@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -197,6 +198,11 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 .permis-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#f3f4f6;color:var(--text);font-family:'DM Mono',monospace}
 .prevu-comment{font-size:12px;color:var(--text-muted);font-style:italic;margin-top:2px}
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; }
+}
 @media(max-width:700px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .topbar{flex-wrap:wrap;height:auto;padding:10px 16px}
@@ -244,6 +250,7 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
             <button class="btn" id="btn-next-month">›</button>
           </div>
         </div>
+        <button class="btn" id="btn-print" title="Imprimer le planning">🖨️ Imprimer</button>
         <button class="btn primary" id="btn-add-slot">+ Ajouter une place</button>
       </div>
       <div class="stats" id="stats-row"></div>
@@ -1152,6 +1159,93 @@ async function saveEditPrevu(){
   closeModal('modal-edit-prevu');renderPrevus();toast('Modifié ✓','#057a55');
 }
 
+function printPlanning(){
+  var month=state.currentMonth;
+  var parts=month.split('-').map(Number);
+  var monthLabel=MONTHS[parts[1]-1]+' '+parts[0];
+  var ms=state.slots.filter(function(s){return s.month===month;});
+  if(!ms.length){toast('Aucune place ce mois','#d97706');return;}
+
+  var byDate={};
+  ms.forEach(function(s){if(!byDate[s.date])byDate[s.date]=[];byDate[s.date].push(s);});
+
+  var html='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">';
+  html+='<title>Planning '+monthLabel+'</title>';
+  html+='<style>';
+  html+='body{font-family:Arial,sans-serif;font-size:13px;color:#111;padding:20px;max-width:900px;margin:0 auto}';
+  html+='.header{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e5e7eb}';
+  html+='.header img{width:56px;height:56px;object-fit:contain;border-radius:8px}';
+  html+='.header h1{font-size:20px;margin:0}';
+  html+='.header p{font-size:12px;color:#6b7280;margin:2px 0 0}';
+  html+='.date-block{margin-bottom:20px}';
+  html+='.date-title{font-size:14px;font-weight:700;padding:8px 12px;background:#f3f4f6;border-radius:6px;margin-bottom:8px;border-left:4px solid #1a56db}';
+  html+='table{width:100%;border-collapse:collapse;margin-bottom:4px}';
+  html+='th{padding:7px 10px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280;border-bottom:2px solid #e5e7eb;background:#fafafa}';
+  html+='td{padding:8px 10px;border-bottom:1px solid #f3f4f6;vertical-align:middle}';
+  html+='.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}';
+  html+='.sbae{background:#ebf2ff;color:#1e3a8a}';
+  html+='.cds{background:#def7ec;color:#014737}';
+  html+='.autre{background:#f3f4f6;color:#374151}';
+  html+='.b78{background:#ede9fe;color:#4c1d95}';
+  html+='.cat{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#f3f4f6}';
+  html+='.libre{color:#9ca3af;font-style:italic}';
+  html+='.locked{color:#059669;font-weight:600}';
+  html+='@media print{button{display:none}}';
+  html+='</style></head><body>';
+
+  // Header avec logo
+  var logoEl=document.getElementById('logo-box');
+  var logoImg=logoEl.querySelector('img');
+  var logoSrc=logoImg?logoImg.src:'';
+  html+='<div class="header">';
+  if(logoSrc) html+='<img src="'+logoSrc+'" alt="Logo">';
+  html+='<div><h1>Easy Auto-École — Planning des permis</h1>';
+  html+='<p>'+monthLabel+' · Centre Gatignolle</p></div>';
+  html+='<div style="margin-left:auto;font-size:12px;color:#6b7280">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</div>';
+  html+='</div>';
+
+  // Stats
+  var total=ms.length;
+  var assigned=ms.filter(function(s){return s.nom;}).length;
+  var libre=total-assigned;
+  html+='<div style="display:flex;gap:16px;margin-bottom:20px">';
+  html+='<div style="padding:10px 16px;background:#f0f6ff;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700;color:#1a56db">'+total+'</div><div style="font-size:11px;color:#6b7280">Places</div></div>';
+  html+='<div style="padding:10px 16px;background:#f0f6ff;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700;color:#1a56db">'+assigned+'</div><div style="font-size:11px;color:#6b7280">Affectés</div></div>';
+  html+='<div style="padding:10px 16px;background:#fffbeb;border-radius:8px;text-align:center"><div style="font-size:22px;font-weight:700;color:#d97706">'+libre+'</div><div style="font-size:11px;color:#6b7280">Libres</div></div>';
+  html+='</div>';
+
+  // Tableau par date
+  Object.keys(byDate).sort().forEach(function(d){
+    var day=new Date(d+'T12:00:00');
+    var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    var label=JOURS[day.getDay()]+' '+day.getDate()+' '+MONTHS[day.getMonth()]+' '+day.getFullYear();
+    html+='<div class="date-block">';
+    html+='<div class="date-title">📅 '+label+' — '+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</div>';
+    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Commentaire</th><th>Statut</th></tr></thead><tbody>';
+    byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
+      var agCls=s.agence==='sbae'?'sbae':s.agence==='cds'?'cds':'autre';
+      var catCls=s.type_permis==='B78'?'b78':'';
+      html+='<tr>';
+      html+='<td style="font-weight:600;font-family:monospace">'+s.heure+'</td>';
+      html+='<td><span class="badge '+agCls+'">'+s.agence.toUpperCase()+'</span></td>';
+      html+='<td>'+(s.nom?'<span class="'+(s.locked?'locked':'')+'">'+s.nom+'</span>':'<span class="libre">Libre</span>')+'</td>';
+      html+='<td><span class="cat '+catCls+'">'+(s.type_permis||'B')+'</span></td>';
+      html+='<td style="color:#6b7280;font-size:12px">'+(s.commentaire||'—')+'</td>';
+      html+='<td>'+(s.locked?'<span style="color:#059669;font-weight:600">✓ Validé</span>':'<span style="color:#d97706">En attente</span>')+'</td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table></div>';
+  });
+
+  html+='<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center">Easy Auto-École · easy-permis · Document généré automatiquement</div>';
+  html+='</body></html>';
+
+  var w=window.open('','_blank','width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){w.print();},500);
+}
+
 document.getElementById('nb-planning').addEventListener('click',function(){showView('planning');});
 document.getElementById('nb-calendrier').addEventListener('click',function(){showView('calendrier');});
 document.getElementById('nb-attente').addEventListener('click',function(){showView('attente');});
@@ -1162,6 +1256,7 @@ document.getElementById('btn-prev-cal').addEventListener('click',prevMonthCal);
 document.getElementById('btn-next-cal').addEventListener('click',nextMonthCal);
 document.getElementById('sel-month').addEventListener('change',renderPlanning);
 document.getElementById('sel-month-cal').addEventListener('change',renderCalView);
+document.getElementById('btn-print').addEventListener('click',printPlanning);
 document.getElementById('btn-add-slot').addEventListener('click',openAddSlot);
 document.getElementById('btn-add-slot-cal').addEventListener('click',openAddSlot);
 document.getElementById('btn-add-wait').addEventListener('click',openAddWait);
