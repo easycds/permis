@@ -108,6 +108,7 @@ select:focus,input:focus{border-color:var(--sbae)}
   font-weight:500;
 }
 .b78-row td{background:var(--b78-light)!important;border-color:#ddd6fe!important}
+.b78-row input,.b78-row select{background:transparent!important;border-color:#c4b5fd!important}
 .hours-warn{color:var(--warn)}
 .hours-bad{color:var(--danger)}
 .exam-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow)}
@@ -118,9 +119,11 @@ select:focus,input:focus{border-color:var(--sbae)}
 .ct-soon{background:#fffbeb;color:#78350f}
 .ct-urgent{background:var(--danger-light);color:#7f1d1d}
 .ct-past{background:#f3f4f6;color:var(--text-muted)}
-table.exam-table{width:100%;border-collapse:collapse}
+table.exam-table{width:100%;border-collapse:collapse;table-layout:auto}
 table.exam-table th{padding:8px 12px;text-align:left;font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:#fafafa}
 table.exam-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+table.exam-table td:last-child{width:36px}
+table.exam-table td input[type="text"]{width:100%;min-width:0}
 table.exam-table tr:last-child td{border-bottom:none}
 table.exam-table tr:hover td{background:#fafafa}
 table.exam-table td select,table.exam-table td input{padding:6px 8px;font-size:13px}
@@ -713,7 +716,7 @@ function renderPlanning(){
     var ctag,ctxt;
     if(diff<0){ctag='ct-past';ctxt='Passé';}else if(diff===0){ctag='ct-urgent';ctxt="Aujourd'hui !";}else if(diff<=3){ctag='ct-urgent';ctxt='J-'+diff+' ⚠';}else if(diff<=7){ctag='ct-soon';ctxt='J-'+diff;}else{ctag='ct-future';ctxt='Dans '+diff+'j';}
     html+='<div class="exam-group"><div class="exam-group-header"><div class="date-dot"></div>'+label+'<span class="countdown-tag '+ctag+'">'+ctxt+'</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted)">'+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</span></div>';
-    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="width:120px">Commentaire</th></tr></thead><tbody>';
+    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="min-width:80px">Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var hcls=s.heures===0?'hours-ok':s.heures<=3?'hours-warn':'hours-bad';
       var hlbl=s.heures===0?'✓ Prêt':s.heures<=3?'⚠ '+s.heures+'h':'✗ '+s.heures+'h';
@@ -736,10 +739,8 @@ function renderPlanning(){
       html+='<td><select onchange="updateSlot('+s.id+',\'heure\',this.value)" style="width:85px"'+dis+'>'+heureOpts+'</select></td>';
       html+='<td><span class="badge '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>';
       html+='<td><select onchange="updateSlotEleve('+s.id+',this)" style="min-width:180px"'+dis+'>'+eleveOpts+'</select></td>';
-
-
       html+='<td><select onchange="updateSlot('+s.id+',\'type_permis\',this.value)" style="width:70px"'+dis+'>'+permisOpts+'</select></td>';
-      html+='<td><input type="text" value="'+(s.commentaire||'')+'" placeholder="Note..." onchange="updateSlot('+s.id+',\'commentaire\',this.value)" style="width:110px;font-size:12px"'+dis+'></td>';
+      html+='<td><input type="text" value="'+(s.commentaire||'')+'" placeholder="Note..." onchange="updateSlot('+s.id+',\'commentaire\',this.value)" style="width:100%;font-size:12px;box-sizing:border-box"'+dis+'></td>';
       html+='<td class="del-cell"><button class="icon-btn del-slot" data-id="'+s.id+'" title="Supprimer">🗑</button></td>';
       html+='</tr>';
     });
@@ -1209,7 +1210,7 @@ function printPlanning(){
     var label=JOURS[day.getDay()]+' '+day.getDate()+' '+MONTHS[day.getMonth()]+' '+day.getFullYear();
     html+='<div class="date-block">';
     html+='<div class="date-title">📅 '+label+' — '+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</div>';
-    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Commentaire</th></tr></thead><tbody>';
+    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th style="min-width:80px">Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var agCls=s.agence==='sbae'?'sbae':s.agence==='cds'?'cds':'autre';
       var catCls=s.type_permis==='B78'?'b78':'';
