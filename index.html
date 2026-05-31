@@ -96,8 +96,7 @@ select:focus,input:focus{border-color:var(--sbae)}
 .detail-verif.nok{background:var(--danger-light);color:#7f1d1d}
 .detail-hours{font-size:12px;font-weight:600}
 .hours-ok{color:var(--ok)}
-.locked-row td{background:#f0fdf4!important;border-color:#bbf7d0!important}
-.locked-row.b78-row td{background:#ede9fe!important;border-color:#ddd6fe!important}
+
 .locked-row select:disabled,.locked-row input:disabled{
   opacity:1!important;
   background:transparent!important;
@@ -714,7 +713,7 @@ function renderPlanning(){
     var ctag,ctxt;
     if(diff<0){ctag='ct-past';ctxt='Passé';}else if(diff===0){ctag='ct-urgent';ctxt="Aujourd'hui !";}else if(diff<=3){ctag='ct-urgent';ctxt='J-'+diff+' ⚠';}else if(diff<=7){ctag='ct-soon';ctxt='J-'+diff;}else{ctag='ct-future';ctxt='Dans '+diff+'j';}
     html+='<div class="exam-group"><div class="exam-group-header"><div class="date-dot"></div>'+label+'<span class="countdown-tag '+ctag+'">'+ctxt+'</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted)">'+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</span></div>';
-    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="width:180px">Commentaire</th><th style="width:36px"></th></tr></thead><tbody>';
+    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="width:180px">Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var hcls=s.heures===0?'hours-ok':s.heures<=3?'hours-warn':'hours-bad';
       var hlbl=s.heures===0?'✓ Prêt':s.heures<=3?'⚠ '+s.heures+'h':'✗ '+s.heures+'h';
@@ -741,9 +740,7 @@ function renderPlanning(){
 
       html+='<td><select onchange="updateSlot('+s.id+',\'type_permis\',this.value)" style="width:70px"'+dis+'>'+permisOpts+'</select></td>';
       html+='<td><input type="text" value="'+(s.commentaire||'')+'" placeholder="Note..." onchange="updateSlot('+s.id+',\'commentaire\',this.value)" style="width:160px;font-size:12px"'+dis+'></td>';
-      var locked=s.locked?true:false;
-      html+='<td class="del-cell"><button class="icon-btn del-slot" data-id="'+s.id+'" title="Supprimer" '+(locked?'disabled style="opacity:.3"':'')+'>🗑</button></td>';
-      html+='<td><button class="icon-btn lock-slot" data-id="'+s.id+'" title="'+(locked?'Déverrouiller':'Verrouiller')+'">'+(locked?'🔒':'🔓')+'</button></td>';
+      html+='<td class="del-cell"><button class="icon-btn del-slot" data-id="'+s.id+'" title="Supprimer">🗑</button></td>';
       html+='</tr>';
     });
     html+='</tbody></table></div>';
