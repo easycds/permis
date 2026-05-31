@@ -20,6 +20,35 @@
   --radius:10px;--radius-sm:6px;
   --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
 }
+body.dark {
+  --bg:#0f1117;--surface:#1a1d27;--border:#2e3347;--border-strong:#3d4461;
+  --text:#e8eaf0;--text-muted:#8b92a8;--text-light:#5a6178;
+  --sbae-light:#1a2d6e;--sbae-dark:#93b4ff;
+  --cds-light:#0d3326;--cds-dark:#6ee7b7;
+  --danger-light:#3b0f0f;--warn-light:#2d1f08;--ok-light:#0d3326;
+  --b78-light:#2d1f52;--b78-dark:#c4b5fd;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+}
+body.dark .nav{background:#12151e}
+body.dark .nav-btn.active{background:var(--surface)}
+body.dark select,body.dark input[type="text"],body.dark input[type="number"],body.dark input[type="date"]{background:var(--surface);color:var(--text);border-color:var(--border)}
+body.dark .exam-group{background:var(--surface)}
+body.dark .cal-day.today{background:#1a2d6e}
+body.dark table.exam-table tr:hover td{background:#22263a}
+body.dark .add-form{background:#12151e;border-color:var(--border)}
+body.dark textarea{background:var(--surface);color:var(--text);border-color:var(--border)}
+body.dark .drop-col{background:#12151e;border-color:var(--border)}
+body.dark .drag-item{background:var(--surface);border-color:var(--border)}
+body.dark .bank-section{background:var(--surface)}
+body.dark .cal-day{background:var(--surface)}
+body.dark .cal-day.empty{background:none}
+body.dark .cal-wrap{background:var(--surface)}
+body.dark .cal-head{background:#12151e}
+body.dark .exam-group-header{background:#12151e}
+body.dark table.exam-table th{background:#12151e}
+body.dark .search-bar{background:var(--surface)}
+body.dark .search-results{background:var(--surface)}
+body.dark .modal{background:var(--surface)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
 .shell{display:flex;flex-direction:column;min-height:100vh}
@@ -113,11 +142,9 @@ select:focus,input:focus{border-color:var(--sbae)}
 .search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
 .search-bar input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;background:transparent;color:var(--text)}
 .search-bar input::placeholder{color:var(--text-light)}
-.search-bar .search-icon{color:var(--text-muted);font-size:16px}
 .search-results{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}
-.search-result-item{padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.search-result-item{padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
 .search-result-item:last-child{border-bottom:none}
-.search-result-item:hover{background:var(--bg)}
 .search-empty{padding:24px;text-align:center;color:var(--text-muted);font-size:13px}
 .hours-bad{color:var(--danger)}
 .exam-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow)}
@@ -209,6 +236,13 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 .permis-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#f3f4f6;color:var(--text);font-family:'DM Mono',monospace}
 .prevu-comment{font-size:12px;color:var(--text-muted);font-style:italic;margin-top:2px}
+.resultat-reussi{background:#def7ec;color:#014737;font-weight:700;padding:3px 10px;border-radius:20px;font-size:12px}
+.resultat-echoue{background:#fef2f2;color:#7f1d1d;font-weight:700;padding:3px 10px;border-radius:20px;font-size:12px}
+.resultat-attente{background:#f3f4f6;color:#6b7280;padding:3px 10px;border-radius:20px;font-size:12px}
+.slot-nom-btn{background:none;border:none;cursor:pointer;font-weight:500;font-size:13px;color:var(--text);padding:0;text-align:left;text-decoration:underline dotted var(--text-muted);text-underline-offset:3px}
+.slot-nom-btn:hover{color:var(--sbae)}
+.histo-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.histo-row:last-child{border-bottom:none}
 @media print {
   body * { visibility: hidden; }
   #print-area, #print-area * { visibility: visible; }
@@ -249,6 +283,7 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
       <span id="sync-st" style="font-size:11px;font-weight:500;color:#6b7280;min-width:110px"></span>
       <button class="btn" id="btn-sync" style="padding:5px 10px;font-size:12px">🔄 Sync</button>
+      <button class="btn" id="btn-dark" style="padding:5px 10px;font-size:14px" title="Mode sombre">🌙</button>
     </div>
   </div>
   <div class="main">
@@ -260,11 +295,6 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
             <select id="sel-month"></select>
             <button class="btn" id="btn-next-month">›</button>
           </div>
-        </div>
-        <div class="search-bar" style="flex:1;margin-bottom:0;max-width:300px">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="search-planning" placeholder="Chercher un élève..." oninput="filterPlanning(this.value)">
-          <button onclick="clearFilterPlanning()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0">×</button>
         </div>
         <button class="btn" id="btn-print" title="Imprimer le planning">🖨️ Imprimer</button>
         <button class="btn primary" id="btn-add-slot">+ Ajouter une place</button>
@@ -292,9 +322,9 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
         <button class="btn primary" id="btn-add-wait">+ Ajouter un élève</button>
       </div>
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <span style="color:var(--text-muted)">🔍</span>
         <input type="text" id="search-wait" placeholder="Rechercher un élève en attente..." oninput="searchWait(this.value)">
-        <button onclick="clearSearchWait()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0" title="Effacer">×</button>
+        <button onclick="clearSearchWait()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:18px;padding:0;line-height:1">×</button>
       </div>
       <div class="legend">
         <span style="font-size:12px;font-weight:600;color:var(--text-muted)">Ancienneté :</span>
@@ -311,13 +341,13 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
         <button class="btn" id="btn-select-all-eleves">☑ Tout sélectionner</button>
         <button class="btn" id="btn-delete-eleves" style="display:none;background:var(--danger);color:#fff;border-color:var(--danger)">🗑 Supprimer</button>
       </div>
+
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <span style="color:var(--text-muted)">🔍</span>
         <input type="text" id="search-eleves" placeholder="Rechercher un élève..." oninput="searchEleves(this.value)">
-        <button onclick="clearSearch()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:0" title="Effacer">×</button>
+        <button onclick="clearSearch()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:18px;padding:0;line-height:1">×</button>
       </div>
       <div id="search-results" style="display:none"></div>
-
       <!-- Zone import -->
       <div class="add-form" style="margin-bottom:20px">
         <div class="form-row" style="align-items:flex-start">
@@ -571,6 +601,42 @@ table.exam-table td input[type="number"]{width:70px;text-align:center}
 </div>
 
 <div class="toast" id="toast"></div>
+<!-- MODAL RESULTAT -->
+<div class="modal-bg" id="modal-resultat" style="display:none">
+  <div class="modal" style="width:480px">
+    <div class="modal-title" id="resultat-title">📋 Résultat de l'examen</div>
+    <input type="hidden" id="res-slot-id">
+    <input type="hidden" id="res-nom">
+    <input type="hidden" id="res-date">
+    <input type="hidden" id="res-type-permis">
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px">
+      <div style="display:flex;gap:10px">
+        <button class="btn" id="btn-reussi" style="flex:1;font-size:15px;padding:14px;border-radius:var(--radius)">✅ Réussi</button>
+        <button class="btn" id="btn-echoue" style="flex:1;font-size:15px;padding:14px;border-radius:var(--radius)">❌ Échoué</button>
+      </div>
+      <div class="form-field"><label>Commentaire (optionnel)</label><input type="text" id="res-commentaire" placeholder="Note sur le passage..." style="width:100%"></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Historique des passages</div>
+      <div id="res-historique"><div style="text-align:center;color:var(--text-muted);font-size:13px;padding:12px">Chargement...</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-resultat')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HISTORIQUE GLOBAL -->
+<div class="modal-bg" id="modal-histo" style="display:none">
+  <div class="modal" style="width:520px;max-height:80vh;overflow-y:auto">
+    <div class="modal-title">📋 Historique — <span id="histo-nom-title"></span></div>
+    <div id="histo-content"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-histo')">Fermer</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 var SUPABASE_URL='https://zyxvkhdythlqzlrwfjab.supabase.co';
@@ -585,9 +651,6 @@ var state={eleves:{sbae:[],cds:[]},slots:[],waitList:[],prevus:[],currentMonth:'
 function toast(msg,col){var t=document.getElementById('toast');t.textContent=msg;t.style.background=col||'#111827';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
 function setSt(msg,col){var el=document.getElementById('sync-st');if(el){el.textContent=msg;el.style.color=col||'#6b7280';}}
 
-// ============================================================
-// RECHERCHE
-// ============================================================
 function searchEleves(q){
   var res=document.getElementById('search-results');
   if(!q.trim()){res.style.display='none';document.getElementById('existing-eleves').style.display='block';return;}
@@ -604,56 +667,106 @@ function searchEleves(q){
     html+='<div class="search-result-item">';
     html+='<span class="badge '+e.a+'">'+e.a.toUpperCase()+'</span>';
     html+='<span style="font-weight:500;flex:1">'+e.n+'</span>';
-    if(inPlanning)html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px">📋 Planifié</span>';
-    if(inWait)html+='<span style="font-size:11px;background:var(--warn-light);color:#78350f;padding:2px 8px;border-radius:10px;margin-left:4px">⏳ Attente</span>';
-    if(inPrevu)html+='<span style="font-size:11px;background:var(--ok-light);color:var(--cds-dark);padding:2px 8px;border-radius:10px;margin-left:4px">🎯 Prévu</span>';
+    if(inPlanning)html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px">📋 Planifié</span> ';
+    if(inWait)html+='<span style="font-size:11px;background:var(--warn-light);color:#78350f;padding:2px 8px;border-radius:10px">⏳ Attente</span> ';
+    if(inPrevu)html+='<span style="font-size:11px;background:var(--ok-light);color:var(--cds-dark);padding:2px 8px;border-radius:10px">🎯 Prévu</span>';
     html+='</div>';
   });
   res.innerHTML=html;res.style.display='block';
 }
-
 function clearSearch(){
   document.getElementById('search-eleves').value='';
   searchEleves('');
 }
-
 function searchWait(q){
   q=q.toLowerCase();
-  var items=document.querySelectorAll('.wait-card');
-  items.forEach(function(item){
+  document.querySelectorAll('.wait-card').forEach(function(item){
     var nom=item.querySelector('.wait-name');
     if(!nom)return;
-    if(!q||nom.textContent.toLowerCase().includes(q)){
-      item.style.display='flex';
-    } else {
-      item.style.display='none';
-    }
+    item.style.display=(!q||nom.textContent.toLowerCase().includes(q))?'flex':'none';
   });
 }
-
 function clearSearchWait(){
   document.getElementById('search-wait').value='';
   searchWait('');
 }
 
-function filterPlanning(q){
-  q=q.toLowerCase().trim();
-  var rows=document.querySelectorAll('#planning-content tr');
-  rows.forEach(function(row){
-    if(!q){row.style.display='';return;}
-    var txt=row.textContent.toLowerCase();
-    row.style.display=txt.includes(q)?'':'none';
-  });
-  // Gérer les groupes vides
-  document.querySelectorAll('.exam-group').forEach(function(g){
-    var visible=Array.from(g.querySelectorAll('tbody tr')).some(function(r){return r.style.display!=='none';});
-    g.style.display=(!q||visible)?'':'none';
-  });
+
+// ============================================================
+// RESULTAT & HISTORIQUE
+// ============================================================
+function openResultat(slotId){
+  var s=state.slots.find(function(x){return x.id===slotId;});
+  if(!s||!s.nom)return;
+  document.getElementById('res-slot-id').value=slotId;
+  document.getElementById('res-nom').value=s.nom;
+  document.getElementById('res-date').value=s.date;
+  document.getElementById('res-type-permis').value=s.type_permis||'B';
+  document.getElementById('res-commentaire').value='';
+  document.getElementById('resultat-title').textContent='📋 '+s.nom+' — '+s.date;
+  // Surligner le résultat actuel
+  document.getElementById('btn-reussi').style.background=s.resultat==='reussi'?'var(--ok)':'';
+  document.getElementById('btn-reussi').style.color=s.resultat==='reussi'?'#fff':'';
+  document.getElementById('btn-echoue').style.background=s.resultat==='echoue'?'var(--danger)':'';
+  document.getElementById('btn-echoue').style.color=s.resultat==='echoue'?'#fff':'';
+  loadHistorique(s.nom);
+  document.getElementById('modal-resultat').style.display='flex';
 }
 
-function clearFilterPlanning(){
-  document.getElementById('search-planning').value='';
-  filterPlanning('');
+async function saveResultat(res){
+  var slotId=+document.getElementById('res-slot-id').value;
+  var nom=document.getElementById('res-nom').value;
+  var date=document.getElementById('res-date').value;
+  var permis=document.getElementById('res-type-permis').value;
+  var commentaire=document.getElementById('res-commentaire').value;
+  // Mettre à jour le slot
+  var s=state.slots.find(function(x){return x.id===slotId;});
+  if(s){s.resultat=res;}
+  await sb.from('slots').update({resultat:res}).eq('id',slotId);
+  // Enregistrer dans l'historique
+  await sb.from('resultats').insert({nom:nom,date:date,resultat:res,type_permis:permis,commentaire:commentaire});
+  renderPlanning();
+  // Rafraîchir l'historique dans le popup
+  document.getElementById('btn-reussi').style.background=res==='reussi'?'var(--ok)':'';
+  document.getElementById('btn-reussi').style.color=res==='reussi'?'#fff':'';
+  document.getElementById('btn-echoue').style.background=res==='echoue'?'var(--danger)':'';
+  document.getElementById('btn-echoue').style.color=res==='echoue'?'#fff':'';
+  loadHistorique(nom);
+  toast(res==='reussi'?'✅ Réussi enregistré !':'❌ Échec enregistré',res==='reussi'?'#057a55':'#dc2626');
+}
+
+async function loadHistorique(nom){
+  var el=document.getElementById('res-historique');
+  el.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:12px">Chargement...</div>';
+  var r=await sb.from('resultats').select('*').eq('nom',nom).order('date',{ascending:false});
+  if(r.error||!r.data||!r.data.length){el.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:12px">Aucun passage enregistré</div>';return;}
+  var reussis=r.data.filter(function(x){return x.resultat==='reussi';}).length;
+  var total=r.data.length;
+  var html='<div style="display:flex;gap:12px;margin-bottom:12px">';
+  html+='<div style="background:var(--ok-light);color:var(--cds-dark);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600">✅ '+reussis+' réussi'+(reussis>1?'s':'')+'</div>';
+  html+='<div style="background:var(--danger-light);color:#7f1d1d;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600">❌ '+(total-reussis)+' échoué'+(total-reussis>1?'s':'')+'</div>';
+  html+='<div style="background:var(--bg);color:var(--text-muted);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600">📊 '+Math.round(reussis/total*100)+'% réussite</div>';
+  html+='</div>';
+  r.data.forEach(function(h){
+    var cls=h.resultat==='reussi'?'resultat-reussi':'resultat-echoue';
+    var icon=h.resultat==='reussi'?'✅':'❌';
+    html+='<div class="histo-row">';
+    html+='<span style="font-family:monospace;font-size:12px;color:var(--text-muted);min-width:90px">'+h.date+'</span>';
+    html+='<span class="'+cls+'">'+icon+' '+(h.resultat==='reussi'?'Réussi':'Échoué')+'</span>';
+    html+='<span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px">'+h.type_permis+'</span>';
+    if(h.commentaire)html+='<span style="font-size:12px;color:var(--text-muted);font-style:italic">'+h.commentaire+'</span>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function toggleDark(){
+  var dark=document.body.classList.toggle('dark');
+  document.getElementById('btn-dark').textContent=dark?'☀️':'🌙';
+  try{localStorage.setItem('permis_dark',dark?'1':'0');}catch(e){}
+}
+function initDark(){
+  try{if(localStorage.getItem('permis_dark')==='1'){document.body.classList.add('dark');document.getElementById('btn-dark').textContent='☀️';}}catch(e){}
 }
 
 async function syncLoad(){
@@ -667,7 +780,7 @@ async function syncLoad(){
     if(r2.error)throw r2.error;
     if(r3.error)throw r3.error;
     // Charger TOUTES les données d'abord
-    state.slots=(r1.data||[]).map(function(s){s.locked=s.locked===true;return s;});
+    state.slots=(r1.data||[]).map(function(s){s.locked=s.locked===true;s.resultat=s.resultat||'';return s;});
     state.waitList=r2.data||[];
     state.prevus=r4.data||[];
     state.eleves={sbae:[],cds:[]};
@@ -834,7 +947,12 @@ function renderPlanning(){
       var dis='';
       html+='<td><select onchange="updateSlot('+s.id+',\'heure\',this.value)" style="width:85px"'+dis+'>'+heureOpts+'</select></td>';
       html+='<td><span class="badge '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>';
-      html+='<td><select onchange="updateSlotEleve('+s.id+',this)" style="min-width:180px"'+dis+'>'+eleveOpts+'</select></td>';
+      var resTag='';
+      if(s.resultat==='reussi')resTag=' <span class="resultat-reussi">✅ Réussi</span>';
+      else if(s.resultat==='echoue')resTag=' <span class="resultat-echoue">❌ Échoué</span>';
+      html+='<td><div style="display:flex;align-items:center;gap:8px"><select onchange="updateSlotEleve('+s.id+',this)" style="min-width:150px"'+dis+'>'+eleveOpts+'</select>';
+      if(s.nom)html+='<button class="slot-nom-btn" onclick="openResultat('+s.id+')" title="Résultat / Historique">'+resTag+(resTag?'':' 📝')+'</button>';
+      html+='</div></td>';
       html+='<td><select onchange="updateSlot('+s.id+',\'type_permis\',this.value)" style="width:70px"'+dis+'>'+permisOpts+'</select></td>';
       html+='<td><input type="text" value="'+(s.commentaire||'')+'" placeholder="Note..." onchange="updateSlot('+s.id+',\'commentaire\',this.value)" style="width:100%;font-size:12px;box-sizing:border-box"'+dis+'></td>';
       html+='<td class="del-cell"><button class="icon-btn del-slot" data-id="'+s.id+'" title="Supprimer">🗑</button></td>';
@@ -1323,4 +1441,70 @@ function printPlanning(){
   });
 
   html+='<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center">Easy Auto-École · easy-permis · Document généré automatiquement</div>';
-  html+='</body></html>
+  html+='</body></html>';
+
+  var w=window.open('','_blank','width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){w.print();},500);
+}
+
+document.getElementById('nb-planning').addEventListener('click',function(){showView('planning');});
+document.getElementById('nb-calendrier').addEventListener('click',function(){showView('calendrier');});
+document.getElementById('nb-attente').addEventListener('click',function(){showView('attente');});
+document.getElementById('nb-banque').addEventListener('click',function(){showView('banque');});
+document.getElementById('btn-prev-month').addEventListener('click',prevMonth);
+document.getElementById('btn-next-month').addEventListener('click',nextMonth);
+document.getElementById('btn-prev-cal').addEventListener('click',prevMonthCal);
+document.getElementById('btn-next-cal').addEventListener('click',nextMonthCal);
+document.getElementById('sel-month').addEventListener('change',renderPlanning);
+document.getElementById('sel-month-cal').addEventListener('change',renderCalView);
+document.getElementById('btn-print').addEventListener('click',printPlanning);
+document.getElementById('btn-add-slot').addEventListener('click',openAddSlot);
+document.getElementById('btn-add-slot-cal').addEventListener('click',openAddSlot);
+document.getElementById('btn-add-wait').addEventListener('click',openAddWait);
+document.getElementById('btn-import-noms').addEventListener('click',importNoms);
+document.getElementById('btn-delete-eleves').addEventListener('click',deleteSelectedEleves);
+document.getElementById('btn-select-all-eleves').addEventListener('click',function(){
+  var all=document.querySelectorAll('.eleve-check');
+  var allChecked=Array.from(all).every(function(cb){return cb.checked;});
+  all.forEach(function(cb){cb.checked=!allChecked;});
+  updateDeleteBtn();
+});
+document.getElementById('btn-confirm-import').addEventListener('click',confirmImport);
+document.getElementById('btn-cancel-import').addEventListener('click',cancelImport);
+document.getElementById('btn-cancel-slot').addEventListener('click',function(){closeModal('modal-slot');});
+document.getElementById('btn-save-slot').addEventListener('click',saveSlot);
+document.getElementById('btn-cancel-wait').addEventListener('click',function(){closeModal('modal-wait');});
+document.getElementById('btn-save-wait').addEventListener('click',saveWait);
+document.getElementById('btn-sync').addEventListener('click',syncLoad);
+document.getElementById('btn-dark').addEventListener('click',toggleDark);
+document.getElementById('btn-reussi').addEventListener('click',function(){saveResultat('reussi');});
+document.getElementById('btn-echoue').addEventListener('click',function(){saveResultat('echoue');});
+initDark();
+document.getElementById('nb-prevus').addEventListener('click',function(){showView('prevus');});
+document.getElementById('btn-add-prevu').addEventListener('click',openAddPrevu);
+document.getElementById('btn-cancel-prevu').addEventListener('click',function(){closeModal('modal-prevu');});
+document.getElementById('btn-save-prevu').addEventListener('click',savePrevu);
+document.getElementById('btn-cancel-edit-prevu').addEventListener('click',function(){closeModal('modal-edit-prevu');});
+document.getElementById('btn-save-edit-prevu').addEventListener('click',saveEditPrevu);
+document.getElementById('btn-cancel-edit-wait').addEventListener('click',function(){closeModal('modal-edit-wait');});
+document.getElementById('btn-save-edit-wait').addEventListener('click',saveEditWait);
+
+async function saveEditWait(){
+  var id=+document.getElementById('ew-id').value;
+  var nom=document.getElementById('ew-nom').value;
+  var agence=document.getElementById('ew-agence').value;
+  var att=+document.getElementById('ew-att').value;
+  var date=document.getElementById('ew-date').value;
+  var r=await sb.from('wait_list').update({nom:nom,agence:agence,att:att,last_date:date}).eq('id',id);
+  if(r.error){toast('Erreur','#dc2626');return;}
+  var w=state.waitList.find(function(x){return x.id===id;});
+  if(w){w.nom=nom;w.agence=agence;w.att=att;w.last_date=date;}
+  closeModal('modal-edit-wait');renderWait();toast('Modifié ✓','#057a55');
+}
+
+syncLoad();
+</script>
+</body>
+</html>
