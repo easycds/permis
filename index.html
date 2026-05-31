@@ -714,7 +714,7 @@ function renderPlanning(){
     var ctag,ctxt;
     if(diff<0){ctag='ct-past';ctxt='Passé';}else if(diff===0){ctag='ct-urgent';ctxt="Aujourd'hui !";}else if(diff<=3){ctag='ct-urgent';ctxt='J-'+diff+' ⚠';}else if(diff<=7){ctag='ct-soon';ctxt='J-'+diff;}else{ctag='ct-future';ctxt='Dans '+diff+'j';}
     html+='<div class="exam-group"><div class="exam-group-header"><div class="date-dot"></div>'+label+'<span class="countdown-tag '+ctag+'">'+ctxt+'</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted)">'+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</span></div>';
-    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="width:180px">Commentaire</th><th style="width:36px"></th><th style="width:36px"></th></tr></thead><tbody>';
+    html+='<table class="exam-table"><thead><tr><th style="width:100px">Heure</th><th style="width:90px">Agence</th><th>Élève</th><th style="width:80px">Catégorie</th><th style="width:180px">Commentaire</th><th style="width:36px"></th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var hcls=s.heures===0?'hours-ok':s.heures<=3?'hours-warn':'hours-bad';
       var hlbl=s.heures===0?'✓ Prêt':s.heures<=3?'⚠ '+s.heures+'h':'✗ '+s.heures+'h';
@@ -731,9 +731,9 @@ function renderPlanning(){
         eleveOpts+='<option value="'+s.nom+'" data-agence="'+ag2+'" selected>'+s.nom+' ('+ag2.toUpperCase()+')</option>';
       }
       var permisOpts=['B','AAC','SUPP','B78'].map(function(p){return'<option value="'+p+'"'+(s.type_permis===p?' selected':'')+'>'+p+'</option>';}).join('');
-      var rowCls=(s.locked?'locked-row ':'')+( s.type_permis==='B78'?'b78-row':'');
+      var rowCls=s.type_permis==='B78'?'b78-row':'';
       html+='<tr class="'+rowCls+'">';
-      var dis=s.locked?' disabled':'';
+      var dis='';
       html+='<td><select onchange="updateSlot('+s.id+',\'heure\',this.value)" style="width:85px"'+dis+'>'+heureOpts+'</select></td>';
       html+='<td><span class="badge '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>';
       html+='<td><select onchange="updateSlotEleve('+s.id+',this)" style="min-width:180px"'+dis+'>'+eleveOpts+'</select></td>';
@@ -1003,16 +1003,7 @@ document.getElementById('logo-input').addEventListener('change',function(){
 });
 
 document.addEventListener('click',function(e){
-  if(e.target.classList.contains('lock-slot')){
-    var id=+e.target.getAttribute('data-id');
-    var s=state.slots.find(function(x){return x.id===id;});
-    if(s){
-      s.locked=!s.locked;
-      sb.from('slots').update({locked:s.locked}).eq('id',id);
-      renderPlanning();
-      toast(s.locked?'Place verrouillée 🔒':'Place déverrouillée 🔓','#6b7280');
-    }
-  }
+
   if(e.target.classList.contains('del-slot')){
     var id=+e.target.getAttribute('data-id');
     if(confirm('Supprimer cette place ?')){
@@ -1221,7 +1212,7 @@ function printPlanning(){
     var label=JOURS[day.getDay()]+' '+day.getDate()+' '+MONTHS[day.getMonth()]+' '+day.getFullYear();
     html+='<div class="date-block">';
     html+='<div class="date-title">📅 '+label+' — '+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</div>';
-    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Commentaire</th><th>Statut</th></tr></thead><tbody>';
+    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var agCls=s.agence==='sbae'?'sbae':s.agence==='cds'?'cds':'autre';
       var catCls=s.type_permis==='B78'?'b78':'';
@@ -1231,7 +1222,7 @@ function printPlanning(){
       html+='<td>'+(s.nom?'<span class="'+(s.locked?'locked':'')+'">'+s.nom+'</span>':'<span class="libre">Libre</span>')+'</td>';
       html+='<td><span class="cat '+catCls+'">'+(s.type_permis||'B')+'</span></td>';
       html+='<td style="color:#6b7280;font-size:12px">'+(s.commentaire||'—')+'</td>';
-      html+='<td>'+(s.locked?'<span style="color:#059669;font-weight:600">✓ Validé</span>':'<span style="color:#d97706">En attente</span>')+'</td>';
+
       html+='</tr>';
     });
     html+='</tbody></table></div>';
