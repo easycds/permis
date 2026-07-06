@@ -644,7 +644,8 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
       <div style="height:1px;background:var(--border);margin:4px 0"></div>
       <button class="btn" onclick="resetData()" style="justify-content:center;color:var(--danger);border-color:var(--danger)">↺ Réinitialiser (revenir aux données d'origine)</button>
     </div>
-    <div style="font-size:11px;color:var(--text-light);margin-top:14px" id="data-info"></div>
+    <div style="font-size:12px;margin-top:14px;font-weight:600" id="cloud-status"></div>
+    <div style="font-size:11px;color:var(--text-light);margin-top:4px" id="data-info"></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('modal-data')">Fermer</button>
     </div>
@@ -652,6 +653,10 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- SDK Firebase (compat) — sert uniquement si tu as collé ta config plus bas -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* =====================================================================
@@ -1652,6 +1657,93 @@ document.getElementById('btn-confirm-import').addEventListener('click',confirmIm
 document.getElementById('btn-cancel-import').addEventListener('click',cancelImport);
 document.getElementById('btn-toggle-import').addEventListener('click',toggleImport);
 
+/* =====================================================================
+   SYNCHRO CLOUD FIREBASE (optionnelle — partage entre tous les postes)
+   ---------------------------------------------------------------------
+   👉 Pour activer : colle la config de TON projet Firebase ci-dessous.
+   (Console Firebase → ⚙ Paramètres du projet → « Tes applications » →
+    Configuration du SDK → copie l'objet firebaseConfig)
+   Tant que FIREBASE_CONFIG vaut null, l'appli marche en local (localStorage).
+===================================================================== */
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBTlHPr02V0yTyyksUdQJhMgwwMBhns_9E",
+  authDomain: "easy-cds.firebaseapp.com",
+  projectId: "easy-cds",
+  storageBucket: "easy-cds.firebasestorage.app",
+  messagingSenderId: "1076531712032",
+  appId: "1:1076531712032:web:5fb2189564a4a4bc3eac45"
+};
+/* ▼▼▼ COLLE ICI (remplace le null au-dessus par ceci, en mettant tes valeurs) ▼▼▼
+var FIREBASE_CONFIG = {
+  apiKey: "AIza...",
+  authDomain: "ton-projet.firebaseapp.com",
+  projectId: "ton-projet",
+  storageBucket: "ton-projet.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcdef"
+};
+▲▲▲ */
+
+var cloud={on:false,ref:null,clientId:Math.random().toString(36).slice(2),applying:false,timer:null};
+function initCloud(){
+  if(!FIREBASE_CONFIG || typeof firebase==='undefined'){updateCloudStatus();return;}
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    cloud.ref=firebase.firestore().collection('easy_permis').doc('data');
+    cloud.on=true;
+    // Temps réel : les modifs des autres postes s'appliquent automatiquement
+    cloud.ref.onSnapshot(function(snap){
+      if(!snap.exists)return;
+      var d=snap.data();
+      if(!d||d.writer===cloud.clientId||!d.payload)return;
+      try{applyRemote(JSON.parse(d.payload));}catch(e){}
+    });
+    // Premier chargement : on prend les données du cloud si elles existent, sinon on y pousse les nôtres
+    cloud.ref.get().then(function(snap){
+      if(snap.exists && snap.data().payload){try{applyRemote(JSON.parse(snap.data().payload));}catch(e){}}
+      else{cloudSave(true);}
+      updateCloudStatus();
+    }).catch(function(){cloud.on=false;updateCloudStatus();});
+  }catch(e){cloud.on=false;}
+  updateCloudStatus();
+}
+function applyRemote(d){
+  if(!d||!Array.isArray(d.slots))return;
+  cloud.applying=true;
+  state.slots=d.slots;
+  state.eleves=Array.isArray(d.eleves)?d.eleves:[];
+  state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+  state.nextId=d.nextId||state.nextId;
+  state.nextWaitId=d.nextWaitId||state.nextWaitId;
+  try{localStorage.setItem(STORAGE_KEY, JSON.stringify({v:1,savedAt:new Date().toISOString(),slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId}));}catch(e){}
+  buildMonthSel();
+  var active=document.querySelector('.view.active');
+  if(active&&active.id==='view-stats')renderStatsView();
+  else if(active&&active.id==='view-attente')renderWait();
+  else if(active&&active.id==='view-banque')renderBanque();
+  else renderPlanning();
+  updateNavCounts();
+  cloud.applying=false;
+}
+function cloudSave(force){
+  if(!cloud.on)return;
+  if(cloud.applying&&!force)return;
+  clearTimeout(cloud.timer);
+  cloud.timer=setTimeout(function(){
+    try{
+      cloud.ref.set({
+        payload:JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId}),
+        writer:cloud.clientId, ts:Date.now()
+      });
+    }catch(e){}
+  },700);
+}
+function updateCloudStatus(){
+  var el=document.getElementById('cloud-status');if(!el)return;
+  if(cloud.on){el.textContent='☁️ Synchro cloud active — partagée entre tous les postes';el.style.color='var(--ok)';}
+  else{el.textContent='💾 Sauvegarde locale seulement (ce navigateur). Colle ta config Firebase pour partager.';el.style.color='var(--text-light)';}
+}
+
 /* ===== PERSISTANCE (localStorage) + EXPORT/IMPORT JSON ===== */
 var STORAGE_KEY='permis_data_v1';
 function persist(){
@@ -1662,6 +1754,7 @@ function persist(){
       nextId:state.nextId, nextWaitId:state.nextWaitId
     }));
   }catch(e){/* quota ou navigation privée : on ignore silencieusement */}
+  cloudSave();
 }
 function loadState(){
   try{
@@ -1732,6 +1825,7 @@ function openDataModal(){
     if(raw){var d=JSON.parse(raw);if(d.savedAt){var dt=new Date(d.savedAt);info='Dernière sauvegarde auto : '+dt.toLocaleString('fr-FR');}}
   }catch(e){}
   document.getElementById('data-info').textContent=info;
+  updateCloudStatus();
   document.getElementById('modal-data').style.display='flex';
 }
 
@@ -1743,6 +1837,7 @@ initMonth();
 buildMonthSel();
 renderPlanning();
 updateNavCounts();
+initCloud();
 </script>
 </body>
 </html>
