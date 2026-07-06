@@ -63,6 +63,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 ::-webkit-scrollbar{height:8px;width:8px}
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
 .shell{display:flex;flex-direction:column;min-height:100vh}
+/* ===== ÉCRAN DE VERROUILLAGE ===== */
+#lock-screen{position:fixed;inset:0;z-index:1000;background:var(--grad-easy);display:flex;align-items:center;justify-content:center;padding:20px}
+.lock-card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:0 20px 60px rgba(0,0,0,.3);padding:32px 28px;width:340px;max-width:100%;text-align:center;animation:groupIn .3s var(--ease) both}
+.lock-logo{font-family:var(--police-titre);font-weight:700;font-size:34px;color:var(--easy);letter-spacing:-.5px;line-height:1;margin-bottom:6px}
+.lock-title{font-family:var(--police-titre);font-weight:600;font-size:19px;color:var(--text);margin-bottom:4px}
+.lock-sub{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.4}
+#lock-input{width:100%;padding:12px 14px;font-size:16px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;text-align:center}
+#lock-input:focus{border-color:var(--easy)}
+.lock-err{font-size:13px;color:var(--danger);min-height:18px;margin-bottom:8px;font-weight:600}
 .topbar{background:var(--grad-easy);border-bottom:none;padding:0 24px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;gap:16px;height:calc(64px + env(safe-area-inset-top));display:flex;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(255,48,48,.28)}
 .logo-area{display:flex;align-items:center;gap:12px;flex:1}
 .logo-img-real{height:38px;width:auto;display:block;flex-shrink:0}
@@ -380,6 +389,17 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 </style>
 </head>
 <body>
+<!-- ===== ÉCRAN DE VERROUILLAGE ===== -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-logo">easy</div>
+    <div class="lock-title">Accès protégé</div>
+    <div class="lock-sub">Entrez le mot de passe pour accéder à l'application.</div>
+    <input type="password" id="lock-input" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <div class="lock-err" id="lock-err"></div>
+    <button class="btn primary" onclick="tryUnlock()" style="width:100%;justify-content:center;padding:11px">Entrer</button>
+  </div>
+</div>
 <div class="shell" id="app-shell">
   <div class="topbar">
     <div class="logo-area">
@@ -668,6 +688,26 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
    Données en mémoire. Fonctions "SYNC" à brancher sur Supabase :
    slots (+ colonnes pp, vm, resultat, locked), eleves, wait_list.
 ===================================================================== */
+/* ===== VERROUILLAGE PAR MOT DE PASSE ===== */
+var APP_PASSWORD='mdpeasy';
+function tryUnlock(){
+  var v=document.getElementById('lock-input').value;
+  if(v===APP_PASSWORD){
+    try{localStorage.setItem('permis_unlocked','1');}catch(e){}
+    document.getElementById('lock-screen').style.display='none';
+  } else {
+    document.getElementById('lock-err').textContent='Mot de passe incorrect';
+    document.getElementById('lock-input').value='';
+    document.getElementById('lock-input').focus();
+  }
+}
+function initLock(){
+  var unlocked=false;
+  try{unlocked=localStorage.getItem('permis_unlocked')==='1';}catch(e){}
+  if(unlocked){document.getElementById('lock-screen').style.display='none';}
+  else{document.getElementById('lock-screen').style.display='flex';setTimeout(function(){var i=document.getElementById('lock-input');if(i)i.focus();},100);}
+}
+
 var MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 var JOURS_FULL=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 var MONITEURS=['Charles','Grégoire','Quentin','Doriane','Aline','Pauline'];
@@ -1830,6 +1870,7 @@ function openDataModal(){
 }
 
 /* ===== INIT ===== */
+initLock();
 initDark();
 loadState();
 initHero();
