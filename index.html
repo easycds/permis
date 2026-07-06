@@ -400,6 +400,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
       <button class="nav-btn" id="nb-banque">👥 Élèves</button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
+      <button class="btn" id="btn-data" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Sauvegarde / Export / Import">💾</button>
       <button class="btn" id="btn-dark" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Mode sombre">🌙</button>
     </div>
   </div>
@@ -627,6 +628,28 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 </div>
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
+
+<!-- MODAL DONNÉES (sauvegarde / export / import / reset) -->
+<div class="modal-bg" id="modal-data" style="display:none">
+  <div class="modal" style="width:420px">
+    <div class="modal-title">💾 Sauvegarde des données</div>
+    <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:16px">
+      Tes données sont enregistrées <strong>automatiquement</strong> dans ce navigateur : elles restent après un rechargement ou une fermeture de l'onglet.
+      Pour les transférer sur un autre appareil ou faire une copie de secours, exporte un fichier.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn primary" onclick="exportJSON()" style="justify-content:center">⬇ Exporter une sauvegarde (.json)</button>
+      <button class="btn" onclick="document.getElementById('file-import').click()" style="justify-content:center">⬆ Importer une sauvegarde (.json)</button>
+      <input type="file" id="file-import" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
+      <div style="height:1px;background:var(--border);margin:4px 0"></div>
+      <button class="btn" onclick="resetData()" style="justify-content:center;color:var(--danger);border-color:var(--danger)">↺ Réinitialiser (revenir aux données d'origine)</button>
+    </div>
+    <div style="font-size:11px;color:var(--text-light);margin-top:14px" id="data-info"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-data')">Fermer</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1052,6 +1075,7 @@ function renderPlanning(){
     html+='</tbody></table></div>';
   });
   document.getElementById('planning-content').innerHTML=html;
+  persist();
 }
 
 /* ===== ACTIONS PLANNING — SYNC : remplacer par sb.from('slots')... si Supabase ===== */
@@ -1161,6 +1185,7 @@ function renderWait(){
     html+='</div>';
   });
   document.getElementById('wait-content').innerHTML=html;
+  persist();
 }
 function cycleAtt(id){
   var w=state.waitList.find(function(x){return x.id===id;});
@@ -1256,6 +1281,7 @@ function renderBanque(){
     html+='</div></div>';
   });
   board.innerHTML=html;
+  persist();
 }
 function optionsMoisPrevu(){return null;}
 function moisOptsSel(sel){
@@ -1267,7 +1293,7 @@ function moisOptsSel(sel){
   }
   return html;
 }
-function setMoisPrevu(nom,val){var e=eleveObj(nom);if(e){e.moisPrevu=val;toast(val?(nom+' prévu '+labelMois(val)):'Mois retiré','#d97706');}}
+function setMoisPrevu(nom,val){var e=eleveObj(nom);if(e){e.moisPrevu=val;persist();toast(val?(nom+' prévu '+labelMois(val)):'Mois retiré','#d97706');}}
 function moveEleve(nom,statut){setStatutEleve(nom,statut);renderBanque();
   toast(nom+' → '+KCOLS.find(function(c){return c.k===statut;}).label.replace(/^[^ ]+ /,''),statut==='repassage'?'#ff3131':statut==='bientot'?'#d97706':'#6b7280');}
 function delEleve(nom){
@@ -1620,13 +1646,98 @@ document.getElementById('btn-add-wait').addEventListener('click',openAddWait);
 document.getElementById('btn-cancel-wait').addEventListener('click',function(){closeModal('modal-wait');});
 document.getElementById('btn-save-wait').addEventListener('click',saveWait);
 document.getElementById('btn-dark').addEventListener('click',toggleDark);
+document.getElementById('btn-data').addEventListener('click',openDataModal);
 document.getElementById('btn-import-noms').addEventListener('click',importNoms);
 document.getElementById('btn-confirm-import').addEventListener('click',confirmImport);
 document.getElementById('btn-cancel-import').addEventListener('click',cancelImport);
 document.getElementById('btn-toggle-import').addEventListener('click',toggleImport);
 
+/* ===== PERSISTANCE (localStorage) + EXPORT/IMPORT JSON ===== */
+var STORAGE_KEY='permis_data_v1';
+function persist(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      v:1, savedAt:new Date().toISOString(),
+      slots:state.slots, eleves:state.eleves, waitList:state.waitList,
+      nextId:state.nextId, nextWaitId:state.nextWaitId
+    }));
+  }catch(e){/* quota ou navigation privée : on ignore silencieusement */}
+}
+function loadState(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return false;
+    var d=JSON.parse(raw);
+    if(d&&Array.isArray(d.slots)){
+      state.slots=d.slots;
+      state.eleves=Array.isArray(d.eleves)?d.eleves:[];
+      state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+      state.nextId=d.nextId||(state.slots.reduce(function(m,s){return Math.max(m,s.id||0);},0)+1);
+      state.nextWaitId=d.nextWaitId||(state.waitList.reduce(function(m,w){return Math.max(m,w.id||0);},0)+1);
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+function exportJSON(){
+  var data={
+    app:'easy-permis', v:1, exportedAt:new Date().toISOString(),
+    slots:state.slots, eleves:state.eleves, waitList:state.waitList,
+    nextId:state.nextId, nextWaitId:state.nextWaitId
+  };
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var d=new Date();
+  a.href=url;
+  a.download='easy-permis_sauvegarde_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  toast('Sauvegarde téléchargée ✓','#057a55');
+}
+function importJSON(ev){
+  var file=ev.target.files&&ev.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d||!Array.isArray(d.slots))throw new Error('format');
+      if(!confirm('Remplacer les données actuelles par celles du fichier ?\n\n'+d.slots.length+' examen(s) trouvé(s).'))return;
+      state.slots=d.slots;
+      state.eleves=Array.isArray(d.eleves)?d.eleves:[];
+      state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+      state.nextId=d.nextId||(state.slots.reduce(function(m,s){return Math.max(m,s.id||0);},0)+1);
+      state.nextWaitId=d.nextWaitId||(state.waitList.reduce(function(m,w){return Math.max(m,w.id||0);},0)+1);
+      persist();
+      buildMonthSel();renderPlanning();updateNavCounts();
+      closeModal('modal-data');
+      toast('Sauvegarde importée ✓ ('+state.slots.length+' examens)','#057a55');
+    }catch(err){
+      alert('Fichier invalide. Choisis un fichier .json exporté depuis cette application.');
+    }
+    ev.target.value='';
+  };
+  reader.readAsText(file);
+}
+function resetData(){
+  if(!confirm('Réinitialiser toutes les données et revenir à l\'état d\'origine ?\n\nCette action est irréversible (pense à exporter une sauvegarde avant).'))return;
+  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  location.reload();
+}
+function openDataModal(){
+  var info='';
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){var d=JSON.parse(raw);if(d.savedAt){var dt=new Date(d.savedAt);info='Dernière sauvegarde auto : '+dt.toLocaleString('fr-FR');}}
+  }catch(e){}
+  document.getElementById('data-info').textContent=info;
+  document.getElementById('modal-data').style.display='flex';
+}
+
 /* ===== INIT ===== */
 initDark();
+loadState();
 initHero();
 initMonth();
 buildMonthSel();
