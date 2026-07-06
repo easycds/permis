@@ -69,8 +69,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .lock-logo{font-family:var(--police-titre);font-weight:700;font-size:34px;color:var(--easy);letter-spacing:-.5px;line-height:1;margin-bottom:6px}
 .lock-title{font-family:var(--police-titre);font-weight:600;font-size:19px;color:var(--text);margin-bottom:4px}
 .lock-sub{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.4}
-#lock-input{width:100%;padding:12px 14px;font-size:16px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;text-align:center}
-#lock-input:focus{border-color:var(--easy)}
+#lock-input,#login-email,#login-pass{width:100%;padding:12px 14px;font-size:16px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;text-align:center}
+#lock-input:focus,#login-email:focus,#login-pass:focus{border-color:var(--easy)}
 .lock-err{font-size:13px;color:var(--danger);min-height:18px;margin-bottom:8px;font-weight:600}
 .topbar{background:var(--grad-easy);border-bottom:none;padding:0 24px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;gap:16px;height:calc(64px + env(safe-area-inset-top));display:flex;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(255,48,48,.28)}
 .logo-area{display:flex;align-items:center;gap:12px;flex:1}
@@ -389,15 +389,16 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 </style>
 </head>
 <body>
-<!-- ===== ÉCRAN DE VERROUILLAGE ===== -->
+<!-- ===== ÉCRAN DE CONNEXION ===== -->
 <div id="lock-screen">
   <div class="lock-card">
     <div class="lock-logo">easy</div>
-    <div class="lock-title">Accès protégé</div>
-    <div class="lock-sub">Entrez le mot de passe pour accéder à l'application.</div>
-    <input type="password" id="lock-input" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <div class="lock-title">Connexion</div>
+    <div class="lock-sub">Connecte-toi avec ton compte pour accéder à l'application.</div>
+    <input type="email" id="login-email" placeholder="E-mail" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" id="login-pass" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     <div class="lock-err" id="lock-err"></div>
-    <button class="btn primary" onclick="tryUnlock()" style="width:100%;justify-content:center;padding:11px">Entrer</button>
+    <button class="btn primary" id="btn-login" onclick="doLogin()" style="width:100%;justify-content:center;padding:11px">Se connecter</button>
   </div>
 </div>
 <div class="shell" id="app-shell">
@@ -663,6 +664,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
       <input type="file" id="file-import" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
       <div style="height:1px;background:var(--border);margin:4px 0"></div>
       <button class="btn" onclick="resetData()" style="justify-content:center;color:var(--danger);border-color:var(--danger)">↺ Réinitialiser (revenir aux données d'origine)</button>
+      <button class="btn" onclick="logout()" style="justify-content:center">🔒 Se déconnecter</button>
     </div>
     <div style="font-size:12px;margin-top:14px;font-weight:600" id="cloud-status"></div>
     <div style="font-size:11px;color:var(--text-light);margin-top:4px" id="data-info"></div>
@@ -677,6 +679,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 <!-- SDK Firebase (compat) — sert uniquement si tu as collé ta config plus bas -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
 <script>
 /* =====================================================================
@@ -688,24 +691,57 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
    Données en mémoire. Fonctions "SYNC" à brancher sur Supabase :
    slots (+ colonnes pp, vm, resultat, locked), eleves, wait_list.
 ===================================================================== */
-/* ===== VERROUILLAGE PAR MOT DE PASSE ===== */
-var APP_PASSWORD='mdpeasy';
-function tryUnlock(){
-  var v=document.getElementById('lock-input').value;
-  if(v===APP_PASSWORD){
-    try{localStorage.setItem('permis_unlocked','1');}catch(e){}
-    document.getElementById('lock-screen').style.display='none';
-  } else {
-    document.getElementById('lock-err').textContent='Mot de passe incorrect';
-    document.getElementById('lock-input').value='';
-    document.getElementById('lock-input').focus();
-  }
+/* ===== CONNEXION SÉCURISÉE (Firebase Auth) ===== */
+var fbApp=null, appStarted=false;
+function firebaseReady(){
+  if(fbApp)return true;
+  if(typeof firebase==='undefined' || !FIREBASE_CONFIG)return false;
+  try{fbApp=firebase.initializeApp(FIREBASE_CONFIG);return true;}
+  catch(e){try{fbApp=firebase.app();return true;}catch(e2){return false;}}
 }
-function initLock(){
-  var unlocked=false;
-  try{unlocked=localStorage.getItem('permis_unlocked')==='1';}catch(e){}
-  if(unlocked){document.getElementById('lock-screen').style.display='none';}
-  else{document.getElementById('lock-screen').style.display='flex';setTimeout(function(){var i=document.getElementById('lock-input');if(i)i.focus();},100);}
+function initAuth(){
+  if(!firebaseReady()){
+    // Firebase non configuré : on ouvre l'appli en local (sans connexion)
+    document.getElementById('lock-screen').style.display='none';
+    startApp();
+    return;
+  }
+  firebase.auth().onAuthStateChanged(function(user){
+    if(user){
+      document.getElementById('lock-screen').style.display='none';
+      startApp();
+    } else {
+      appStarted=false;
+      document.getElementById('lock-screen').style.display='flex';
+      setTimeout(function(){var i=document.getElementById('login-email');if(i)i.focus();},100);
+    }
+  });
+}
+function doLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var pwd=document.getElementById('login-pass').value;
+  var err=document.getElementById('lock-err');err.textContent='';
+  if(!email||!pwd){err.textContent='Renseigne ton e-mail et ton mot de passe.';return;}
+  if(!firebaseReady()){err.textContent='Firebase non configuré.';return;}
+  document.getElementById('btn-login').textContent='Connexion…';
+  firebase.auth().signInWithEmailAndPassword(email,pwd).catch(function(e){
+    var msg='Connexion impossible.';
+    if(e.code==='auth/invalid-email')msg='E-mail invalide.';
+    else if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')msg='E-mail ou mot de passe incorrect.';
+    else if(e.code==='auth/too-many-requests')msg='Trop de tentatives, réessaie plus tard.';
+    else if(e.code==='auth/network-request-failed')msg='Pas de connexion internet.';
+    err.textContent=msg;
+    document.getElementById('login-pass').value='';
+    document.getElementById('btn-login').textContent='Se connecter';
+  });
+}
+function logout(){
+  if(typeof firebase!=='undefined'&&firebase.auth){firebase.auth().signOut();}
+  location.reload();
+}
+function startApp(){
+  if(appStarted)return;appStarted=true;
+  initCloud();
 }
 
 var MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -1726,9 +1762,8 @@ var FIREBASE_CONFIG = {
 
 var cloud={on:false,ref:null,clientId:Math.random().toString(36).slice(2),applying:false,timer:null};
 function initCloud(){
-  if(!FIREBASE_CONFIG || typeof firebase==='undefined'){updateCloudStatus();return;}
+  if(!firebaseReady()){updateCloudStatus();return;}
   try{
-    firebase.initializeApp(FIREBASE_CONFIG);
     cloud.ref=firebase.firestore().collection('easy_permis').doc('data');
     cloud.on=true;
     // Temps réel : les modifs des autres postes s'appliquent automatiquement
@@ -1870,7 +1905,7 @@ function openDataModal(){
 }
 
 /* ===== INIT ===== */
-initLock();
+initAuth();
 initDark();
 loadState();
 initHero();
@@ -1878,7 +1913,6 @@ initMonth();
 buildMonthSel();
 renderPlanning();
 updateNavCounts();
-initCloud();
 </script>
 </body>
 </html>
