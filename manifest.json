@@ -1,0 +1,17 @@
+{
+  "name": "Easy Auto-École · Places Permis",
+  "short_name": "Places Permis",
+  "description": "Places d'examen, suivi VM et repassages — Easy Auto-École",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ff3131",
+  "theme_color": "#ff3131",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
