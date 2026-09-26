@@ -1107,7 +1107,7 @@ function renderPlanning(){
     jour.slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       var lk=s.locked;
       var dis=lk?' disabled':'';
-      var heureOpts='';for(var h=8;h<=16;h++){['00','30'].forEach(function(mn){var v=String(h).padStart(2,'0')+':'+mn;heureOpts+='<option value="'+v+'"'+(s.heure===v?' selected':'')+'>'+v+'</option>';});}
+      var heureOpts=s.heure?'':'<option value="" selected>--:--</option>';for(var h=8;h<=16;h++){['00','30'].forEach(function(mn){var v=String(h).padStart(2,'0')+':'+mn;heureOpts+='<option value="'+v+'"'+(s.heure===v?' selected':'')+'>'+v+'</option>';});}
       var permisOpts=PERMIS.map(function(p){return'<option value="'+p+'"'+(s.type_permis===p?' selected':'')+'>'+p+'</option>';}).join('');
       var monOpts=MONITEURS.map(function(m){return'<option value="'+m+'"'+(s.moniteur===m?' selected':'')+'>'+m+'</option>';}).join('');
       var rowCls='';
@@ -1419,7 +1419,7 @@ function searchEleves(q){
       html+='<span class="res-badge recu">'+ic('ok')+' Permis obtenu le '+dr.getDate()+' '+MONTHS[dr.getMonth()]+'</span>';
     } else if(slot){
       var d=new Date(slot.date+'T12:00:00');
-      html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('calendar')+' '+d.getDate()+' '+MONTHS[d.getMonth()]+' · '+slot.heure+'</span>';
+      html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('calendar')+' '+d.getDate()+' '+MONTHS[d.getMonth()]+(slot.heure?' · '+slot.heure:'')+'</span>';
       if(slot.resultat==='echec')html+='<span class="res-badge echec">'+ic('ko')+' Échec</span>';
       else{
         html+='<span class="pv-badge '+(slot.vm?'ok':'nok')+'" style="cursor:default">VM '+(slot.vm?'✓':'✗')+'</span>';
@@ -1666,7 +1666,7 @@ function printPlanning(){
     html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Moniteur</th><th>VM</th><th>Résultat</th><th>Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       html+='<tr>';
-      html+='<td style="font-weight:600;font-family:monospace">'+s.heure+'</td>';
+      html+='<td style="font-weight:600;font-family:monospace">'+(s.heure||'—')+'</td>';
       html+='<td><span class="badge '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>';
       html+='<td>'+(s.nom?(s.nom+((s.passage&&s.passage!=='1er')?' <b style="color:#b45309;font-size:11px">'+s.passage+'</b>':'')):'<span class="libre">Libre</span>')+'</td>';
       html+='<td><span class="cat '+(s.type_permis==='B78'?'b78':'')+'">'+(s.type_permis||'B')+'</span></td>';
