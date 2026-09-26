@@ -514,7 +514,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
       <button class="btn hdr-ic" id="btn-install" style="background:#fff;border-color:#fff;color:#ff3131" title="Installer l'appli sur cet appareil"><svg class="ic"><use href="#i-download"/></svg></button>
-      <button class="btn hdr-ic" id="btn-data" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Sauvegarde / Export / Import"><svg class="ic"><use href="#i-database"/></svg></button>
+      <button class="btn hdr-ic" id="btn-logout" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Se déconnecter" aria-label="Se déconnecter"><svg class="ic"><use href="#i-logout"/></svg></button>
       <button class="btn hdr-ic" id="btn-dark" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Mode sombre"><svg class="ic"><use href="#i-moon"/></svg></button>
     </div>
   </div>
@@ -743,30 +743,6 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
-<!-- MODAL DONNÉES (sauvegarde / export / import / reset) -->
-<div class="modal-bg" id="modal-data" style="display:none">
-  <div class="modal" style="width:420px">
-    <div class="modal-title"><svg class="ic"><use href="#i-database"/></svg>Sauvegarde des données</div>
-    <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:16px">
-      Tes données sont enregistrées <strong>automatiquement</strong> dans ce navigateur : elles restent après un rechargement ou une fermeture de l'onglet.
-      Pour les transférer sur un autre appareil ou faire une copie de secours, exporte un fichier.
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn primary" onclick="exportJSON()" style="justify-content:center"><svg class="ic"><use href="#i-download"/></svg> Exporter une sauvegarde (.json)</button>
-      <button class="btn" onclick="document.getElementById('file-import').click()" style="justify-content:center"><svg class="ic"><use href="#i-upload"/></svg> Importer une sauvegarde (.json)</button>
-      <input type="file" id="file-import" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
-      <div style="height:1px;background:var(--border);margin:4px 0"></div>
-      <button class="btn" onclick="resetData()" style="justify-content:center;color:var(--danger);border-color:var(--danger)"><svg class="ic"><use href="#i-retry"/></svg> Vider la copie locale (recharger depuis le cloud)</button>
-      <button class="btn" onclick="logout()" style="justify-content:center"><svg class="ic"><use href="#i-logout"/></svg> Se déconnecter</button>
-    </div>
-    <div style="font-size:12px;margin-top:14px;font-weight:600" id="cloud-status"></div>
-    <div style="font-size:11px;color:var(--text-light);margin-top:4px" id="data-info"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-data')">Fermer</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <!-- SDK Firebase (compat) — sert uniquement si tu as collé ta config plus bas -->
@@ -853,8 +829,11 @@ function accesRefuse(){
   document.getElementById('login-pass').value='';
 }
 function logout(){
-  if(typeof firebase!=='undefined'&&firebase.auth){firebase.auth().signOut();}
-  location.reload();
+  // On efface aussi la copie des données gardée sur l'appareil (ordinateurs partagés)
+  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  if(typeof firebase!=='undefined'&&firebase.auth){
+    firebase.auth().signOut().finally(function(){location.reload();});
+  } else location.reload();
 }
 function startApp(){
   if(appStarted)return;appStarted=true;
@@ -1751,7 +1730,9 @@ document.getElementById('btn-add-wait').addEventListener('click',openAddWait);
 document.getElementById('btn-cancel-wait').addEventListener('click',function(){closeModal('modal-wait');});
 document.getElementById('btn-save-wait').addEventListener('click',saveWait);
 document.getElementById('btn-dark').addEventListener('click',toggleDark);
-document.getElementById('btn-data').addEventListener('click',openDataModal);
+document.getElementById('btn-logout').addEventListener('click',function(){
+  if(confirm('Se déconnecter de Places Permis ?'))logout();
+});
 document.getElementById('btn-import-noms').addEventListener('click',importNoms);
 document.getElementById('btn-confirm-import').addEventListener('click',confirmImport);
 document.getElementById('btn-cancel-import').addEventListener('click',cancelImport);
