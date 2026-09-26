@@ -426,6 +426,12 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .tag-ic{display:inline-flex;align-items:center;gap:4px}
 .tag-ic .ic{width:12px;height:12px}
 
+/* Bouton « + Élève » dans l'en-tête de chaque date */
+.add-same-date{display:inline-flex;align-items:center;gap:4px;margin-left:10px;padding:5px 11px;border-radius:20px;border:1px solid var(--easy);background:var(--surface);color:var(--easy);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.add-same-date .ic{width:14px;height:14px}
+.add-same-date:hover{background:var(--easy);color:#fff}
+@media(max-width:640px){.add-same-date{padding:7px 12px;min-height:34px}}
+
 /* ===== APPLI : barre d'onglets en bas sur téléphone ===== */
 #btn-install{display:none}
 #btn-install.show{display:inline-flex}
@@ -478,6 +484,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.5 2.3a.5.5 0 0 1 1 0l2.3 4.7a2 2 0 0 0 1.6 1.1l5.2.8a.5.5 0 0 1 .3.9l-3.8 3.7a2 2 0 0 0-.6 1.9l.9 5.2a.5.5 0 0 1-.8.6l-4.6-2.5a2 2 0 0 0-1.9 0l-4.6 2.5a.5.5 0 0 1-.8-.6l.9-5.2a2 2 0 0 0-.6-1.9L1.2 9.8a.5.5 0 0 1 .3-.9l5.2-.8a2 2 0 0 0 1.6-1.1z"/></symbol>
 </svg>
 <!-- ===== ÉCRAN DE CONNEXION ===== -->
@@ -1099,7 +1106,8 @@ function renderPlanning(){
     if(diff<0){ctag='ct-past';ctxt='Passé';}else if(diff===0){ctag='ct-urgent';ctxt="Aujourd'hui !";}else if(diff<=3){ctag='ct-urgent';ctxt='J-'+diff+' '+ic('alert');}else if(diff<=7){ctag='ct-soon';ctxt='J-'+diff;}else{ctag='ct-future';ctxt='Dans '+diff+'j';}
     var jour=byDate[d];
     html+='<div class="exam-group"><div class="exam-group-header"><div class="date-dot"></div>'+label+'<span class="countdown-tag '+ctag+'">'+ctxt+'</span>';
-    html+='<span style="margin-left:auto;font-size:12px;color:var(--text-muted)">'+jour.length+' place'+(jour.length>1?'s':'')+'</span></div>';
+    html+='<span style="margin-left:auto;font-size:12px;color:var(--text-muted)">'+jour.length+' place'+(jour.length>1?'s':'')+'</span>';
+    html+='<button class="add-same-date" onclick="addSlotSameDate(\''+d+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span>Élève</span></button></div>';
     html+='<table class="exam-table"><thead><tr><th style="width:95px">Heure</th><th style="width:75px">Agence</th><th>Élève</th><th style="width:78px">Catégorie</th><th style="width:105px">Moniteur</th><th style="width:90px">VM</th><th style="width:150px">Résultat</th><th style="min-width:80px">Commentaire</th><th></th></tr></thead><tbody>';
 
     var plannedThisMonth=state.slots.filter(function(x){return estAffecte(x)&&x.month===state.currentMonth;}).map(function(x){return x.nom;});
@@ -1183,6 +1191,25 @@ function togglePV(id,champ){
   s[champ]=!s[champ];
   renderPlanning();
   toast('Vérif Mécanique : '+(s[champ]?'validé ✓':'à faire ✗'),s[champ]?'#057a55':'#d97706');
+}
+// Ajout rapide d'une place sur une date déjà au planning (reprend agence / moniteur / catégorie de la dernière ligne)
+function addSlotSameDate(date){
+  var jour=state.slots.filter(function(s){return s.date===date;})
+    .sort(function(a,b){return a.heure.localeCompare(b.heure);});
+  var ref=jour[jour.length-1]||{agence:'cds',moniteur:'Charles',type_permis:'B'};
+  // Heure suivante : 30 min après la dernière heure connue (sinon vide)
+  var heure='';
+  if(ref.heure){
+    var p=ref.heure.split(':'),m=(+p[0])*60+(+p[1])+30;
+    if(m<=16*60+30)heure=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  }
+  var id=state.nextId++;
+  state.slots.push({id:id,month:date.slice(0,7),date:date,heure:heure,agence:ref.agence,nom:'',type_permis:ref.type_permis,moniteur:ref.moniteur,pp:false,vm:false,resultat:'',locked:false,passage:'1er',commentaire:''});
+  renderPlanning();
+  // On place directement le curseur sur le champ élève de la nouvelle ligne
+  var inp=document.querySelector('input[onchange^="updateSlotEleve('+id+',"]');
+  if(inp){inp.scrollIntoView({block:'center',behavior:'smooth'});setTimeout(function(){inp.focus();},250);}
+  toast('Place ajoutée — tape le nom de l\'élève','#057a55');
 }
 function delSlot(id){
   if(!confirm('Supprimer cette place ?'))return;
