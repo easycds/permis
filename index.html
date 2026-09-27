@@ -480,6 +480,10 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
+.del-date{margin-left:auto;width:32px;height:32px;border:none;background:none;border-radius:50%;cursor:pointer;color:var(--text-light);display:inline-flex;align-items:center;justify-content:center;transition:all .15s;padding:0}
+.del-date .ic{width:16px;height:16px}
+.del-date:hover{background:var(--danger-light);color:var(--danger)}
+.pl-dayhead .del-date+.add-same-date{margin-left:4px}
 .pl-bloc{margin-bottom:18px;scroll-margin-top:90px}
 .pl-bloc .pl-list{transition:box-shadow .2s,border-color .2s}
 .pl-bloc.on .pl-list{border-color:var(--easy);box-shadow:0 0 0 3px var(--easy-light),var(--shadow)}
@@ -1364,6 +1368,7 @@ function renderBlocJour(d,ms,today){
     .sort(function(a,b){return (a.heure||'99').localeCompare(b.heure||'99');});
   var h='<div class="pl-bloc'+(d===state.selDate?' on':'')+(diff<0?' past':'')+'" id="jour-'+d+'">';
   h+='<div class="pl-dayhead"><h2>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</h2><span class="dh-j">'+quand+'</span>'+
+    '<button class="del-date" onclick="supprimerDate(\''+d+'\')" title="Supprimer toutes les places de cette date">'+ic('trash')+'</button>'+
     '<button class="add-same-date" onclick="addSlotSameDate(\''+d+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span>Élève</span></button></div>';
   h+='<div class="pl-list">';
   jour.forEach(function(s){
@@ -1532,6 +1537,26 @@ function addSlotSameDate(date){
   // On place directement le curseur sur le nom de l'élève dans le panneau de détail
   setTimeout(function(){var inp=document.getElementById('pp-name');if(inp)inp.focus();},280);
   toast('Place ajoutée — tape le nom de l\'élève','#057a55');
+}
+// Supprime toutes les places d'une date (avec avertissement si des résultats sont déjà saisis)
+function supprimerDate(d){
+  var jour=state.slots.filter(function(s){return s.date===d;});
+  if(!jour.length)return;
+  var dd=new Date(d+'T12:00:00');
+  var label=JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase();
+  var eleves=jour.filter(estAffecte).length;
+  var resultats=jour.filter(function(s){return s.resultat;}).length;
+  var msg=(jour.length>1?'Supprimer les '+jour.length+' places':'Supprimer la place')+' du '+label+' ?';
+  if(eleves)msg+='\n\n'+eleves+' élève'+(eleves>1?'s sont placés':' est placé')+' sur cette date.';
+  if(resultats)msg+='\n\nAttention : '+resultats+' résultat'+(resultats>1?'s':'')+' (Reçu / Échec) '+(resultats>1?'seront effacés':'sera effacé')+' et ne compter'+(resultats>1?'ont':'a')+' plus dans les statistiques.';
+  msg+='\n\nCette action est définitive.';
+  if(!confirm(msg))return;
+  state.slots=state.slots.filter(function(s){return s.date!==d;});
+  if(state.selDate===d){state.selDate='';state.selSlot=null;}
+  fermerDetail(true);
+  buildMonthSel();
+  renderPlanning();
+  toast(jour.length+' place'+(jour.length>1?'s':'')+' supprimée'+(jour.length>1?'s':''),'#6b7280');
 }
 function delSlot(id){
   if(!confirm('Supprimer cette place ?'))return;
