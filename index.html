@@ -661,11 +661,15 @@ body.dark .acc-note{background:#2d2408;border-color:#5a4a12}
 .rs-body{padding:16px}
 .rs-t{margin-top:16px}
 
-/* Confirmation élève */
-.cf-nom{font-size:20px;font-weight:700;margin:2px 0 10px}
-.cf-ligne{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);margin-bottom:10px}
-.cf-ligne .ic{width:16px;height:16px}
-.cf-note{font-size:13px;padding:8px 11px;border-radius:10px;background:var(--bg);color:var(--text-muted);margin-bottom:6px}
+/* Nom de l'élève validé par la coche */
+.pp-name-row{display:flex;gap:8px;align-items:flex-start}
+.pp-name-row .pp-name{flex:1;min-width:0;width:auto}
+.pp-name.en-cours{border-color:#d97706!important;background:#fffbeb}
+.pp-valider{flex:none;width:46px;height:46px;border-radius:10px;border:none;background:#057a55;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:ppPop .2s ease}
+.pp-valider:hover{background:#046c4e}
+.pp-valider .ic{width:22px;height:22px;stroke-width:3}
+@keyframes ppPop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.cf-note{font-size:12.5px;padding:7px 11px;border-radius:10px;background:var(--bg);color:var(--text-muted);margin:4px 0 6px}
 .cf-note.new{background:#fff7ed;color:#b45309}
 .cf-note.rep{background:var(--easy-light);color:var(--easy)}
 
@@ -1317,13 +1321,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
 <!-- MODAL PLACER UN ÉLÈVE SUR UNE PLACE LIBRE -->
-<div class="modal-bg" id="modal-confirm" style="display:none" onclick="if(event.target===this)validerConfirm(false)">
-  <div class="modal" style="width:420px;max-width:94vw">
-    <div class="modal-title">Confirmer l'élève sur cette place ?</div>
-    <div id="mcf-contenu"></div>
-    <div class="modal-actions"><button class="btn" onclick="validerConfirm(false)">Annuler</button><button class="btn primary" id="mcf-ok" onclick="validerConfirm(true)">Confirmer</button></div>
-  </div>
-</div>
 <div class="modal-bg" id="modal-placer" style="display:none" onclick="if(event.target===this)closeModal('modal-placer')">
   <div class="modal" style="width:500px;max-width:94vw">
     <div class="modal-title" id="mpl-titre"></div>
@@ -2508,7 +2505,10 @@ function renderDetail(){
 
   var h='<div class="pp-top"><span class="pp-st"><span class="pl-dot st-'+st+'"></span>'+LIB_STATUT[st]+'</span>'+
     '<button class="pl-ico pp-close" onclick="fermerDetail()" title="Fermer">'+ic('x')+'</button></div>';
-  h+='<input type="text" class="pp-name" id="pp-name" list="dl-detail" value="'+(s.nom||'').replace(/"/g,'&quot;')+'" placeholder="Nom de l\'élève" onchange="confirmerEleve('+s.id+',this)"'+dis+'><datalist id="dl-detail">'+dl+'</datalist>';
+  var nomAff=brouillonNom.id===s.id?brouillonNom.val:(s.nom||'');
+  h+='<div class="pp-name-row"><input type="text" class="pp-name" id="pp-name" list="dl-detail" value="'+nomAff.replace(/"/g,'&quot;')+'" placeholder="Nom de l\'élève" oninput="nomSaisi('+s.id+',this.value)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();validerNom('+s.id+');}"'+dis+'>'+
+    '<button class="pp-valider" id="pp-valider" onclick="validerNom('+s.id+')" title="Valider l\'élève sur cette place" style="display:none">'+ic('check')+'</button></div>'+
+    '<div id="pp-nom-info"></div><datalist id="dl-detail">'+dl+'</datalist>';
   h+='<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>';
   h+='<div class="pp-grid">'+
     '<div class="pp-f"><label>Heure</label><select onchange="updateSlot('+s.id+',\'heure\',this.value)"'+dis+'>'+heureOpts+'</select></div>'+
@@ -2535,6 +2535,7 @@ function renderDetail(){
   }
   h+='<button class="pp-del" onclick="delSlot('+s.id+')">'+ic('trash')+'Supprimer la place</button>';
   p.innerHTML=h;
+  if(brouillonNom.id===s.id)majNomUI(s); // nom tapé mais pas encore validé : on le garde
 }
 
 /* ===== ACTIONS PLANNING — SYNC : remplacer par sb.from('slots')... si Supabase ===== */
@@ -2545,30 +2546,34 @@ function updateSlot(id,f,v){
   renderPlanning();
   toast('Sauvegardé ✓','#057a55');
 }
-/* ===== CONFIRMATION AVANT D'INSCRIRE UN ÉLÈVE SUR UNE PLACE ===== */
-var confAttente=null;
-function confirmerEleve(id,inp){
+/* ===== NOM DE L'ÉLÈVE : enregistré seulement avec la coche ✓ (ou Entrée) ===== */
+var brouillonNom={id:null,val:''};
+function nomSaisi(id,val){
   var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
-  var val=(inp.value||'').trim();
-  if(val===(s.nom||''))return;
-  if(!val){updateSlotEleve(id,'');return;}
-  confAttente={id:id,val:val,inp:inp,ancien:s.nom||''};
-  var ag=agenceDe(val),w=state.waitList.find(function(x){return x.nom===val;}),connu=tousEleves().some(function(e){return e.nom===val;});
-  var h='<div class="cf-nom">'+esc(val)+'</div>'+
-    '<div class="cf-ligne">'+ic('calendar')+'<span>'+labelJourCourt(s.date)+(s.heure?' à '+s.heure:'')+(s.moniteur?' · '+esc(s.moniteur):'')+'</span>'+(ag?'<span class="ag-mini '+ag+'">'+ag.toUpperCase()+'</span>':'')+'</div>';
-  if(w)h+='<div class="cf-note rep">Élève en repassage ('+w.att+' échec'+(w.att>1?'s':'')+') → '+libPassage((w.att+1)>=4?'B4+':'B'+(w.att+1))+'</div>';
-  else if(!connu)h+='<div class="cf-note new">Nouvel élève : il sera ajouté aux Élèves. Vérifie bien l\'orthographe.</div>';
-  if(confAttente.ancien)h+='<div class="cf-note">Remplace « '+esc(confAttente.ancien)+' »</div>';
-  document.getElementById('mcf-contenu').innerHTML=h;
-  document.getElementById('modal-confirm').style.display='flex';
-  setTimeout(function(){var b=document.getElementById('mcf-ok');if(b)b.focus();},50);
+  if(val.trim()===(s.nom||''))brouillonNom={id:null,val:''};
+  else brouillonNom={id:id,val:val};
+  majNomUI(s);
 }
-function validerConfirm(ok){
-  var c=confAttente;confAttente=null;
-  document.getElementById('modal-confirm').style.display='none';
-  if(!c)return;
-  if(ok)updateSlotEleve(c.id,c.val);
-  else if(c.inp)c.inp.value=c.ancien;
+function majNomUI(s){
+  var b=document.getElementById('pp-valider'),info=document.getElementById('pp-nom-info'),inp=document.getElementById('pp-name');
+  if(!b||!info||!inp)return;
+  var val=inp.value.trim(),change=val!==(s.nom||'');
+  b.style.display=change?'':'none';
+  inp.classList.toggle('en-cours',change);
+  if(!change){info.innerHTML='';return;}
+  var w=state.waitList.find(function(x){return x.nom===val;}),connu=tousEleves().some(function(e){return e.n===val;});
+  var h='';
+  if(!val)h='<div class="cf-note">Coche ✓ pour libérer la place</div>';
+  else if(w)h='<div class="cf-note rep">Repassage ('+w.att+' échec'+(w.att>1?'s':'')+') → '+libPassage((w.att+1)>=4?'B4+':'B'+(w.att+1))+' · coche ✓ pour valider</div>';
+  else if(!connu)h='<div class="cf-note new">Nouvel élève : vérifie l\'orthographe, puis coche ✓</div>';
+  else h='<div class="cf-note">Coche ✓ pour valider</div>';
+  info.innerHTML=h;
+}
+function validerNom(id){
+  var inp=document.getElementById('pp-name');if(!inp)return;
+  var val=inp.value;
+  brouillonNom={id:null,val:''};
+  updateSlotEleve(id,val);
 }
 
 function updateSlotEleve(id,val){
