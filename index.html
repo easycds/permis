@@ -517,6 +517,87 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 }
 @media(min-width:641px) and (max-width:1000px){.app-title{display:none}.nav-btn span{display:none}.nav-btn{padding:8px 10px}}
 
+/* ===== ÉLÈVES : ajout rapide + tri ===== */
+#view-banque{max-width:1180px;margin:0 auto}
+.el-head h2{font-family:var(--police-titre);font-size:22px;font-weight:600;margin:0}
+.el-sub{font-size:13px;color:var(--text-muted);margin:2px 0 14px}
+.el-add{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:14px;margin-bottom:16px}
+.el-add-in{display:flex;align-items:center;gap:10px;border:2px solid var(--border);border-radius:14px;padding:4px 8px 4px 14px;transition:border-color .15s;background:var(--bg)}
+.el-add-in:focus-within{border-color:var(--easy);background:var(--surface)}
+.el-add-in>.ic{width:20px;height:20px;color:var(--easy);flex-shrink:0}
+.el-add-in input{flex:1;border:none!important;background:transparent!important;font-size:17px!important;padding:10px 0!important;box-shadow:none!important;outline:none;min-width:0}
+.el-clear{border:none;background:none;cursor:pointer;color:var(--text-light);width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.el-clear:hover{background:var(--border)}
+.el-hint{font-size:12.5px;color:var(--text-muted);margin:8px 4px 0;min-height:18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.el-hint .ic{width:14px;height:14px;color:var(--easy)}
+.el-dest{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.el-btn{display:flex;flex-direction:column;align-items:center;gap:1px;padding:12px 8px;border-radius:14px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-family:inherit;color:var(--text);transition:all .15s}
+.el-btn b{font-size:15px}
+.el-btn span{font-size:11px;color:var(--text-muted)}
+.el-btn.sbae:hover,.el-btn.sbae.sug{border-color:var(--sbae);background:var(--sbae-light);color:var(--sbae-dark)}
+.el-btn.cds:hover,.el-btn.cds.sug{border-color:var(--cds);background:var(--cds-light);color:var(--cds-dark)}
+.el-btn.rep:hover,.el-btn.rep.sug{border-color:var(--warn);background:var(--warn-light);color:#92400e}
+.el-btn.sug{box-shadow:0 0 0 3px rgba(0,0,0,.04);transform:translateY(-1px)}
+.el-btn.sug::after{content:'Entrée ↵';font-size:10px;font-weight:700;margin-top:3px;opacity:.7}
+.el-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.el-search{flex:1;min-width:220px;margin:0}
+.el-search .ic{width:16px;height:16px;color:var(--text-muted)}
+.el-filtres{display:flex;gap:6px;flex-wrap:wrap}
+.el-cnt{font-size:11px;font-weight:700;opacity:.7;margin-left:2px}
+.el-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.el-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.el-col-h{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.el-col-h b{font-size:14px}
+.el-col-sub{font-size:11px;color:var(--text-muted)}
+.el-col-h .el-cnt{margin-left:auto;background:var(--bg);padding:2px 9px;border-radius:10px;opacity:1;color:var(--text-muted)}
+.el-dot{width:10px;height:10px;border-radius:50%}
+.el-col.sbae .el-dot{background:var(--sbae)}.el-col.sbae .el-col-h{border-top:3px solid var(--sbae)}
+.el-col.cds .el-dot{background:var(--cds)}.el-col.cds .el-col-h{border-top:3px solid var(--cds)}
+.el-col.repassage .el-dot{background:var(--warn)}.el-col.repassage .el-col-h{border-top:3px solid var(--warn)}
+.el-col-body{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:120px;transition:background .15s}
+.el-col-body.drag-over{background:var(--easy-light)}
+.el-vide{font-size:12px;color:var(--text-light);text-align:center;padding:24px 10px;border:2px dashed var(--border);border-radius:12px;line-height:1.5}
+.el-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;cursor:grab;transition:box-shadow .15s,transform .15s}
+.el-card:hover{box-shadow:var(--shadow-md)}
+.el-card:active{cursor:grabbing}
+.el-card.flash{animation:elFlash 1.4s ease}
+@keyframes elFlash{0%,40%{box-shadow:0 0 0 3px var(--easy);background:var(--easy-light)}100%{box-shadow:none}}
+.el-card-top{display:flex;align-items:center;gap:6px}
+.el-nom{flex:1;min-width:0;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.el-x{border:none;background:none;cursor:pointer;color:var(--text-light);width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s}
+.el-x .ic{width:14px;height:14px}
+.el-card:hover .el-x{opacity:1}
+.el-x:hover{background:var(--danger-light);color:var(--danger)}
+.el-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;align-items:center}
+.el-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--bg);color:var(--text-muted);border:none;font-family:inherit}
+.el-tag .ic{width:12px;height:12px}
+button.el-tag{cursor:pointer}
+button.el-tag:hover{filter:brightness(.95)}
+.el-tag.bientot{background:var(--warn-light);color:#92400e}
+.el-tag.ok{background:var(--ok-light);color:var(--ok)}
+.el-tag.ko{background:var(--danger-light);color:var(--danger)}
+.el-tag.exam{background:var(--sbae-light);color:var(--sbae-dark)}
+.el-tag.ag.sbae{background:var(--sbae-light);color:var(--sbae-dark)}
+.el-tag.ag.cds{background:var(--cds-light);color:var(--cds-dark)}
+.el-mois{font-size:11px!important;padding:2px 6px!important;height:auto;border-radius:20px}
+.el-move{display:flex;gap:4px;margin-top:8px;opacity:0;max-height:0;overflow:hidden;transition:all .15s}
+.el-card:hover .el-move{opacity:1;max-height:40px}
+.el-move button{flex:1;font-size:11px;font-weight:600;font-family:inherit;border:1px dashed var(--border-strong);background:none;border-radius:8px;padding:4px 6px;cursor:pointer;color:var(--text-muted)}
+.el-move button:hover{border-style:solid;border-color:var(--easy);color:var(--easy)}
+@media(max-width:900px){.el-board{grid-template-columns:minmax(0,1fr)}}
+@media(hover:none){.el-x,.el-move{opacity:1;max-height:none}}
+@media(max-width:640px){.el-dest{gap:6px}.el-btn{padding:10px 4px}.el-btn b{font-size:13px}.el-add-in input{font-size:16px!important}}
+.acc-expl{font-size:12px;color:var(--text-muted);margin:-4px 2px 8px;line-height:1.45}
+.acc-res .acc-nom{cursor:pointer}
+.acc-res .acc-nom:hover{color:var(--easy)}
+.acc-res{cursor:default}
+.acc-b{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;font-family:inherit;padding:5px 10px;border-radius:20px;cursor:pointer;background:var(--surface);flex-shrink:0}
+.acc-b .ic{width:13px;height:13px}
+.acc-b.ok{color:var(--ok);border:1.5px solid var(--ok)}
+.acc-b.ok:hover{background:var(--ok-light)}
+.acc-b.ko{color:var(--danger);border:1.5px solid var(--danger)}
+.acc-b.ko:hover{background:var(--danger-light)}
+
 /* ===== ACCUEIL « CETTE SEMAINE » ===== */
 #view-accueil{max-width:1100px;margin:0 auto}
 .acc-hi{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 2px 18px}
@@ -670,7 +751,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
   .pl-row{grid-template-columns:48px minmax(0,1fr) 60px 14px!important}
   .r-mon,.r-tags{display:none!important}
   .hide-sm{display:none}
-  .save-st .ss-txt{display:none}
+  .save-st{display:none!important}
   .hdr-lbl span{display:none}
   .hdr-lbl{padding:6px 9px!important}
   .toast-undo{bottom:calc(84px + env(safe-area-inset-bottom));width:calc(100% - 32px);justify-content:space-between}
@@ -961,59 +1042,32 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div id="wait-content"></div>
     </div>
 
-    <!-- ===== VUE ÉLÈVES (KANBAN) ===== -->
+    <!-- ===== VUE ÉLÈVES : ajout rapide + tri SBAE / CDS / Repassage ===== -->
     <div class="view" id="view-banque">
-      <div class="toolbar">
-        <div class="toolbar-left"><strong style="font-size:15px">Élèves</strong>
-          <span style="font-size:12px;color:var(--text-muted)">— vivier examen · glissez selon l'avancement</span>
-        </div>
-        <button class="btn" id="btn-toggle-import"><svg class="ic"><use href="#i-upload"/></svg> Importer / Ajouter</button>
+      <div class="el-head">
+        <h2>Élèves</h2>
+        <div class="el-sub">Tape un nom (ou colle une liste), puis range-le d'un clic. Glisse les cartes pour changer de colonne.</div>
       </div>
-
-      <div class="search-bar">
-        <svg class="ic"><use href="#i-search"/></svg>
-        <input type="text" id="search-eleves" placeholder="Rechercher un élève..." oninput="searchEleves(this.value)">
-        <button onclick="clearSearch()" style="border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:18px;padding:0;line-height:1">×</button>
-      </div>
-      <div id="search-results" style="display:none"></div>
-
-      <!-- Zone import repliable -->
-      <div id="import-zone" style="display:none">
-        <div class="add-form">
-          <div class="form-row" style="align-items:flex-start">
-            <div class="form-field" style="flex:1">
-              <label>Coller des noms (un par ligne)</label>
-              <textarea id="e-noms" placeholder="Martin Sophie&#10;Dupont Thomas&#10;Leroy Emma&#10;..." rows="4" style="width:100%"></textarea>
-            </div>
-            <button class="btn primary" id="btn-import-noms" style="align-self:flex-end">Importer</button>
-          </div>
+      <div class="el-add">
+        <div class="el-add-in">
+          <svg class="ic"><use href="#i-plus"/></svg>
+          <input type="text" id="el-nom" list="dl-el" autocomplete="off" placeholder="Nom de l'élève… (ou colle une liste de noms)" oninput="suggererAgence()" onpaste="collerListeEleves(event)" onkeydown="if(event.key==='Enter'){event.preventDefault();ajouterEleveVers(elSuggestion);}">
+          <datalist id="dl-el"></datalist>
+          <button class="el-clear" id="el-clear" onclick="viderAjoutEleve()" title="Effacer" style="display:none"><svg class="ic"><use href="#i-x"/></svg></button>
         </div>
-        <div id="drag-zone" style="display:none">
-          <div id="drag-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
-            <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;padding:8px 12px;background:#f3f4f6;border-radius:var(--radius-sm);text-align:center"><svg class="ic"><use href="#i-inbox"/></svg> À classer (<span id="count-pending">0</span>)</div>
-              <div id="drop-pending" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'pending',this)"></div>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sbae-dark);margin-bottom:8px;padding:8px 12px;background:var(--sbae-light);border-radius:var(--radius-sm);text-align:center">● SBAE — Seiches (<span id="count-sbae">0</span>)</div>
-              <div id="drop-sbae" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'sbae',this)"></div>
-            </div>
-            <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--cds-dark);margin-bottom:8px;padding:8px 12px;background:var(--cds-light);border-radius:var(--radius-sm);text-align:center">● CDS — Saint-Sylvain (<span id="count-cds">0</span>)</div>
-              <div id="drop-cds" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'cds',this)"></div>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:20px">
-            <button class="btn" id="btn-cancel-import">Annuler</button>
-            <button class="btn primary" id="btn-confirm-import"><svg class="ic"><use href="#i-check"/></svg> Enregistrer la classification</button>
-          </div>
+        <div class="el-hint" id="el-hint"></div>
+        <div class="el-dest">
+          <button class="el-btn sbae" id="el-btn-sbae" onclick="ajouterEleveVers('sbae')"><b>SBAE</b><span>Seiches</span></button>
+          <button class="el-btn cds" id="el-btn-cds" onclick="ajouterEleveVers('cds')"><b>CDS</b><span>Saint-Sylvain</span></button>
+          <button class="el-btn rep" id="el-btn-repassage" onclick="ajouterEleveVers('repassage')"><b>Repassage</b><span>après un échec</span></button>
         </div>
       </div>
-
-      <!-- Kanban 3 colonnes -->
-      <div class="kanban" id="kanban-board"></div>
+      <div class="el-tools">
+        <div class="search-bar el-search"><svg class="ic"><use href="#i-search"/></svg><input type="text" id="search-eleves" placeholder="Rechercher un élève…" oninput="elFiltre.txt=this.value;renderBanque()"></div>
+        <div class="el-filtres" id="el-filtres"></div>
+      </div>
+      <div class="el-board" id="kanban-board"></div>
     </div>
-
     <!-- ===== VUE SUIVI ANTS (comptes autorisés uniquement) ===== -->
     <div class="view" id="view-ants">
       <div class="ants-head">
@@ -1588,7 +1642,7 @@ function renderAccueil(){
   var resume=[];
   resume.push(semaine.length+' examen'+(semaine.length>1?'s':'')+' cette semaine');
   if(libres.length)resume.push(libres.length+' place'+(libres.length>1?'s':'')+' libre'+(libres.length>1?'s':'')+' à remplir');
-  if(aSaisir.length&&!lectureSeule)resume.push(aSaisir.length+' résultat'+(aSaisir.length>1?'s':'')+' à saisir');
+  if(aSaisir.length&&!lectureSeule)resume.push(aSaisir.length+' résultat'+(aSaisir.length>1?'s':'')+' d\'examen à indiquer');
   html+='<div class="acc-resume">'+resume.join(' · ')+'</div></div>';
 
   html+='<div class="acc-grid">';
@@ -1626,13 +1680,19 @@ function renderAccueil(){
   }
   html+='</section>';
 
-  // 3. Résultats à saisir (examens passés sans résultat)
-  html+='<section class="acc-card"><div class="acc-h">'+ic('clipboard')+'<h2>Résultats à saisir</h2><span class="acc-n'+(aSaisir.length?' alerte':'')+'">'+aSaisir.length+'</span></div>';
-  if(!aSaisir.length)html+='<div class="acc-vide ok">'+ic('check')+' Tous les résultats sont saisis.</div>';
-  else aSaisir.forEach(function(s){
-    html+='<div class="acc-row" onclick="ouvrirDepuisStats('+s.id+')"><span class="acc-d">'+labelJourCourt(s.date)+'</span>'+
-      '<span class="acc-nom">'+s.nom+'</span><span class="acc-mon">'+s.moniteur+'</span>'+ic('chev-right')+'</div>';
-  });
+  // 3. Examens passés dont on n'a pas encore indiqué le résultat
+  html+='<section class="acc-card"><div class="acc-h">'+ic('clipboard')+'<h2>Examen passé : reçu ou pas ?</h2><span class="acc-n'+(aSaisir.length?' alerte':'')+'">'+aSaisir.length+'</span></div>';
+  if(!aSaisir.length)html+='<div class="acc-vide ok">'+ic('check')+' Tous les résultats d\'examen sont indiqués.</div>';
+  else{
+    html+='<div class="acc-expl">Ces élèves ont passé l\'examen. '+(lectureSeule?'Le secrétariat doit encore indiquer le résultat.':'Indique le résultat : il compte dans les statistiques, et un échec envoie l\'élève en Repassage.')+'</div>';
+    aSaisir.forEach(function(s){
+      html+='<div class="acc-row acc-res"><span class="acc-d">'+labelJourCourt(s.date)+'</span>'+
+        '<span class="acc-nom" onclick="ouvrirDepuisStats('+s.id+')" title="Voir dans le planning">'+esc(s.nom)+'</span>'+
+        (lectureSeule?'<span class="acc-mon">'+esc(s.moniteur)+'</span>':
+          '<button class="acc-b ok" onclick="resultatDepuisAccueil('+s.id+',\'recu\')">'+ic('ok')+'Reçu</button>'+
+          '<button class="acc-b ko" onclick="resultatDepuisAccueil('+s.id+',\'echec\')">'+ic('ko')+'Échec</button>')+'</div>';
+    });
+  }
   html+='</section>';
 
   // 4. Repassage (raccourci)
@@ -1641,6 +1701,14 @@ function renderAccueil(){
     '<div class="acc-vide">'+(nRep?nRep+' élève'+(nRep>1?'s':'')+' à replanifier après un échec.':'Aucun élève en repassage.')+' <u>Voir</u></div></section>';
   html+='</div>';
   el.innerHTML=html;
+}
+
+// Saisie du résultat directement depuis l'accueil
+function resultatDepuisAccueil(id,res){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s||lectureSeule)return;
+  if(res==='echec'&&!confirm(s.nom+' : échec à l\'examen ?\nL\'élève sera ajouté au Repassage.'))return;
+  setResultat(id,res);
+  renderAccueil();
 }
 
 /* ===== STATS : heures de formation + listes d'élèves cliquables ===== */
@@ -2322,51 +2390,188 @@ function saveWait(){
   toast('Ajouté au repassage ✓','#057a55');
 }
 
-/* ===== BANQUE D'ÉLÈVES — SYNC : remplacer par sb.from('eleves')... si Supabase ===== */
-/* ===== ÉLÈVES — KANBAN (SYNC : sb.from('eleves') si Supabase) ===== */
+/* ===== ÉLÈVES : ajout rapide + tri fluide SBAE / CDS / Repassage ===== */
 var KCOLS=[
-  {k:'formation',ic:'grad',label:'En formation'},
-  {k:'bientot',  ic:'clock',label:'Bientôt prêt'},
-  {k:'repassage',ic:'retry',label:'Repassage'}
+  {k:'sbae',ic:'users',label:'SBAE',sub:'Seiches'},
+  {k:'cds',ic:'users',label:'CDS',sub:'Saint-Sylvain'},
+  {k:'repassage',ic:'retry',label:'Repassage',sub:'après un échec'}
 ];
-var kdrag=null;
+var LIB_DEST={sbae:'SBAE',cds:'CDS',repassage:'Repassage'};
+var elFiltre={txt:'',vue:'tous'};
+var elSuggestion=null,elListeCollee=null,kdrag=null;
+
+// Tous les noms déjà vus (élèves, repassage, historique des examens)
+function nomsConnus(){
+  var set={};
+  state.eleves.forEach(function(e){set[e.nom]=1;});
+  state.waitList.forEach(function(w){set[w.nom]=1;});
+  state.slots.forEach(function(s){if(estAffecte(s))set[s.nom.trim()]=1;});
+  return Object.keys(set).sort(function(a,b){return a.localeCompare(b,'fr');});
+}
+// Agence la plus probable d'un élève déjà connu (dernier examen, sinon fiche, sinon repassage)
+function agenceConnue(nom){
+  var ex=state.slots.filter(function(s){return s.nom===nom;}).sort(function(a,b){return b.date.localeCompare(a.date);})[0];
+  if(ex&&ex.agence)return ex.agence;
+  var e=eleveObj(nom);if(e&&e.agence)return e.agence;
+  var w=state.waitList.find(function(x){return x.nom===nom;});return w?w.agence:null;
+}
+function ouEstEleve(nom){
+  if(enRepassage(nom))return 'repassage';
+  var e=eleveObj(nom);return e?e.agence:null;
+}
+function remplirSuggestionsEleves(){
+  var dl=document.getElementById('dl-el');if(!dl)return;
+  dl.innerHTML=nomsConnus().map(function(n){
+    var ou=ouEstEleve(n),ag=agenceConnue(n);
+    return '<option value="'+esc(n)+'">'+(ou?'déjà en '+LIB_DEST[ou]:ag?'ancien élève '+LIB_DEST[ag]:'')+'</option>';
+  }).join('');
+}
+function majBoutonsDestination(){
+  ['sbae','cds','repassage'].forEach(function(k){
+    var b=document.getElementById('el-btn-'+k);if(b)b.classList.toggle('sug',elSuggestion===k);
+  });
+}
+function suggererAgence(){
+  var inp=document.getElementById('el-nom'),v=inp.value.trim(),hint=document.getElementById('el-hint');
+  elListeCollee=null;inp.readOnly=false;
+  document.getElementById('el-clear').style.display=v?'':'none';
+  var ou=v?ouEstEleve(v):null,ag=v?agenceConnue(v):null;
+  elSuggestion=ou||ag;
+  majBoutonsDestination();
+  if(!v)hint.innerHTML='';
+  else if(ou)hint.innerHTML=ic('check')+' <b>'+esc(v)+'</b> est déjà en <b>'+LIB_DEST[ou]+'</b>. Choisis une autre destination pour le déplacer.';
+  else if(ag)hint.innerHTML=ic('clock')+' Ancien élève, passé par <b>'+LIB_DEST[ag]+'</b>. Appuie sur <b>Entrée</b> pour l\'ajouter en '+LIB_DEST[ag]+', ou choisis ci-dessous.';
+  else hint.innerHTML=ic('plus')+' Nouvel élève : choisis <b>SBAE</b>, <b>CDS</b> ou <b>Repassage</b>.';
+}
+// Coller plusieurs noms d'un coup (un par ligne)
+function collerListeEleves(e){
+  var t=((e.clipboardData||window.clipboardData)||{getData:function(){return '';}}).getData('text')||'';
+  if(!/\n/.test(t.trim()))return;
+  e.preventDefault();
+  var noms=t.split(/\r?\n/).map(function(n){return n.trim();}).filter(Boolean).filter(function(n,i,a){return a.indexOf(n)===i;});
+  elListeCollee=noms;elSuggestion=null;majBoutonsDestination();
+  var inp=document.getElementById('el-nom');inp.value=noms.length+' noms collés';inp.readOnly=true;
+  document.getElementById('el-clear').style.display='';
+  document.getElementById('el-hint').innerHTML=ic('users')+' <b>'+noms.length+' élèves</b> prêts à ranger : '+esc(noms.slice(0,4).join(', '))+(noms.length>4?'…':'')+' — choisis la destination.';
+}
+function viderAjoutEleve(){
+  var inp=document.getElementById('el-nom');inp.readOnly=false;inp.value='';
+  elListeCollee=null;suggererAgence();inp.focus();
+}
+// Range (ou déplace) un élève vers SBAE, CDS ou Repassage
+function rangerEleve(nom,dest){
+  var e=eleveObj(nom);
+  if(dest==='repassage'){
+    var ag=(e&&e.agence)||agenceConnue(nom)||'cds';
+    if(!e)state.eleves.push({nom:nom,agence:ag,statut:'formation',moisPrevu:''});
+    if(!enRepassage(nom)){
+      var echecs=state.slots.filter(function(s){return s.nom===nom&&s.resultat==='echec';}).sort(function(a,b){return b.date.localeCompare(a.date);});
+      state.waitList.push({id:state.nextWaitId++,nom:nom,agence:ag,att:Math.max(1,Math.min(echecs.length,9)),
+        last_date:echecs[0]?echecs[0].date:isoJour(new Date())});
+    }
+  } else {
+    state.waitList=state.waitList.filter(function(w){return w.nom!==nom;});
+    if(e){e.agence=dest;}
+    else state.eleves.push({nom:nom,agence:dest,statut:'formation',moisPrevu:''});
+  }
+  updateNavCounts();
+}
+function ajouterEleveVers(dest){
+  var inp=document.getElementById('el-nom');
+  if(!dest){toast('Choisis SBAE, CDS ou Repassage','#d97706');return;}
+  var noms=elListeCollee||[inp.value.trim()].filter(Boolean);
+  if(!noms.length){toast('Tape d\'abord le nom d\'un élève','#d97706');inp.focus();return;}
+  noms.forEach(function(n){rangerEleve(n,dest);});
+  toast((noms.length>1?noms.length+' élèves':noms[0])+' → '+LIB_DEST[dest]+' ✓','#057a55');
+  viderAjoutEleve();
+  renderBanque();
+  // Petit effet pour repérer la carte ajoutée
+  setTimeout(function(){noms.forEach(function(n){var c=document.querySelector('.el-card[data-nom="'+n.replace(/"/g,'\\"')+'"]');if(c)c.classList.add('flash');});},30);
+}
+function deplacerEleve(nom,dest){
+  if(ouEstEleve(nom)===dest)return;
+  rangerEleve(nom,dest);renderBanque();
+  toast(nom+' → '+LIB_DEST[dest],dest==='repassage'?'#d97706':'#057a55');
+}
+function basculerStatutEleve(nom){
+  var e=eleveObj(nom);if(!e)return;
+  e.statut=e.statut==='bientot'?'formation':'bientot';
+  if(e.statut!=='bientot')e.moisPrevu='';
+  renderBanque();
+}
+function basculerAgenceRepassage(nom){
+  var w=state.waitList.find(function(x){return x.nom===nom;});if(!w)return;
+  w.agence=w.agence==='sbae'?'cds':'sbae';
+  var e=eleveObj(nom);if(e)e.agence=w.agence;
+  renderBanque();
+}
+function retirerEleve(nom,col){
+  if(col==='repassage'){
+    if(!confirm('Retirer '+nom+' du repassage ?'))return;
+    state.waitList=state.waitList.filter(function(w){return w.nom!==nom;});
+  } else {
+    if(!confirm('Retirer '+nom+' de la liste des élèves ?'))return;
+    state.eleves=state.eleves.filter(function(e){return e.nom!==nom;});
+  }
+  updateNavCounts();renderBanque();toast(nom+' retiré','#6b7280');
+}
+function setFiltreEleves(v){elFiltre.vue=v;renderBanque();}
 function renderBanque(){
   var board=document.getElementById('kanban-board');if(!board)return;
-  var moisOpts=optionsMoisPrevu();
+  remplirSuggestionsEleves();
+  var auj=isoJour(new Date()),q=(elFiltre.txt||'').trim().toLowerCase();
+  var prochain=function(nom){return state.slots.filter(function(s){return s.nom===nom&&s.date>=auj&&!s.resultat;}).sort(function(a,b){return a.date.localeCompare(b.date);})[0];};
+  var aPermis=function(nom){return state.slots.some(function(s){return s.nom===nom&&s.resultat==='recu';});};
+  var passe=function(nom,statut){
+    if(q&&nom.toLowerCase().indexOf(q)<0)return false;
+    if(elFiltre.vue==='bientot')return statut==='bientot';
+    if(elFiltre.vue==='sans')return !prochain(nom)&&!aPermis(nom);
+    if(elFiltre.vue==='planifies')return !!prochain(nom);
+    return true;
+  };
+  var cols={
+    sbae:state.eleves.filter(function(e){return e.agence==='sbae'&&!enRepassage(e.nom);}).map(function(e){return {nom:e.nom,e:e};}),
+    cds:state.eleves.filter(function(e){return e.agence==='cds'&&!enRepassage(e.nom);}).map(function(e){return {nom:e.nom,e:e};}),
+    repassage:state.waitList.map(function(w){return {nom:w.nom,w:w,e:eleveObj(w.nom)};})
+  };
+  // Filtres
+  var tous=cols.sbae.concat(cols.cds,cols.repassage);
+  var nb=function(v){var s=elFiltre.vue;elFiltre.vue=v;var n=tous.filter(function(x){return passe(x.nom,x.e&&x.e.statut);}).length;elFiltre.vue=s;return n;};
+  document.getElementById('el-filtres').innerHTML=[['tous','Tous'],['bientot','Bientôt prêts'],['planifies','Examen prévu'],['sans','Sans examen']].map(function(f){
+    return '<button class="chip-btn'+(elFiltre.vue===f[0]?' active':'')+'" onclick="setFiltreEleves(\''+f[0]+'\')">'+f[1]+' <span class="el-cnt">'+nb(f[0])+'</span></button>';
+  }).join('');
+
   var html='';
   KCOLS.forEach(function(c){
-    var list=state.eleves.filter(function(e){return statutEleve(e.nom)===c.k;})
-      .sort(function(a,b){return a.nom.localeCompare(b.nom,'fr');});
-    html+='<div class="kcol '+c.k+'">';
-    html+='<div class="kcol-head">'+ic(c.ic)+c.label+'<span class="kcount">'+list.length+'</span></div>';
-    html+='<div class="kcol-body" data-col="'+c.k+'" ondragover="kOver(event,this)" ondragleave="this.classList.remove(\'drag-over\')" ondrop="kDrop(event,\''+c.k+'\',this)">';
-    if(!list.length){html+='<div class="kcol-empty">Glissez un élève ici</div>';}
-    list.forEach(function(e){
-      var n=e.nom;
-      var slot=state.slots.find(function(s){return s.nom===n&&s.month===state.currentMonth;});
-      var aEuPermis=state.slots.some(function(s){return s.nom===n&&s.resultat==='recu';});
-      html+='<div class="kcard '+e.agence+'" draggable="true" data-nom="'+n.replace(/"/g,'&quot;')+'" ondragstart="kStart(event)">';
-      html+='<div class="kcard-top"><span class="kcard-grip" title="Glisser">⠿</span><span class="kcard-name">'+n+'</span>';
-      html+='<button class="kcard-del" title="Supprimer" onclick="delEleve(this.parentNode.parentNode.getAttribute(\'data-nom\'))">'+ic('trash')+'</button></div>';
-      html+='<div class="kcard-meta"><span class="kbadge '+e.agence+'">'+e.agence.toUpperCase()+'</span>';
-      if(c.k==='bientot'){
-        html+='<select class="kcard-mois" title="Mois prévu" onchange="setMoisPrevu(\''+n.replace(/'/g,"\\'")+'\',this.value)"><option value="">Mois ?</option>'+moisOptsSel(e.moisPrevu)+'</select>';
-      }
+    var list=cols[c.k].filter(function(x){return passe(x.nom,x.e&&x.e.statut);}).sort(function(a,b){return a.nom.localeCompare(b.nom,'fr');});
+    html+='<div class="el-col '+c.k+'"><div class="el-col-h"><span class="el-dot"></span><b>'+c.label+'</b><span class="el-col-sub">'+c.sub+'</span><span class="el-cnt">'+list.length+'</span></div>';
+    html+='<div class="el-col-body" ondragover="kOver(event,this)" ondragleave="this.classList.remove(\'drag-over\')" ondrop="kDrop(event,\''+c.k+'\',this)">';
+    if(!list.length)html+='<div class="el-vide">'+(q||elFiltre.vue!=='tous'?'Aucun élève pour ce filtre':'Glisse un élève ici<br>ou ajoute-le avec le bouton '+c.label)+'</div>';
+    list.forEach(function(x){
+      var n=x.nom,nq=n.replace(/\\/g,'\\\\').replace(/'/g,"\\'"),px=prochain(n),ok=aPermis(n);
+      html+='<div class="el-card" draggable="true" data-nom="'+esc(n)+'" ondragstart="kStart(event)">';
+      html+='<div class="el-card-top"><span class="el-nom">'+esc(n)+'</span><button class="el-x" title="Retirer" onclick="retirerEleve(\''+nq+'\',\''+c.k+'\')">'+ic('x')+'</button></div>';
+      html+='<div class="el-meta">';
       if(c.k==='repassage'){
-        var w=state.waitList.find(function(x){return x.nom===n;});
-        if(w)html+='<span class="kcard-fail">'+w.att+' échec'+(w.att>1?'s':'')+'</span>';
+        html+='<button class="el-tag ag '+x.w.agence+'" title="Changer d\'agence" onclick="basculerAgenceRepassage(\''+nq+'\')">'+x.w.agence.toUpperCase()+'</button>';
+        html+='<span class="el-tag ko">'+x.w.att+' échec'+(x.w.att>1?'s':'')+'</span>';
+      } else {
+        var bientot=x.e.statut==='bientot';
+        html+='<button class="el-tag st'+(bientot?' bientot':'')+'" title="Cliquer pour changer" onclick="basculerStatutEleve(\''+nq+'\')">'+(bientot?ic('clock')+'Bientôt prêt':ic('grad')+'En formation')+'</button>';
+        if(bientot)html+='<select class="el-mois" onchange="setMoisPrevu(\''+nq+'\',this.value)"><option value="">Mois ?</option>'+moisOptsSel(x.e.moisPrevu)+'</select>';
       }
-      if(aEuPermis)html+='<span class="kcard-planned">'+ic('ok')+' permis</span>';
-      else if(slot)html+='<span class="kcard-planned">'+ic('calendar')+' planifié</span>';
-      html+='<select class="kcard-move" onchange="moveEleve(\''+n.replace(/'/g,"\\'")+'\',this.value)">'+KCOLS.map(function(cc){return '<option value="'+cc.k+'"'+(cc.k===c.k?' selected':'')+'>'+cc.label+'</option>';}).join('')+'</select>';
-      html+='</div></div>';
+      if(ok)html+='<span class="el-tag ok">'+ic('check')+'Permis</span>';
+      else if(px)html+='<span class="el-tag exam">'+ic('calendar')+labelJourCourt(px.date)+'</span>';
+      html+='</div>';
+      html+='<div class="el-move">'+KCOLS.filter(function(cc){return cc.k!==c.k;}).map(function(cc){
+        return '<button onclick="deplacerEleve(\''+nq+'\',\''+cc.k+'\')">→ '+cc.label+'</button>';}).join('')+'</div>';
+      html+='</div>';
     });
     html+='</div></div>';
   });
   board.innerHTML=html;
   persist();
 }
-function optionsMoisPrevu(){return null;}
 function moisOptsSel(sel){
   var now=new Date();var html='';
   for(var i=0;i<=9;i++){
@@ -2377,140 +2582,15 @@ function moisOptsSel(sel){
   return html;
 }
 function setMoisPrevu(nom,val){var e=eleveObj(nom);if(e){e.moisPrevu=val;persist();toast(val?(nom+' prévu '+labelMois(val)):'Mois retiré','#d97706');}}
-function moveEleve(nom,statut){setStatutEleve(nom,statut);renderBanque();
-  toast(nom+' → '+KCOLS.find(function(c){return c.k===statut;}).label,statut==='repassage'?'#ff3131':statut==='bientot'?'#d97706':'#6b7280');}
-function delEleve(nom){
-  if(!confirm('Supprimer '+nom+' de la banque ?'))return;
-  state.eleves=state.eleves.filter(function(e){return e.nom!==nom;});
-  state.waitList=state.waitList.filter(function(w){return w.nom!==nom;});
-  updateNavCounts();renderBanque();
-  toast('Supprimé','#6b7280');
-}
-/* Drag & drop entre colonnes */
-function kStart(e){kdrag=e.target.getAttribute('data-nom');e.dataTransfer.effectAllowed='move';}
+function moveEleve(nom,statut){deplacerEleve(nom,statut==='repassage'?'repassage':(eleveObj(nom)||{}).agence||'cds');}
+function delEleve(nom){retirerEleve(nom,ouEstEleve(nom)||'cds');}
+/* Glisser-déposer entre colonnes */
+function kStart(e){var c=e.target.closest('.el-card');kdrag=c?c.getAttribute('data-nom'):null;e.dataTransfer.effectAllowed='move';}
 function kOver(e,el){e.preventDefault();el.classList.add('drag-over');}
-function kDrop(e,statut,el){
+function kDrop(e,dest,el){
   e.preventDefault();el.classList.remove('drag-over');
-  if(!kdrag)return;
-  if(statutEleve(kdrag)!==statut){
-    setStatutEleve(kdrag,statut);
-    toast(kdrag+' → '+KCOLS.find(function(c){return c.k===statut;}).label,statut==='repassage'?'#ff3131':statut==='bientot'?'#d97706':'#6b7280');
-  }
-  kdrag=null;renderBanque();
-}
-/* Bascule de la zone d'import */
-function toggleImport(){
-  var z=document.getElementById('import-zone');
-  z.style.display=(z.style.display==='none'||!z.style.display)?'block':'none';
-}
-
-/* ===== RECHERCHE DANS LA BANQUE ===== */
-function searchEleves(q){
-  var res=document.getElementById('search-results');
-  if(!q.trim()){res.style.display='none';document.getElementById('kanban-board').style.display='grid';return;}
-  document.getElementById('kanban-board').style.display='none';
-  q=q.toLowerCase();
-  var found=tousEleves().filter(function(e){return e.n.toLowerCase().includes(q);});
-  if(!found.length){res.innerHTML='<div class="search-empty">Aucun élève trouvé pour "'+q+'"</div>';res.style.display='block';return;}
-  var html='<div style="padding:8px 16px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'+found.length+' résultat'+(found.length>1?'s':'')+'</div>';
-  found.forEach(function(e){
-    var slot=state.slots.find(function(s){return s.nom===e.n&&s.month===state.currentMonth;});
-    var w=state.waitList.find(function(x){return x.nom===e.n;});
-    var recu=state.slots.find(function(s){return s.nom===e.n&&s.resultat==='recu';});
-    html+='<div class="search-result-item"><span class="badge '+e.a+'">'+e.a.toUpperCase()+'</span><span style="font-weight:500;flex:1">'+e.n+'</span>';
-    if(recu){
-      var dr=new Date(recu.date+'T12:00:00');
-      html+='<span class="res-badge recu">'+ic('ok')+' Permis obtenu le '+dr.getDate()+' '+MONTHS[dr.getMonth()]+'</span>';
-    } else if(slot){
-      var d=new Date(slot.date+'T12:00:00');
-      html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('calendar')+' '+d.getDate()+' '+MONTHS[d.getMonth()]+(slot.heure?' · '+slot.heure:'')+'</span>';
-      if(slot.resultat==='echec')html+='<span class="res-badge echec">'+ic('ko')+' Échec</span>';
-    } else {
-      html+='<span style="font-size:11px;color:var(--text-light)">Non planifié ce mois</span>';
-    }
-    if(w)html+='<span style="font-size:11px;background:var(--warn-light);color:#78350f;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('retry')+' Repassage ('+w.att+' échec'+(w.att>1?'s':'')+')</span>';
-    else{var eo=eleveObj(e.n);if(eo&&eo.moisPrevu)html+='<span style="font-size:11px;background:var(--warn-light);color:#92400e;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('target')+' Prévu '+labelMois(eo.moisPrevu)+'</span>';}
-    html+='</div>';
-  });
-  res.innerHTML=html;res.style.display='block';
-}
-function clearSearch(){document.getElementById('search-eleves').value='';searchEleves('');}
-
-/* ===== IMPORT EN MASSE + DRAG & DROP ===== */
-function importNoms(){
-  var raw=document.getElementById('e-noms').value;
-  var noms=raw.split('\n').map(function(n){return n.trim();}).filter(function(n){return n.length>0;});
-  if(!noms.length)return;
-  noms=noms.filter(function(n,i){return noms.indexOf(n)===i;});
-  var allExisting=state.eleves.map(function(e){return e.nom;});
-  noms=noms.filter(function(n){return !allExisting.includes(n);});
-  if(!noms.length){toast('Ces élèves existent déjà','#d97706');return;}
-  dragState.items=noms.map(function(n){return{nom:n,agence:'pending'};});
-  document.getElementById('drag-zone').style.display='block';
-  document.getElementById('kanban-board').style.display='none';
-  document.getElementById('e-noms').value='';
-  renderDragZone();
-}
-function renderDragZone(){
-  ['pending','sbae','cds'].forEach(function(col){
-    var el=document.getElementById('drop-'+col);
-    var items=dragState.items.filter(function(x){return x.agence===col;});
-    document.getElementById('count-'+col).textContent=items.length;
-    if(!items.length){
-      el.innerHTML='<div style="text-align:center;color:var(--text-light);font-size:12px;padding:16px">Glisser ici</div>';
-      return;
-    }
-    var html='';
-    items.forEach(function(it){
-      html+='<div class="drag-item '+col+'" draggable="true" data-nom="'+it.nom.replace(/"/g,'&quot;')+'" ondragstart="onDragStart(event)">';
-      html+='<span>'+it.nom+'</span>';
-      html+='<span class="drag-rm" data-nom="'+it.nom.replace(/"/g,'&quot;')+'" title="Retirer de l\'import">×</span>';
-      html+='</div>';
-    });
-    el.innerHTML=html;
-  });
-}
-function onDragStart(e){
-  dragState.draggedNom=e.target.getAttribute('data-nom');
-  e.dataTransfer.effectAllowed='move';
-}
-function onDragOver(e,el){
-  e.preventDefault();
-  el.classList.add('drag-over');
-}
-function onDrop(e,col,el){
-  e.preventDefault();
-  el.classList.remove('drag-over');
-  var nom=dragState.draggedNom;
-  if(!nom)return;
-  var item=dragState.items.find(function(x){return x.nom===nom;});
-  if(item)item.agence=col;
-  dragState.draggedNom=null;
-  renderDragZone();
-}
-function confirmImport(){
-  var classified=dragState.items.filter(function(x){return x.agence!=='pending';});
-  if(!classified.length){toast('Classez au moins un élève (glisser dans SBAE ou CDS)','#d97706');return;}
-  classified.forEach(function(x){
-    if(!state.eleves.some(function(e){return e.nom===x.nom;}))state.eleves.push({nom:x.nom,agence:x.agence,statut:'formation',moisPrevu:''});
-  });
-  var restants=dragState.items.filter(function(x){return x.agence==='pending';});
-  dragState.items=restants;
-  if(restants.length){
-    renderDragZone();
-    toast(classified.length+' importé'+(classified.length>1?'s':'')+' — '+restants.length+' encore à classer','#d97706');
-  } else {
-    document.getElementById('drag-zone').style.display='none';
-    document.getElementById('kanban-board').style.display='grid';
-    toast(classified.length+' élève'+(classified.length>1?'s':'')+' ajouté'+(classified.length>1?'s':'')+' ✓','#057a55');
-  }
-  renderBanque();
-}
-function cancelImport(){
-  dragState.items=[];
-  document.getElementById('drag-zone').style.display='none';
-  document.getElementById('kanban-board').style.display='grid';
-  document.getElementById('e-noms').value='';
+  if(kdrag)deplacerEleve(kdrag,dest);
+  kdrag=null;
 }
 
 /* ===== MODAL AJOUT PLACE ===== */
@@ -2779,10 +2859,6 @@ document.getElementById('btn-dark').addEventListener('click',toggleDark);
 document.getElementById('btn-logout').addEventListener('click',function(){
   if(confirm('Se déconnecter de Places Permis ?'))logout();
 });
-document.getElementById('btn-import-noms').addEventListener('click',importNoms);
-document.getElementById('btn-confirm-import').addEventListener('click',confirmImport);
-document.getElementById('btn-cancel-import').addEventListener('click',cancelImport);
-document.getElementById('btn-toggle-import').addEventListener('click',toggleImport);
 
 /* =====================================================================
    SYNCHRO CLOUD FIREBASE (optionnelle — partage entre tous les postes)
