@@ -736,6 +736,7 @@ body.dark .acc-note{background:#2d2408;border-color:#5a4a12}
 
 /* ===== ACCUEIL « CETTE SEMAINE » ===== */
 #view-accueil{max-width:1100px;margin:0 auto}
+
 .acc-hi{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 2px 18px}
 .acc-hi h1{font-family:var(--police-titre);font-size:26px;font-weight:600;letter-spacing:-.4px;margin:0}
 .acc-date{font-size:13px;color:var(--text-muted);text-transform:capitalize;margin-top:2px}
@@ -773,6 +774,39 @@ body.lecture-seule .att-badge{cursor:default}
 .lbl-short{display:none}
 @media(max-width:900px){.acc-grid{grid-template-columns:minmax(0,1fr)}.acc-semaine{grid-row:auto}}
 @media(max-width:640px){.lbl-long{display:none!important}.lbl-short{display:inline!important}.acc-hi h1{font-size:22px}.acc-mon{display:none}}
+/* Accueil sur ordinateur : plus grand pour remplir l'écran */
+@media(min-width:1000px){
+  #view-accueil{max-width:1380px}
+  .acc-hi{margin:10px 4px 26px}
+  .acc-hi h1{font-size:34px}
+  .acc-date{font-size:15px}
+  .acc-resume{font-size:15px;padding:9px 18px}
+  .acc-grid{gap:22px}
+  .acc-card{padding:22px 26px;border-radius:18px}
+  .acc-h{margin-bottom:16px;gap:10px}
+  .acc-h .ic{width:22px;height:22px}
+  .acc-h h2{font-size:20px}
+  .acc-n{font-size:14px;padding:3px 13px}
+  .acc-vide,.acc-expl{font-size:15px}
+  .acc-jt{font-size:14px;padding:8px 6px 6px}
+  .acc-row{font-size:15.5px;padding:13px 10px;gap:14px}
+  .acc-hh{font-size:14px;width:54px}
+  .acc-d{font-size:14px;width:96px}
+  .acc-mon,.acc-when{font-size:13.5px}
+  .acc-row .r-st{width:70px}
+  .acc-b{font-size:13.5px;padding:7px 14px}
+  .acc-note-txt{font-size:15px;max-height:220px}
+}
+/* Pied de page + mentions légales */
+.acc-footer{margin:34px 0 10px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-light)}
+.acc-footer a{color:var(--text-muted);text-decoration:underline}
+.acc-footer a:hover{color:var(--easy)}
+.ml{max-height:60vh;overflow-y:auto;padding-right:4px}
+.ml h3{font-family:var(--police-titre);font-size:14px;font-weight:600;margin:14px 0 4px;color:var(--easy)}
+.ml h3:first-child{margin-top:0}
+.ml p{font-size:13px;line-height:1.55;color:var(--text);margin:0}
+.ml-vide{color:var(--text-light)}
+
 /* Accueil mobile : sections repliables */
 .acc-chev{display:none}
 @media(max-width:640px){
@@ -1334,6 +1368,13 @@ body.lecture-seule .obs-badge{display:inline-flex}
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
 <!-- MODAL PLACER UN ÉLÈVE SUR UNE PLACE LIBRE -->
+<div class="modal-bg" id="modal-mentions" style="display:none" onclick="if(event.target===this)closeModal('modal-mentions')">
+  <div class="modal" style="width:620px;max-width:94vw">
+    <div class="modal-title">Mentions légales</div>
+    <div id="mml-contenu"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-mentions')">Fermer</button></div>
+  </div>
+</div>
 <div class="modal-bg" id="modal-placer" style="display:none" onclick="if(event.target===this)closeModal('modal-placer')">
   <div class="modal" style="width:500px;max-width:94vw">
     <div class="modal-title" id="mpl-titre"></div>
@@ -1909,8 +1950,33 @@ function renderAccueil(){
   html+='<section class="acc-card acc-mini" onclick="showView(\'attente\')"><div class="acc-h">'+ic('retry')+'<h2>Repassage</h2><span class="acc-n">'+nRep+'</span></div>'+
     '<div class="acc-vide">'+(nRep?nRep+' élève'+(nRep>1?'s':'')+' à replanifier après un échec.':'Aucun élève en repassage.')+' <u>Voir</u></div></section>';
   html+='</div>';
+  html+='<footer class="acc-footer">© '+t.getFullYear()+' Easy Auto-École · Outil interne réservé au personnel · <a href="#" onclick="ouvrirMentions();return false">Mentions légales</a></footer>';
   el.innerHTML=html;
   plisAccueil(el);
+}
+
+/* ===== MENTIONS LÉGALES ===== */
+// Identité de l'entreprise : à compléter (laisser '' affiche « à compléter »)
+var MENTIONS={raison:'',forme:'',siret:'',adresse:'',directeur:'',email:'',tel:''};
+function ouvrirMentions(){
+  var v=function(x){return x?esc(x):'<i class="ml-vide">à compléter</i>';};
+  var h='<div class="ml">'+
+    '<h3>Éditeur</h3><p><b>'+(MENTIONS.raison?esc(MENTIONS.raison):'Easy Auto-École')+'</b>'+(MENTIONS.forme?' · '+esc(MENTIONS.forme):'')+'<br>'+
+      'Agences : Seiches-sur-le-Loir (SBAE) et Saint-Sylvain-d\'Anjou (CDS)<br>'+
+      'Siège social : '+v(MENTIONS.adresse)+'<br>SIRET : '+v(MENTIONS.siret)+'<br>'+
+      'Directeur de la publication : '+v(MENTIONS.directeur)+'<br>Contact : '+v(MENTIONS.email)+(MENTIONS.tel?' · '+esc(MENTIONS.tel):'')+'</p>'+
+    '<h3>Hébergement</h3><p>Application : GitHub Pages, GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.<br>'+
+      'Données : Google Firebase (Cloud Firestore et Authentication), Google Ireland Ltd, Gordon House, Barrow Street, Dublin 4, Irlande.</p>'+
+    '<h3>Accès</h3><p>Cette application est un outil interne de gestion des places d\'examen du permis de conduire. Son accès est réservé au personnel autorisé de l\'auto-école, au moyen d\'un compte personnel.</p>'+
+    '<h3>Données personnelles</h3><p>Données traitées : nom et prénom des élèves, agence, formation, heures de formation, dates et résultats d\'examen.<br>'+
+      'Finalités : organisation des examens, suivi des démarches ANTS et statistiques de réussite de l\'auto-école.<br>'+
+      'Base légale : intérêt légitime de l\'auto-école et exécution du contrat de formation.<br>'+
+      'Destinataires : uniquement le personnel habilité de l\'auto-école. Aucune donnée n\'est vendue ni cédée.<br>'+
+      'Conformément au RGPD, chaque élève peut demander l\'accès, la rectification ou l\'effacement de ses données en contactant l\'auto-école. En cas de difficulté, une réclamation peut être adressée à la CNIL (www.cnil.fr).</p>'+
+    '<h3>Cookies</h3><p>Aucun cookie publicitaire ni de mesure d\'audience. Seul un stockage technique est utilisé sur l\'appareil (connexion et préférences d\'affichage).</p>'+
+  '</div>';
+  document.getElementById('mml-contenu').innerHTML=h;
+  document.getElementById('modal-mentions').style.display='flex';
 }
 
 /* Sur mobile : chaque section de l'accueil se replie / se déplie (état mémorisé) */
