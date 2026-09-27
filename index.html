@@ -481,6 +481,31 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
 @media(max-width:1100px){.pl-kpi{padding:10px 12px}.pl-kpi b{font-size:16px;white-space:nowrap}}
+/* ===== STATS : heures + listes cliquables ===== */
+.am-hours{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);padding:8px 14px 10px}
+.am-hours .ic{width:14px;height:14px}
+.am-hours b{color:var(--text);font-size:13px}
+.am-hours span{color:var(--text-light)}
+.am-hours.vide{color:var(--text-light)}
+button.agency-metric{background:none;border-top:none;border-bottom:none;border-left:none;font-family:inherit;color:inherit;cursor:pointer;transition:background .12s;width:100%}
+button.agency-metric:hover:not(:disabled){background:var(--bg)}
+button.agency-metric:hover:not(:disabled) .am-lbl{color:var(--easy)}
+button.agency-metric:disabled{cursor:default}
+.ml-n{font-size:12px;font-weight:700;background:var(--bg);color:var(--text-muted);padding:2px 9px;border-radius:10px;margin-left:4px}
+.ml-sum{font-size:13px;color:var(--text-muted);margin:-6px 0 10px;display:flex;align-items:center;gap:6px}
+.ml-sum .ic{width:14px;height:14px}
+.ml-sum b{color:var(--text)}
+.ml-list{max-height:60vh;overflow-y:auto;border:1px solid var(--border);border-radius:12px}
+.ml-row{display:grid;grid-template-columns:62px minmax(0,1fr) 74px 62px 58px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px}
+.ml-row:last-child{border-bottom:none}
+.ml-row:hover{background:var(--bg)}
+.ml-d{color:var(--text-muted);font-size:12px}
+.ml-nom{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-nom em{font-style:normal;font-weight:500;font-size:11px;color:var(--warn);margin-left:4px}
+.ml-mon{color:var(--text-muted);font-size:12px}
+.ml-h{font-family:'DM Mono',monospace;font-size:12px;text-align:right}
+@media(max-width:640px){.ml-row{grid-template-columns:52px minmax(0,1fr) 56px 54px}.ml-mon{display:none}}
+
 /* ===== MINI-CALENDRIER (ordinateur) ===== */
 @media(min-width:901px){
   .pl-side{padding:16px 14px}
@@ -869,11 +894,11 @@ body.lecture-seule .obs-badge{display:inline-flex}
               <div id="drop-pending" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'pending',this)"></div>
             </div>
             <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sbae-dark);margin-bottom:8px;padding:8px 12px;background:var(--sbae-light);border-radius:var(--radius-sm);text-align:center">● SBAE — Doriane / Aline (<span id="count-sbae">0</span>)</div>
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sbae-dark);margin-bottom:8px;padding:8px 12px;background:var(--sbae-light);border-radius:var(--radius-sm);text-align:center">● SBAE — Seiches (<span id="count-sbae">0</span>)</div>
               <div id="drop-sbae" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'sbae',this)"></div>
             </div>
             <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--cds-dark);margin-bottom:8px;padding:8px 12px;background:var(--cds-light);border-radius:var(--radius-sm);text-align:center">● CDS — Charles / Grégoire / Quentin (<span id="count-cds">0</span>)</div>
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--cds-dark);margin-bottom:8px;padding:8px 12px;background:var(--cds-light);border-radius:var(--radius-sm);text-align:center">● CDS — Saint-Sylvain (<span id="count-cds">0</span>)</div>
               <div id="drop-cds" class="drop-col" ondragover="onDragOver(event,this)" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event,'cds',this)"></div>
             </div>
           </div>
@@ -912,8 +937,8 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="form-field"><label>Agence</label>
           <select id="ms-agence" style="width:100%">
-            <option value="sbae">SBAE — Doriane / Aline</option>
-            <option value="cds" selected>CDS — Charles / Grégoire / Quentin</option>
+            <option value="sbae">SBAE — Seiches (AE11)</option>
+            <option value="cds" selected>CDS — Saint-Sylvain (AE8)</option>
           </select>
         </div>
         <div class="form-field"><label>Type de permis</label>
@@ -974,8 +999,8 @@ body.lecture-seule .obs-badge{display:inline-flex}
       </div>
       <div class="form-field"><label>Agence</label>
         <select id="mw-agence" style="width:100%">
-          <option value="sbae">SBAE — Doriane / Aline</option>
-          <option value="cds">CDS — Charles / Grégoire</option>
+          <option value="sbae">SBAE — Seiches (AE11)</option>
+          <option value="cds">CDS — Saint-Sylvain (AE8)</option>
         </select>
       </div>
       <div class="form-field"><label>Nombre d'échecs</label>
@@ -995,6 +1020,15 @@ body.lecture-seule .obs-badge{display:inline-flex}
 </div>
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
+
+<!-- MODAL LISTE D'ÉLÈVES (clic sur un chiffre des statistiques) -->
+<div class="modal-bg" id="modal-liste" style="display:none" onclick="if(event.target===this)closeModal('modal-liste')">
+  <div class="modal" style="width:620px;max-width:94vw">
+    <div class="modal-title" id="ml-titre"></div>
+    <div id="ml-contenu"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-liste')">Fermer</button></div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 <div class="toast-undo" id="toast-undo"><span id="toast-undo-msg"></span><button onclick="annulerSuppression()">Annuler</button></div>
@@ -1184,7 +1218,7 @@ var MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','
 var JOURS_FULL=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 var MONITEURS=['Charles','Grégoire','Quentin','Doriane','Aline'];
 var PERMIS=['B','AAC','SUPP','B78'];
-var AGENCE_LABEL={sbae:'SBAE — Doriane & Aline',cds:'CDS — Charles & Grégoire'};
+var AGENCE_LABEL={sbae:'SBAE — Seiches (AE11)',cds:'CDS — Saint-Sylvain (AE8)'};
 
 var state={
   eleves:[],
@@ -1267,8 +1301,83 @@ function syncMonthSelectors(){
 }
 
 /* ===== VUE STATISTIQUES ===== */
+/* ===== STATS : heures de formation + listes d'élèves cliquables ===== */
+var STATS_LISTES={},statsSeq=0;
+function fmtHeures(min){
+  if(!min&&min!==0)return '—';
+  var h=Math.floor(min/60),m=Math.round(min-h*60);
+  if(m===60){h++;m=0;}
+  return h+' h'+(m?' '+String(m).padStart(2,'0'):'');
+}
+function moyenneHeures(list){
+  var v=list.filter(function(s){return s.hf>0;}).map(function(s){return s.hf;});
+  return v.length?{moy:v.reduce(function(a,b){return a+b;},0)/v.length,n:v.length}:null;
+}
+function ligneHeures(list){
+  var m=moyenneHeures(list);
+  if(!m)return '<div class="am-hours vide">'+ic('clock')+' Heures de formation non renseignées</div>';
+  return '<div class="am-hours">'+ic('clock')+' <b>'+fmtHeures(m.moy)+'</b> de formation en moyenne <span>· '+m.n+' élève'+(m.n>1?'s':'')+'</span></div>';
+}
+// Les 4 chiffres (1re fois, reçus, échecs, à passer) : un clic ouvre la liste des élèves
+function metriquesStats(list,titre){
+  var groupes=[
+    {k:'tous',lbl:'1re fois',cls:'',l:list},
+    {k:'recu',lbl:ic('ok','ic-ok')+' Reçus',cls:'am-ok',l:list.filter(function(s){return s.resultat==='recu';})},
+    {k:'echec',lbl:ic('ko','ic-ko')+' Échecs',cls:'am-ko',l:list.filter(function(s){return s.resultat==='echec';})},
+    {k:'attente',lbl:'À passer',cls:'',l:list.filter(function(s){return !s.resultat;})}
+  ];
+  var noms={tous:'Élèves présentés (1re fois)',recu:'Reçus',echec:'Échecs',attente:'À passer'};
+  var h='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
+  groupes.forEach(function(g,i){
+    var key='l'+(++statsSeq);
+    STATS_LISTES[key]={titre:noms[g.k]+' — '+titre,list:g.l};
+    h+='<button class="agency-metric am-click"'+(i===3?' style="border-right:none"':'')+' onclick="voirListeStats(\''+key+'\')"'+(g.l.length?'':' disabled')+' title="Voir la liste des élèves">'+
+      '<div class="am-val '+g.cls+'">'+g.l.length+'</div><div class="am-lbl">'+g.lbl+'</div></button>';
+  });
+  return h+'</div>';
+}
+function voirListeStats(key){
+  var e=STATS_LISTES[key];if(!e)return;
+  var list=e.list.slice().sort(function(a,b){return b.date.localeCompare(a.date)||a.nom.localeCompare(b.nom,'fr');});
+  document.getElementById('ml-titre').innerHTML=ic('users')+e.titre+' <span class="ml-n">'+list.length+'</span>';
+  var m=moyenneHeures(list);
+  var h='<div class="ml-sum">'+(m?ic('clock')+' <b>'+fmtHeures(m.moy)+'</b> de formation en moyenne':'Heures de formation non renseignées')+'</div><div class="ml-list">';
+  list.forEach(function(s){
+    var d=new Date(s.date+'T12:00:00'),st=statutPlace(s);
+    h+='<div class="ml-row" onclick="ouvrirDepuisStats('+s.id+')" title="Voir dans le planning">'+
+      '<span class="ml-d">'+d.getDate()+' '+MONTHS[d.getMonth()].slice(0,4).toLowerCase()+'.</span>'+
+      '<span class="ml-nom">'+s.nom+(s.passage&&s.passage!=='1er'?' <em>'+libPassage(s.passage)+'</em>':'')+'</span>'+
+      '<span class="ml-mon">'+s.moniteur+'</span>'+
+      '<span class="ml-h">'+(s.hf>0?fmtHeures(s.hf):'—')+'</span>'+
+      '<span class="r-st st-'+st+'">'+LIB_COURT[st]+'</span></div>';
+  });
+  h+='</div>';
+  document.getElementById('ml-contenu').innerHTML=h;
+  document.getElementById('modal-liste').style.display='flex';
+}
+function ouvrirDepuisStats(id){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
+  closeModal('modal-liste');
+  showView('planning');
+  allerAuProchain(s.date);
+  ouvrirDetail(id);
+}
+// Saisie des heures de formation : « 32:45 », « 32h45 » ou « 32,5 »
+function setHeuresFormation(id,val){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s||lectureSeule)return;
+  val=String(val||'').trim().replace(',','.');
+  var min=0,m;
+  if((m=val.match(/^(\d+)\s*[:h]\s*(\d{1,2})?$/i)))min=(+m[1])*60+(+(m[2]||0));
+  else if(/^\d+(\.\d+)?$/.test(val))min=Math.round(parseFloat(val)*60);
+  else if(val){toast('Format d\'heures non reconnu (ex. 32:45)','#d97706');renderDetail();return;}
+  s.hf=min;
+  renderPlanning();
+  toast('Heures de formation enregistrées ✓','#057a55');
+}
+
 function renderStatsView(){
   syncMonthSelectors();
+  STATS_LISTES={};statsSeq=0;
   var ms=state.slots.filter(function(s){return s.month===state.currentMonth;});
   renderAgencyStats(ms);
   renderAnneeStats();
@@ -1295,17 +1404,14 @@ function renderAnneeStats(){
     h+='<div class="agency-rate"><div class="agency-rate-val" style="color:'+(taux===null?'var(--text-light)':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)')+'">'+(taux===null?'—':taux+'%')+'</div><div class="agency-rate-lbl">année '+annee+'</div></div>';
     h+='</div>';
     h+='<div class="progress" title="'+recus+' reçu(s) · '+echecs+' échec(s) · '+enAttente+' à passer"><div class="seg-ok" style="width:'+pctOk+'%"></div><div class="seg-ko" style="width:'+pctKo+'%"></div></div>';
-    h+='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
-    h+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re fois</div></div>';
-    h+='<div class="agency-metric"><div class="am-val am-ok">'+recus+'</div><div class="am-lbl">'+ic('ok','ic-ok')+' Reçus</div></div>';
-    h+='<div class="agency-metric"><div class="am-val am-ko">'+echecs+'</div><div class="am-lbl">'+ic('ko','ic-ko')+' Échecs</div></div>';
-    h+='<div class="agency-metric" style="border-right:none"><div class="am-val">'+enAttente+'</div><div class="am-lbl">À passer</div></div>';
-    h+='</div></div>';
+    h+=ligneHeures(list);
+    h+=metriquesStats(list,titre+' · année '+annee);
+    h+='</div>';
     return h;
   }
   var html=bloc(an,'Toutes agences','SBAE + CDS réunis',null);
-  html+=bloc(an.filter(function(s){return s.agence==='sbae';}),'SBAE','Doriane & Aline','sbae');
-  html+=bloc(an.filter(function(s){return s.agence==='cds';}),'CDS','Charles · Grégoire · Quentin','cds');
+  html+=bloc(an.filter(function(s){return s.agence==='sbae';}),'SBAE','Seiches · AE11','sbae');
+  html+=bloc(an.filter(function(s){return s.agence==='cds';}),'CDS','Saint-Sylvain · AE8','cds');
   document.getElementById('annee-stats').innerHTML=html;
 }
 function updateNavCounts(){
@@ -1392,7 +1498,7 @@ function renderAgencyStats(ms){
     var taux=examines?Math.round(recus/examines*100):null;
     var pctOk=examines?recus/examines*100:0;
     var pctKo=examines?echecs/examines*100:0;
-    var sub=ag==='sbae'?'Doriane & Aline':'Charles · Grégoire · Quentin';
+    var sub=ag==='sbae'?'Seiches · AE11':'Saint-Sylvain · AE8';
 
     html+='<div class="agency-card '+ag+'">';
     html+='<div class="agency-head">';
@@ -1403,12 +1509,9 @@ function renderAgencyStats(ms){
     html+='<div class="progress" title="'+recus+' reçu(s) · '+echecs+' échec(s) · '+enAttente+' à passer">';
     html+='<div class="seg-ok" style="width:'+pctOk+'%"></div><div class="seg-ko" style="width:'+pctKo+'%"></div>';
     html+='</div>';
-    html+='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
-    html+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re fois</div></div>';
-    html+='<div class="agency-metric"><div class="am-val am-ok">'+recus+'</div><div class="am-lbl">'+ic('ok','ic-ok')+' Reçus</div></div>';
-    html+='<div class="agency-metric"><div class="am-val am-ko">'+echecs+'</div><div class="am-lbl">'+ic('ko','ic-ko')+' Échecs</div></div>';
-    html+='<div class="agency-metric" style="border-right:none"><div class="am-val">'+enAttente+'</div><div class="am-lbl">À passer</div></div>';
-    html+='</div>';
+    html+=ligneHeures(list);
+    var pm=state.currentMonth.split('-');
+    html+=metriquesStats(list,ag.toUpperCase()+' · '+MONTHS[+pm[1]-1].toLowerCase()+' '+pm[0]);
     html+='</div>';
   });
   document.getElementById('agency-stats').innerHTML=html;
@@ -1603,7 +1706,7 @@ function renderDetailLecture(s){
     '<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>'+
     '<div class="pp-ro">'+
       ligne('Heure',s.heure||'à définir')+ligne('Moniteur',s.moniteur)+ligne('Catégorie',s.type_permis)+
-      ligne('Agence',(s.agence||'').toUpperCase())+(s.commentaire?ligne('Note',s.commentaire):'')+
+      ligne('Agence',(s.agence||'').toUpperCase())+ligne('Heures de formation',s.hf>0?fmtHeures(s.hf):'—')+(s.commentaire?ligne('Note',s.commentaire):'')+
       ligne('Résultat',s.resultat==='recu'?'Reçu':s.resultat==='echec'?'Échec':'—')+
     '</div>'+
     '<div class="pp-hint">'+ic('eye')+' Mode consultation : tu peux regarder, pas modifier.</div>';
@@ -1638,6 +1741,7 @@ function renderDetail(){
     '<div class="pp-f"><label>Moniteur</label><select onchange="updateSlot('+s.id+',\'moniteur\',this.value)"'+dis+'>'+monOpts+'</select></div>'+
     '<div class="pp-f"><label>Catégorie</label><select onchange="updateSlot('+s.id+',\'type_permis\',this.value)"'+dis+'>'+permisOpts+'</select></div>'+
     '<div class="pp-f"><label>Agence</label><select onchange="updateSlot('+s.id+',\'agence\',this.value)"'+dis+'>'+agOpts+'</select></div>'+
+    '<div class="pp-f full"><label>Heures de formation</label><input type="text" value="'+(s.hf>0?Math.floor(s.hf/60)+':'+String(s.hf%60).padStart(2,'0'):'')+'" placeholder="ex. 32:45" onchange="setHeuresFormation('+s.id+',this.value)"></div>'+
     '<div class="pp-f full"><label>Note</label><input type="text" value="'+(s.commentaire||'').replace(/"/g,'&quot;')+'" placeholder="Ex. B Trad, boîte auto…" onchange="updateSlot('+s.id+',\'commentaire\',this.value)"'+dis+'></div>'+
     '</div>';
   if(s.resultat){
@@ -1801,7 +1905,7 @@ function renderWait(){
   var html='';
   ['sbae','cds'].forEach(function(ag){
     var list=sorted.filter(function(w){return w.agence===ag;});
-    var label=ag==='sbae'?'● SBAE — Doriane &amp; Aline':'● CDS — Charles &amp; Grégoire';
+    var label=ag==='sbae'?'● SBAE — Seiches':'● CDS — Saint-Sylvain';
     html+='<div class="wait-agency"><div class="wait-agency-header"><div class="wait-agency-title '+ag+'">'+label+'</div><div class="wait-agency-line '+ag+'"></div><span style="font-size:12px;color:var(--text-muted)">'+list.length+' élève'+(list.length!==1?'s':'')+'</span></div>';
     if(!list.length)html+='<div class="empty" style="padding:16px 0">Aucun élève en repassage.</div>';
     list.forEach(function(w){
