@@ -480,6 +480,47 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
+/* ===== LISIBILITÉ (secrétariat) ===== */
+.pl-row{grid-template-columns:58px minmax(0,1fr) auto auto 64px 16px!important}
+.r-mon{font-size:13px;color:var(--text-muted);white-space:nowrap}
+.r-st{font-size:11px;font-weight:700;padding:4px 0;border-radius:20px;text-align:center;white-space:nowrap}
+.r-st.st-libre{background:var(--bg)!important;color:var(--text-muted)}
+.r-st.st-pret{background:var(--sbae-light)!important;color:var(--sbae-dark)}
+.r-st.st-recu{background:var(--ok-light)!important;color:var(--ok)}
+.r-st.st-echec{background:var(--danger-light)!important;color:var(--danger)}
+.r-go{color:var(--text-light);display:inline-flex}
+.r-go .ic{width:16px;height:16px}
+.pl-row:hover .r-go{color:var(--easy)}
+.st-pret{background:var(--sbae)}
+.day-menu{margin-left:auto;position:relative}
+.day-menu summary{list-style:none;width:32px;height:32px;border-radius:50%;cursor:pointer;color:var(--text-muted);display:inline-flex;align-items:center;justify-content:center}
+.day-menu summary::-webkit-details-marker{display:none}
+.day-menu summary:hover,.day-menu[open] summary{background:var(--bg);color:var(--text)}
+.day-menu summary .ic{width:18px;height:18px}
+.dm-pop{position:absolute;right:0;top:36px;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;min-width:250px}
+.dm-pop button{width:100%;display:flex;align-items:center;gap:8px;border:none;background:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--danger);text-align:left}
+.dm-pop button:hover{background:var(--danger-light)}
+.dm-pop .ic{width:15px;height:15px}
+.pl-dayhead .day-menu+.add-same-date{margin-left:4px}
+.toast-undo{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#1c2430;color:#fff;border-radius:12px;padding:10px 10px 10px 18px;display:flex;align-items:center;gap:14px;font-size:14px;z-index:500;opacity:0;pointer-events:none;transition:all .25s var(--ease);box-shadow:var(--shadow-lg)}
+.toast-undo.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.toast-undo button{border:none;background:#fff;color:#1c2430;font-family:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:8px;cursor:pointer}
+.save-st{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.85);margin-right:4px;white-space:nowrap}
+.save-st .ic{width:14px;height:14px}
+.save-st.err{color:#fff;background:rgba(0,0,0,.25);padding:4px 10px;border-radius:20px}
+.ss-spin{width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:ssSpin .8s linear infinite}
+@keyframes ssSpin{to{transform:rotate(360deg)}}
+.hdr-lbl{padding:6px 12px!important;font-size:13px!important;background:rgba(255,255,255,.2)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:none!important}
+.hdr-lbl:hover{background:rgba(255,255,255,.3)!important}
+@media(max-width:640px){
+  .pl-row{grid-template-columns:48px minmax(0,1fr) 60px 14px!important}
+  .r-mon,.r-tags{display:none!important}
+  .hide-sm{display:none}
+  .save-st .ss-txt{display:none}
+  .hdr-lbl span{display:none}
+  .hdr-lbl{padding:6px 9px!important}
+  .toast-undo{bottom:calc(84px + env(safe-area-inset-bottom));width:calc(100% - 32px);justify-content:space-between}
+}
 .del-date{margin-left:auto;width:32px;height:32px;border:none;background:none;border-radius:50%;cursor:pointer;color:var(--text-light);display:inline-flex;align-items:center;justify-content:center;transition:all .15s;padding:0}
 .del-date .ic{width:16px;height:16px}
 .del-date:hover{background:var(--danger-light);color:var(--danger)}
@@ -641,6 +682,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></g></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
   <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -678,9 +720,10 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
       <button class="nav-btn" id="nb-ants" style="display:none"><svg class="ic"><use href="#i-clipboard"/></svg><span id="nb-ants-lbl">ANTS</span></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
+      <span class="save-st" id="save-st"></span>
       <button class="btn hdr-ic" id="btn-install" style="background:#fff;border-color:#fff;color:#ff3131" title="Installer l'appli sur cet appareil"><svg class="ic"><use href="#i-download"/></svg></button>
-      <button class="btn hdr-ic" id="btn-logout" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Se déconnecter" aria-label="Se déconnecter"><svg class="ic"><use href="#i-logout"/></svg></button>
       <button class="btn hdr-ic" id="btn-dark" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Mode sombre"><svg class="ic"><use href="#i-moon"/></svg></button>
+      <button class="btn hdr-lbl" id="btn-logout" title="Se déconnecter"><svg class="ic"><use href="#i-logout"/></svg><span>Déconnexion</span></button>
     </div>
   </div>
 
@@ -699,7 +742,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
           <div class="pl-dates" id="pl-dates"></div>
           <div class="pl-side-actions">
             <button class="btn" id="btn-add-slot" title="Ajouter une nouvelle date d'examen"><svg class="ic"><use href="#i-calendar-plus"/></svg><span>Nouvelle date</span></button>
-            <button class="btn pl-ico-btn" id="btn-print" title="Imprimer le planning du mois"><svg class="ic"><use href="#i-printer"/></svg></button>
+            <button class="btn" id="btn-print" title="Imprimer le planning du mois"><svg class="ic"><use href="#i-printer"/></svg><span>Imprimer</span></button>
           </div>
         </aside>
         <section class="pl-day" id="pl-day"></section>
@@ -720,11 +763,11 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
           </div>
         </div>
       </div>
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:2px 2px 10px">Réussite sur l'année <span id="stats-annee"></span> — 1re présentation</div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:2px 2px 10px">Réussite sur l'année <span id="stats-annee"></span> — élèves qui passent pour la 1re fois</div>
       <div class="agency-grid" id="annee-stats" style="margin-bottom:22px"></div>
 
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:2px 2px 4px">Détail du mois — 1re présentation</div>
-      <div style="font-size:12px;color:var(--text-muted);margin:0 2px 14px">Seuls les élèves passant l'examen pour la première fois sont comptabilisés (les repassages B2/B3/B4+ sont exclus).</div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:2px 2px 4px">Détail du mois — élèves qui passent pour la 1re fois</div>
+      <div style="font-size:12px;color:var(--text-muted);margin:0 2px 14px">Seuls les élèves passant l'examen pour la première fois sont comptabilisés (les repassages ne sont pas comptés).</div>
       <div class="agency-grid" id="agency-stats"></div>
     </div>
 
@@ -840,12 +883,12 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
           </select>
         </div>
       </div>
-      <div class="form-field"><label>Passage <span style="font-weight:400;text-transform:none;letter-spacing:0">(1re présentation ou repassage)</span></label>
+      <div class="form-field"><label>Passage <span style="font-weight:400;text-transform:none;letter-spacing:0">(combien de fois l'élève a passé l'examen)</span></label>
         <div id="ms-passage-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-          <button type="button" class="pass-btn selected" data-passage="1er" onclick="setPassage('1er')">1re prés.</button>
-          <button type="button" class="pass-btn" data-passage="B2" onclick="setPassage('B2')">B2</button>
-          <button type="button" class="pass-btn" data-passage="B3" onclick="setPassage('B3')">B3</button>
-          <button type="button" class="pass-btn" data-passage="B4+" onclick="setPassage('B4+')">B4+</button>
+          <button type="button" class="pass-btn selected" data-passage="1er" onclick="setPassage('1er')">1re fois</button>
+          <button type="button" class="pass-btn" data-passage="B2" onclick="setPassage('B2')">2e fois</button>
+          <button type="button" class="pass-btn" data-passage="B3" onclick="setPassage('B3')">3e fois</button>
+          <button type="button" class="pass-btn" data-passage="B4+" onclick="setPassage('B4+')">4e et +</button>
         </div>
       </div>
       <div class="form-field"><label>Moniteur</label>
@@ -913,6 +956,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
 <div class="toast" id="toast"></div>
+<div class="toast-undo" id="toast-undo"><span id="toast-undo-msg"></span><button onclick="annulerSuppression()">Annuler</button></div>
 
 <!-- SDK Firebase (compat) — sert uniquement si tu as collé ta config plus bas -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1193,7 +1237,7 @@ function renderAnneeStats(){
     h+='</div>';
     h+='<div class="progress" title="'+recus+' reçu(s) · '+echecs+' échec(s) · '+enAttente+' à passer"><div class="seg-ok" style="width:'+pctOk+'%"></div><div class="seg-ko" style="width:'+pctKo+'%"></div></div>';
     h+='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
-    h+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re prés.</div></div>';
+    h+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re fois</div></div>';
     h+='<div class="agency-metric"><div class="am-val am-ok">'+recus+'</div><div class="am-lbl">'+ic('ok','ic-ok')+' Reçus</div></div>';
     h+='<div class="agency-metric"><div class="am-val am-ko">'+echecs+'</div><div class="am-lbl">'+ic('ko','ic-ko')+' Échecs</div></div>';
     h+='<div class="agency-metric" style="border-right:none"><div class="am-val">'+enAttente+'</div><div class="am-lbl">À passer</div></div>';
@@ -1295,13 +1339,13 @@ function renderAgencyStats(ms){
     html+='<div class="agency-head">';
     html+='<span class="badge '+ag+'">● '+ag.toUpperCase()+'</span>';
     html+='<div><div class="agency-name">'+ag.toUpperCase()+'</div><div class="agency-sub">'+sub+'</div></div>';
-    html+='<div class="agency-rate"><div class="agency-rate-val" style="color:'+(taux===null?'var(--text-light)':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)')+'">'+(taux===null?'—':taux+'%')+'</div><div class="agency-rate-lbl">1re présent.</div></div>';
+    html+='<div class="agency-rate"><div class="agency-rate-val" style="color:'+(taux===null?'var(--text-light)':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)')+'">'+(taux===null?'—':taux+'%')+'</div><div class="agency-rate-lbl">réussite 1re fois</div></div>';
     html+='</div>';
     html+='<div class="progress" title="'+recus+' reçu(s) · '+echecs+' échec(s) · '+enAttente+' à passer">';
     html+='<div class="seg-ok" style="width:'+pctOk+'%"></div><div class="seg-ko" style="width:'+pctKo+'%"></div>';
     html+='</div>';
     html+='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
-    html+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re prés.</div></div>';
+    html+='<div class="agency-metric"><div class="am-val">'+list.length+'</div><div class="am-lbl">1re fois</div></div>';
     html+='<div class="agency-metric"><div class="am-val am-ok">'+recus+'</div><div class="am-lbl">'+ic('ok','ic-ok')+' Reçus</div></div>';
     html+='<div class="agency-metric"><div class="am-val am-ko">'+echecs+'</div><div class="am-lbl">'+ic('ko','ic-ko')+' Échecs</div></div>';
     html+='<div class="agency-metric" style="border-right:none"><div class="am-val">'+enAttente+'</div><div class="am-lbl">À passer</div></div>';
@@ -1350,7 +1394,6 @@ function renderPlanning(){
     var h=vueOrdinateur()?renderKpisMois(ms):'';
     var aAfficher=vueOrdinateur()?dates:[state.selDate];
     aAfficher.forEach(function(d){h+=renderBlocJour(d,ms,today);});
-    h+='<div class="pl-legend"><span><i class="pdot st-libre"></i>Libre</span><span><i class="pdot st-pret"></i>Élève placé</span><span><i class="pdot st-recu"></i>Reçu</span><span><i class="pdot st-echec"></i>Échec</span></div>';
     day.innerHTML=h;
   }
 
@@ -1368,19 +1411,21 @@ function renderBlocJour(d,ms,today){
     .sort(function(a,b){return (a.heure||'99').localeCompare(b.heure||'99');});
   var h='<div class="pl-bloc'+(d===state.selDate?' on':'')+(diff<0?' past':'')+'" id="jour-'+d+'">';
   h+='<div class="pl-dayhead"><h2>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</h2><span class="dh-j">'+quand+'</span>'+
-    '<button class="del-date" onclick="supprimerDate(\''+d+'\')" title="Supprimer toutes les places de cette date">'+ic('trash')+'</button>'+
-    '<button class="add-same-date" onclick="addSlotSameDate(\''+d+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span>Élève</span></button></div>';
+    '<details class="day-menu"><summary title="Plus d\'options">'+ic('dots')+'</summary><div class="dm-pop">'+
+      '<button onclick="this.closest(\'details\').open=false;supprimerDate(\''+d+'\')">'+ic('trash')+'Supprimer toutes les places de cette date</button></div></details>'+
+    '<button class="add-same-date" onclick="addSlotSameDate(\''+d+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span><span class="hide-sm">Ajouter une </span>place</span></button></div>';
   h+='<div class="pl-list">';
   jour.forEach(function(s){
     var tags='';
-    if(s.passage&&s.passage!=='1er')tags+='<span class="r-tag">'+s.passage+'</span>';
+    if(s.passage&&s.passage!=='1er')tags+='<span class="r-tag">'+libPassage(s.passage)+'</span>';
     if(s.type_permis&&s.type_permis!=='B')tags+='<span class="r-tag">'+s.type_permis+'</span>';
     h+='<div class="pl-row'+(s.id===state.selSlot?' on':'')+'" onclick="ouvrirDetail('+s.id+')">'+
       '<span class="r-h'+(s.heure?'':' vide')+'">'+(s.heure||'--:--')+'</span>'+
       (estAffecte(s)?'<span class="r-n">'+s.nom+'</span>':'<span class="r-n vide">Ajouter un élève</span>')+
       '<span class="r-tags">'+tags+'</span>'+
-      '<span class="pl-av" title="'+s.moniteur+'">'+initiales(s.moniteur)+'</span>'+
-      '<span class="pl-dot st-'+statutPlace(s)+'" title="'+LIB_STATUT[statutPlace(s)]+'"></span></div>';
+      '<span class="r-mon">'+s.moniteur+'</span>'+
+      '<span class="r-st st-'+statutPlace(s)+'">'+LIB_COURT[statutPlace(s)]+'</span>'+
+      '<span class="r-go">'+ic('chev-right')+'</span></div>';
   });
   h+='</div></div>';
   return h;
@@ -1410,6 +1455,13 @@ try{window.matchMedia('(min-width:901px)').addEventListener('change',function(){
 });}catch(e){}
 
 var LIB_STATUT={libre:'Place libre',pret:'Élève placé',recu:'Reçu',echec:'Échec'};
+var LIB_COURT={libre:'Libre',pret:'Placé',recu:'Reçu',echec:'Échec'};
+// Codes de passage stockés (1er, B2, B3, B4+) → libellés compréhensibles
+function libPassage(p){return {'1er':'1re fois','B2':'2e passage','B3':'3e passage','B4+':'4e passage et +'}[p]||p;}
+// Ferme les menus « ⋯ » ouverts quand on clique ailleurs
+document.addEventListener('click',function(e){
+  document.querySelectorAll('details.day-menu[open]').forEach(function(m){if(!m.contains(e.target))m.open=false;});
+});
 function statutPlace(s){
   if(s.resultat==='recu')return 'recu';
   if(s.resultat==='echec')return 'echec';
@@ -1474,7 +1526,7 @@ function renderDetail(){
   var h='<div class="pp-top"><span class="pp-st"><span class="pl-dot st-'+st+'"></span>'+LIB_STATUT[st]+'</span>'+
     '<button class="pl-ico pp-close" onclick="fermerDetail()" title="Fermer">'+ic('x')+'</button></div>';
   h+='<input type="text" class="pp-name" id="pp-name" list="dl-detail" value="'+(s.nom||'').replace(/"/g,'&quot;')+'" placeholder="Nom de l\'élève" onchange="updateSlotEleve('+s.id+',this.value)"'+dis+'><datalist id="dl-detail">'+dl+'</datalist>';
-  h+='<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · repassage '+s.passage:'')+'</div>';
+  h+='<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>';
   h+='<div class="pp-grid">'+
     '<div class="pp-f"><label>Heure</label><select onchange="updateSlot('+s.id+',\'heure\',this.value)"'+dis+'>'+heureOpts+'</select></div>'+
     '<div class="pp-f"><label>Moniteur</label><select onchange="updateSlot('+s.id+',\'moniteur\',this.value)"'+dis+'>'+monOpts+'</select></div>'+
@@ -1556,13 +1608,37 @@ function supprimerDate(d){
   fermerDetail(true);
   buildMonthSel();
   renderPlanning();
-  toast(jour.length+' place'+(jour.length>1?'s':'')+' supprimée'+(jour.length>1?'s':''),'#6b7280');
+  toastAnnuler(jour.length+' place'+(jour.length>1?'s':'')+' supprimée'+(jour.length>1?'s':''),jour);
 }
 function delSlot(id){
-  if(!confirm('Supprimer cette place ?'))return;
-  state.slots=state.slots.filter(function(s){return s.id!==id;});
+  var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
+  state.slots=state.slots.filter(function(x){return x.id!==id;});
+  state.selSlot=null;fermerDetail(true);
   renderPlanning();
-  toast('Supprimé','#6b7280');
+  toastAnnuler('Place supprimée',[s]);
+}
+// Message « supprimé » avec bouton Annuler (quelques secondes pour revenir en arrière)
+var annulTimer=null,annulSlots=null;
+function toastAnnuler(msg,slots){
+  annulSlots=slots.map(function(s){return JSON.parse(JSON.stringify(s));});
+  var t=document.getElementById('toast-undo');
+  document.getElementById('toast-undo-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(annulTimer);
+  annulTimer=setTimeout(function(){t.classList.remove('show');annulSlots=null;},8000);
+}
+function annulerSuppression(){
+  if(!annulSlots)return;
+  var ids=state.slots.map(function(s){return s.id;});
+  annulSlots.forEach(function(s){if(ids.indexOf(s.id)<0)state.slots.push(s);});
+  var d=annulSlots[0].date;
+  annulSlots=null;clearTimeout(annulTimer);
+  document.getElementById('toast-undo').classList.remove('show');
+  state.selDate=d;
+  if(state.currentMonth!==d.slice(0,7))state.currentMonth=d.slice(0,7);
+  buildMonthSel();
+  renderPlanning();
+  toast('Suppression annulée ✓','#057a55');
 }
 
 /* ===== RÉSULTAT D'EXAMEN + VERROUILLAGE ===== */
@@ -1945,7 +2021,7 @@ document.getElementById('ms-nom').addEventListener('change',function(){
   if(w){
     var rang=w.att+1; // att = nb d'échecs déjà subis → prochain passage
     setPassage(rang>=4?'B4+':'B'+rang);
-    toast(nom+' déjà en repassage → passage '+(rang>=4?'B4+':'B'+rang),'#d97706');
+    toast(nom+' déjà en repassage → '+libPassage(rang>=4?'B4+':'B'+rang),'#d97706');
   } else {
     setPassage('1er');
   }
@@ -2019,7 +2095,7 @@ function printPlanning(){
     var col=ag==='sbae'?'#1a56db':'#057a55';
     html+='<div class="agc" style="border-top:3px solid '+col+'">';
     html+='<div style="font-weight:800;color:'+col+';font-size:12px;text-transform:uppercase;margin-bottom:4px">● '+ag.toUpperCase()+'</div>';
-    html+='<div style="font-size:12px;color:#374151">Places : <b>'+list.length+'</b> · Affectés : <b>'+aff.length+'</b> · <b>Réussite 1re présent. : '+(taux===null?'—':taux+'%')+'</b> ('+recus+' reçus / '+echecs+' échecs)</div>';
+    html+='<div style="font-size:12px;color:#374151">Places : <b>'+list.length+'</b> · Affectés : <b>'+aff.length+'</b> · <b>Réussite 1re fois : '+(taux===null?'—':taux+'%')+'</b> ('+recus+' reçus / '+echecs+' échecs)</div>';
     html+='</div>';
   });
   html+='</div>';
@@ -2144,6 +2220,7 @@ function initCloud(){
       if(snap.exists && snap.data().payload){try{applyRemote(JSON.parse(snap.data().payload));}catch(e){}}
       else{cloudSave(true);}
       updateCloudStatus();
+      etatSauvegarde('ok');
     }).catch(function(e){
       cloud.on=false;updateCloudStatus();
       if(e&&e.code==='permission-denied')accesRefuse();
@@ -2169,6 +2246,8 @@ function applyRemote(d){
   else renderPlanning();
   updateNavCounts();
   majCompteAnts();
+  // Mémorise ce qui vient du cloud : on ne le renverra pas tant que rien ne change
+  cloud.lastPayload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId});
   cloud.applying=false;
 }
 function cloudSave(force){
@@ -2178,13 +2257,25 @@ function cloudSave(force){
   if(cloud.applying&&!force)return;
   clearTimeout(cloud.timer);
   cloud.timer=setTimeout(function(){
+    var payload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId});
+    // Rien n'a changé (simple clic, changement de date…) : pas d'écriture
+    if(payload===cloud.lastPayload&&!force)return;
+    cloud.lastPayload=payload;
+    etatSauvegarde('saving');
     try{
-      cloud.ref.set({
-        payload:JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId}),
-        writer:cloud.clientId, ts:Date.now()
-      });
-    }catch(e){}
+      cloud.ref.set({payload:payload,writer:cloud.clientId,ts:Date.now()})
+        .then(function(){etatSauvegarde('ok');})
+        .catch(function(){etatSauvegarde('err');cloud.lastPayload=null;});
+    }catch(e){etatSauvegarde('err');}
   },700);
+}
+// Indicateur « Enregistré » dans l'en-tête
+function etatSauvegarde(etat){
+  var el=document.getElementById('save-st');if(!el)return;
+  el.className='save-st '+etat;
+  el.innerHTML=etat==='saving'?'<span class="ss-spin"></span><span class="ss-txt">Enregistrement…</span>'
+    :etat==='err'?ic('alert')+'<span class="ss-txt">Non enregistré — vérifie ta connexion</span>'
+    :ic('check')+'<span class="ss-txt">Enregistré</span>';
 }
 function updateCloudStatus(){
   var el=document.getElementById('cloud-status');if(!el)return;
