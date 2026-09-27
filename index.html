@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
-<title>Easy Auto-École · Places Permis (VM)</title>
+<title>Easy Auto-École · Places Permis</title>
 <!-- Appli installable (PWA) -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff3131">
@@ -373,7 +373,6 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
   /* Élève en évidence, sans label */
   table.exam-table td.m-eleve::before{display:none}
   table.exam-table td.m-eleve input{font-weight:600;font-size:16px!important;min-height:44px}
-  /* VM et Résultat : boutons pleine largeur tactile */
   table.exam-table td.m-pv,table.exam-table td.m-res{flex-wrap:wrap}
   table.exam-table td.m-pv .pv-badge,table.exam-table td.m-res .res-btn,table.exam-table td.m-res .res-badge{min-height:40px;padding:8px 14px;font-size:13px;flex:1;justify-content:center}
   table.exam-table td.m-res .unlock-btn{flex:0 0 auto;min-height:40px;min-width:40px}
@@ -478,7 +477,6 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .pl-av{width:30px;height:30px;border-radius:50%;background:var(--bg);color:var(--text-muted);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .pl-dot{width:10px;height:10px;border-radius:50%}
 .st-libre{background:var(--border-strong)}
-.st-vm{background:var(--warn)}
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
@@ -506,10 +504,6 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .pp-f label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:4px}
 .pp-f select,.pp-f input{width:100%}
 .pp-f.full{grid-column:1/-1}
-.pp-vm{width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:inherit;font-size:13px;color:var(--text);margin-bottom:10px}
-.pp-vm b.ok{color:var(--ok)}
-.pp-vm b.nok{color:var(--warn)}
-.pp-vm:disabled{opacity:.5;cursor:not-allowed}
 .pp-res{display:flex;gap:8px}
 .pp-big{flex:1;height:48px;border-radius:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--surface);transition:all .12s}
 .pp-big .ic{width:18px;height:18px}
@@ -864,9 +858,6 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
         <input type="text" id="ms-nom" list="dl-ms-noms" placeholder="Taper le nom..." style="width:100%">
         <datalist id="dl-ms-noms"></datalist>
       </div>
-      <div>
-        <button type="button" class="pv-toggle off" id="ms-vm" onclick="toggleModalPV('vm')" title="Vérifications mécaniques int/ext" style="width:100%">VM · À faire</button>
-      </div>
       <div class="form-field">
         <label>Horaires <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0">(cochez les heures souhaitées)</span></label>
         <div id="ms-heures-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px"></div>
@@ -926,7 +917,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 
 <script>
 /* =====================================================================
-   EASY AUTO-ÉCOLE · PLACES PERMIS — VM + RÉSULTATS + REPASSAGE + STATS
+   EASY AUTO-ÉCOLE · PLACES PERMIS — RÉSULTATS + REPASSAGE + STATS
    Basé sur le design system et les composants de easy-permis.
    Workflow résultat : ✅ Reçu / ❌ Échec  →  ligne verrouillée 🔒
    ❌ Échec  →  élève ajouté automatiquement dans l'onglet Repassage
@@ -1355,7 +1346,7 @@ function renderPlanning(){
     var h=vueOrdinateur()?renderKpisMois(ms):'';
     var aAfficher=vueOrdinateur()?dates:[state.selDate];
     aAfficher.forEach(function(d){h+=renderBlocJour(d,ms,today);});
-    h+='<div class="pl-legend"><span><i class="pdot st-libre"></i>Libre</span><span><i class="pdot st-vm"></i>VM à faire</span><span><i class="pdot st-pret"></i>Prêt</span><span><i class="pdot st-recu"></i>Reçu</span><span><i class="pdot st-echec"></i>Échec</span></div>';
+    h+='<div class="pl-legend"><span><i class="pdot st-libre"></i>Libre</span><span><i class="pdot st-pret"></i>Élève placé</span><span><i class="pdot st-recu"></i>Reçu</span><span><i class="pdot st-echec"></i>Échec</span></div>';
     day.innerHTML=h;
   }
 
@@ -1413,12 +1404,12 @@ try{window.matchMedia('(min-width:901px)').addEventListener('change',function(){
   var v=document.querySelector('.view.active');if(v&&v.id==='view-planning')renderPlanning();
 });}catch(e){}
 
-var LIB_STATUT={libre:'Place libre',vm:'VM à faire',pret:'Prêt',recu:'Reçu',echec:'Échec'};
+var LIB_STATUT={libre:'Place libre',pret:'Élève placé',recu:'Reçu',echec:'Échec'};
 function statutPlace(s){
   if(s.resultat==='recu')return 'recu';
   if(s.resultat==='echec')return 'echec';
   if(!estAffecte(s))return 'libre';
-  return s.vm?'pret':'vm';
+  return 'pret';
 }
 function initiales(n){return String(n||'').split(/[\s-]+/).map(function(w){return w.charAt(0);}).join('').slice(0,2).toUpperCase();}
 
@@ -1486,7 +1477,6 @@ function renderDetail(){
     '<div class="pp-f"><label>Agence</label><select onchange="updateSlot('+s.id+',\'agence\',this.value)"'+dis+'>'+agOpts+'</select></div>'+
     '<div class="pp-f full"><label>Note</label><input type="text" value="'+(s.commentaire||'').replace(/"/g,'&quot;')+'" placeholder="Ex. B Trad, boîte auto…" onchange="updateSlot('+s.id+',\'commentaire\',this.value)"'+dis+'></div>'+
     '</div>';
-  h+='<button class="pp-vm" onclick="togglePV('+s.id+',\'vm\')"'+(aff&&!lk?'':' disabled')+'><span>Vérifications mécaniques</span><b class="'+(s.vm?'ok':'nok')+'">'+(s.vm?'Faites ✓':'À faire')+'</b></button>';
   if(s.resultat){
     h+='<div class="pp-locked '+s.resultat+'"><span>'+ic('lock')+' '+(s.resultat==='recu'?'Reçu':'Échec')+'</span><button onclick="unlockSlot('+s.id+')">Déverrouiller</button></div>';
     // Suivi ANTS : visible uniquement pour les comptes autorisés
@@ -1523,13 +1513,6 @@ function updateSlotEleve(id,val){
   if(val){var eo=eleveObj(val);if(eo)eo.moisPrevu='';} // prévision soldée : il est sur le planning
   renderPlanning();
   toast(val?(val+' affecté ✓'):'Place libérée','#057a55');
-}
-function togglePV(id,champ){
-  var s=state.slots.find(function(x){return x.id===id;});
-  if(!s||!estAffecte(s)||s.locked)return;
-  s[champ]=!s[champ];
-  renderPlanning();
-  toast('Vérif Mécanique : '+(s[champ]?'validé ✓':'à faire ✗'),s[champ]?'#057a55':'#d97706');
 }
 // Ajout rapide d'une place sur une date déjà au planning (reprend agence / moniteur / catégorie de la dernière ligne)
 function addSlotSameDate(date){
@@ -1787,9 +1770,6 @@ function searchEleves(q){
       var d=new Date(slot.date+'T12:00:00');
       html+='<span style="font-size:11px;background:#f0f6ff;color:var(--sbae);padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px">'+ic('calendar')+' '+d.getDate()+' '+MONTHS[d.getMonth()]+(slot.heure?' · '+slot.heure:'')+'</span>';
       if(slot.resultat==='echec')html+='<span class="res-badge echec">'+ic('ko')+' Échec</span>';
-      else{
-        html+='<span class="pv-badge '+(slot.vm?'ok':'nok')+'" style="cursor:default">VM '+(slot.vm?'✓':'✗')+'</span>';
-      }
     } else {
       html+='<span style="font-size:11px;color:var(--text-light)">Non planifié ce mois</span>';
     }
@@ -1899,12 +1879,6 @@ function updateHeuresCount(){
   var n=document.querySelectorAll('.heure-btn.selected').length;
   document.getElementById('ms-count-label').textContent=n===0?'Aucune heure':n+' place'+(n>1?'s':'')+' sélectionnée'+(n>1?'s':'');
 }
-function toggleModalPV(champ){
-  modalPV[champ]=!modalPV[champ];
-  var el=document.getElementById('ms-'+champ);
-  el.className='pv-toggle '+(modalPV[champ]?'on':'off');
-  el.textContent=champ.toUpperCase()+(modalPV[champ]?' ✓ OK':' · À faire');
-}
 function openAddSlot(){
   document.getElementById('ms-date').value=state.currentMonth+'-01';
   document.getElementById('ms-nom').value='';
@@ -1928,7 +1902,6 @@ function openAddSlot(){
   });
   modalPV={pp:false,vm:false};
   setPassage('1er');
-  document.getElementById('ms-vm').className='pv-toggle off';document.getElementById('ms-vm').textContent='VM · À faire';
   buildHeuresGrid();
   document.getElementById('modal-slot').style.display='flex';
 }
@@ -2005,7 +1978,7 @@ function printPlanning(){
   html+='.libre{color:#9ca3af;font-style:italic}';
   html+='.agc{display:inline-block;padding:10px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-right:12px;margin-bottom:8px;vertical-align:top}';
   html+='</style></head><body>';
-  html+='<div class="header"><div class="logo">easy</div><div><h1>Easy Auto-École — Places permis · VM</h1><p>'+monthLabel+' · Centre Gatignolle</p></div>';
+  html+='<div class="header"><div class="logo">easy</div><div><h1>Easy Auto-École — Places permis</h1><p>'+monthLabel+' · Centre Gatignolle</p></div>';
   html+='<div style="margin-left:auto;font-size:12px;color:#6b7280">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</div></div>';
 
   // Bilan par agence — taux de réussite en 1re présentation uniquement
@@ -2030,7 +2003,7 @@ function printPlanning(){
     var day=new Date(d+'T12:00:00');
     var label=JOURS_FULL[day.getDay()]+' '+day.getDate()+' '+MONTHS[day.getMonth()]+' '+day.getFullYear();
     html+='<div class="date-title">'+label+' — '+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</div>';
-    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Moniteur</th><th>VM</th><th>Résultat</th><th>Commentaire</th></tr></thead><tbody>';
+    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Moniteur</th><th>Résultat</th><th>Commentaire</th></tr></thead><tbody>';
     byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
       html+='<tr>';
       html+='<td style="font-weight:600;font-family:monospace">'+(s.heure||'—')+'</td>';
@@ -2038,14 +2011,13 @@ function printPlanning(){
       html+='<td>'+(s.nom?(s.nom+((s.passage&&s.passage!=='1er')?' <b style="color:#b45309;font-size:11px">'+s.passage+'</b>':'')):'<span class="libre">Libre</span>')+'</td>';
       html+='<td><span class="cat '+(s.type_permis==='B78'?'b78':'')+'">'+(s.type_permis||'B')+'</span></td>';
       html+='<td>'+(s.moniteur||'—')+'</td>';
-      html+='<td>'+(estAffecte(s)?'<span class="pv '+(s.vm?'ok':'nok')+'">'+(s.vm?'✓':'✗')+'</span>':'—')+'</td>';
       html+='<td>'+(s.resultat==='recu'?'<span class="res recu">Reçu</span>':s.resultat==='echec'?'<span class="res echec">Échec</span>':'—')+'</td>';
       html+='<td style="color:#6b7280;font-size:12px">'+(s.commentaire||'—')+'</td>';
       html+='</tr>';
     });
     html+='</tbody></table>';
   });
-  html+='<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center">Easy Auto-École · easy-permis · VM = Vérifications mécaniques · Document généré automatiquement</div>';
+  html+='<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center">Easy Auto-École · easy-permis · Document généré automatiquement</div>';
   html+='</body></html>';
 
   var w=window.open('','_blank','width=900,height=700');
