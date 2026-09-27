@@ -481,6 +481,59 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
 @media(max-width:1100px){.pl-kpi{padding:10px 12px}.pl-kpi b{font-size:16px;white-space:nowrap}}
+/* ===== ACCUEIL « CETTE SEMAINE » ===== */
+#view-accueil{max-width:1100px;margin:0 auto}
+.acc-hi{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 2px 18px}
+.acc-hi h1{font-family:var(--police-titre);font-size:26px;font-weight:600;letter-spacing:-.4px;margin:0}
+.acc-date{font-size:13px;color:var(--text-muted);text-transform:capitalize;margin-top:2px}
+.acc-resume{font-size:13px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px}
+.acc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+.acc-semaine{grid-row:span 3}
+.acc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:14px 16px}
+.acc-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.acc-h .ic{width:18px;height:18px;color:var(--easy)}
+.acc-h h2{font-family:var(--police-titre);font-size:16px;font-weight:600;margin:0}
+.acc-n{margin-left:auto;font-size:12px;font-weight:700;background:var(--bg);color:var(--text-muted);padding:2px 10px;border-radius:12px}
+.acc-n.alerte{background:var(--easy-light);color:var(--easy)}
+.acc-vide{font-size:13px;color:var(--text-muted);padding:6px 2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.acc-vide.ok{color:var(--ok)}
+.acc-vide .ic{width:15px;height:15px}
+.acc-jour{margin-bottom:10px}
+.acc-jt{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:700;color:var(--text);text-transform:capitalize;padding:6px 4px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.acc-jt b{color:var(--easy)}
+.acc-jt span{font-weight:500;color:var(--text-light);text-transform:none}
+.acc-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:10px;cursor:pointer;font-size:13px;transition:background .12s}
+.acc-row:hover{background:var(--bg)}
+.acc-row>.ic{width:15px;height:15px;color:var(--text-light);flex-shrink:0}
+.acc-hh{font-family:'DM Mono',monospace;font-size:12px;width:44px;color:var(--text-muted);flex-shrink:0}
+.acc-d{font-size:12px;color:var(--text-muted);width:78px;flex-shrink:0}
+.acc-nom{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-nom.vide{font-weight:400;color:var(--text-light);font-style:italic}
+.acc-mon{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.acc-when{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.acc-when.urgent{color:var(--easy);font-weight:700}
+.acc-row .r-st{width:58px;flex-shrink:0}
+.acc-mini{cursor:pointer}
+.acc-mini:hover{border-color:var(--easy)}
+.acc-mini u{color:var(--easy);text-decoration:none;font-weight:600}
+body.lecture-seule .att-badge{cursor:default}
+.lbl-short{display:none}
+@media(max-width:900px){.acc-grid{grid-template-columns:minmax(0,1fr)}.acc-semaine{grid-row:auto}}
+@media(max-width:640px){.lbl-long{display:none}.lbl-short{display:inline}.acc-hi h1{font-size:22px}.acc-mon{display:none}}
+
+/* ===== OPTIONS D'IMPRESSION ===== */
+.mp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:4px 0 6px}
+.mp-choix{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.mp-choix label{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .12s}
+.mp-choix label:hover{background:var(--bg)}
+.mp-choix label:has(input:checked){border-color:var(--easy);background:var(--easy-light)}
+.mp-choix input{accent-color:var(--easy)}
+.mp-choix span{display:flex;flex-direction:column}
+.mp-choix b{font-size:13px}
+.mp-choix em{font-style:normal;font-size:11px;color:var(--text-muted)}
+.mp-check{display:flex;align-items:center;gap:8px;font-size:13px;margin:12px 0 4px;cursor:pointer}
+.mp-check input{accent-color:var(--easy)}
+
 /* ===== STATS : heures + listes cliquables ===== */
 .am-hours{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);padding:8px 14px 10px}
 .am-hours .ic{width:14px;height:14px}
@@ -536,7 +589,7 @@ button.agency-metric:disabled{cursor:default}
 
 /* ===== MODE OBSERVATEUR (consultation seule) ===== */
 body.lecture-seule .add-same-date,body.lecture-seule .day-menu,body.lecture-seule #btn-add-slot,
-body.lecture-seule #nb-attente,body.lecture-seule #nb-banque,body.lecture-seule #nb-ants,body.lecture-seule #save-st{display:none!important}
+body.lecture-seule #btn-add-wait,body.lecture-seule .wait-card .icon-btn,body.lecture-seule #nb-banque,body.lecture-seule #nb-ants,body.lecture-seule #save-st{display:none!important}
 body.lecture-seule .pl-row .r-n.vide{font-style:italic}
 .pp-ro-name{font-size:18px;font-weight:700;margin-bottom:2px}
 .pp-ro{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin-bottom:14px}
@@ -751,6 +804,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></g></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
@@ -783,8 +837,9 @@ body.lecture-seule .obs-badge{display:inline-flex}
       </div>
     </div>
     <div class="nav">
-      <button class="nav-btn active" id="nb-planning"><svg class="ic"><use href="#i-calendar"/></svg><span>Planning</span></button>
-      <button class="nav-btn" id="nb-stats"><svg class="ic"><use href="#i-chart"/></svg><span>Statistiques</span></button>
+      <button class="nav-btn active" id="nb-accueil"><svg class="ic"><use href="#i-home"/></svg><span>Accueil</span></button>
+      <button class="nav-btn" id="nb-planning"><svg class="ic"><use href="#i-calendar"/></svg><span>Planning</span></button>
+      <button class="nav-btn" id="nb-stats"><svg class="ic"><use href="#i-chart"/></svg><span class="lbl-long">Statistiques</span><span class="lbl-short">Stats</span></button>
       <button class="nav-btn" id="nb-attente"><svg class="ic"><use href="#i-retry"/></svg><span id="nb-attente-lbl">Repassage</span></button>
       <button class="nav-btn" id="nb-banque"><svg class="ic"><use href="#i-users"/></svg><span>Élèves</span></button>
       <button class="nav-btn" id="nb-ants" style="display:none"><svg class="ic"><use href="#i-clipboard"/></svg><span id="nb-ants-lbl">ANTS</span></button>
@@ -800,8 +855,11 @@ body.lecture-seule .obs-badge{display:inline-flex}
 
   <div class="main">
 
+    <!-- ===== VUE ACCUEIL « CETTE SEMAINE » ===== -->
+    <div class="view active" id="view-accueil"><div id="accueil-content"></div></div>
+
     <!-- ===== VUE PLANNING ===== -->
-    <div class="view active" id="view-planning">
+    <div class="view" id="view-planning">
       <div class="pl">
         <div class="pl-next" id="pl-next"></div>
         <aside class="pl-side">
@@ -1025,6 +1083,30 @@ body.lecture-seule .obs-badge{display:inline-flex}
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
+<!-- MODAL OPTIONS D'IMPRESSION -->
+<div class="modal-bg" id="modal-print" style="display:none" onclick="if(event.target===this)closeModal('modal-print')">
+  <div class="modal" style="width:440px;max-width:94vw">
+    <div class="modal-title"><svg class="ic"><use href="#i-printer"/></svg>Imprimer — <span id="mp-mois"></span></div>
+    <div class="mp-lbl">Présentation</div>
+    <div class="mp-choix">
+      <label><input type="radio" name="mp-grp" value="date" checked><span><b>Tout le mois</b><em>Toutes les dates à la suite</em></span></label>
+      <label><input type="radio" name="mp-grp" value="agence"><span><b>Par agence</b><em>Une page SBAE, une page CDS</em></span></label>
+      <label><input type="radio" name="mp-grp" value="moniteur"><span><b>Par moniteur</b><em>Une page par moniteur, à lui donner</em></span></label>
+    </div>
+    <div class="mp-lbl">Agence</div>
+    <select id="mp-agence" style="width:100%">
+      <option value="">Toutes les agences</option>
+      <option value="sbae">SBAE — Seiches</option>
+      <option value="cds">CDS — Saint-Sylvain</option>
+    </select>
+    <label class="mp-check"><input type="checkbox" id="mp-libres"> Masquer les places libres</label>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-print')">Annuler</button>
+      <button class="btn primary" onclick="lancerImpression()"><svg class="ic"><use href="#i-printer"/></svg>Imprimer</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL LISTE D'ÉLÈVES (clic sur un chiffre des statistiques) -->
 <div class="modal-bg" id="modal-liste" style="display:none" onclick="if(event.target===this)closeModal('modal-liste')">
   <div class="modal" style="width:620px;max-width:94vw">
@@ -1147,7 +1229,8 @@ function initRoles(){
   document.body.classList.toggle('lecture-seule',lectureSeule);
   if(lectureSeule){
     var v=document.querySelector('.view.active');
-    if(v&&v.id!=='view-planning'&&v.id!=='view-stats')showView('planning');
+    if(v&&['view-accueil','view-planning','view-stats','view-attente'].indexOf(v.id)<0)showView('accueil');
+    else if(v&&v.id==='view-accueil')renderAccueil();
   }
 }
 
@@ -1320,6 +1403,7 @@ function showView(v){
   if(v==='attente')renderWait();
   if(v==='banque')renderBanque();
   if(v==='ants')renderAnts();
+  if(v==='accueil')renderAccueil();
 }
 
 /* ===== SYNCHRO DES SÉLECTEURS DE MOIS ===== */
@@ -1330,6 +1414,79 @@ function syncMonthSelectors(){
 }
 
 /* ===== VUE STATISTIQUES ===== */
+/* ===== ACCUEIL « CETTE SEMAINE » : ce qu'il y a à faire ===== */
+function isoJour(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function labelJourCourt(iso){var d=new Date(iso+'T12:00:00');return JOURS_FULL[d.getDay()].slice(0,3).toLowerCase()+' '+d.getDate()+' '+['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'][d.getMonth()];}
+function renderAccueil(){
+  var el=document.getElementById('accueil-content');if(!el)return;
+  var t=new Date();t.setHours(0,0,0,0);
+  var auj=isoJour(t),fin7=isoJour(new Date(t.getTime()+6*86400000)),fin60=isoJour(new Date(t.getTime()+60*86400000));
+  var tri=function(a,b){return a.date.localeCompare(b.date)||(a.heure||'99').localeCompare(b.heure||'99');};
+  var semaine=state.slots.filter(function(s){return s.date>=auj&&s.date<=fin7;}).sort(tri);
+  var libres=state.slots.filter(function(s){return s.date>=auj&&s.date<=fin60&&!estAffecte(s);}).sort(tri);
+  var aSaisir=state.slots.filter(function(s){return s.date<auj&&estAffecte(s)&&!s.resultat;}).sort(tri);
+  var h=new Date().getHours();
+  var salut=h<12?'Bonjour':h<18?'Bon après-midi':'Bonsoir';
+
+  var html='<div class="acc-hi"><div><h1>'+salut+'</h1><div class="acc-date">'+JOURS_FULL[t.getDay()]+' '+t.getDate()+' '+MONTHS[t.getMonth()].toLowerCase()+' '+t.getFullYear()+'</div></div>';
+  var resume=[];
+  resume.push(semaine.length+' examen'+(semaine.length>1?'s':'')+' cette semaine');
+  if(libres.length)resume.push(libres.length+' place'+(libres.length>1?'s':'')+' libre'+(libres.length>1?'s':'')+' à remplir');
+  if(aSaisir.length&&!lectureSeule)resume.push(aSaisir.length+' résultat'+(aSaisir.length>1?'s':'')+' à saisir');
+  html+='<div class="acc-resume">'+resume.join(' · ')+'</div></div>';
+
+  html+='<div class="acc-grid">';
+  // 1. Cette semaine
+  html+='<section class="acc-card acc-semaine"><div class="acc-h">'+ic('calendar')+'<h2>Cette semaine</h2><span class="acc-n">'+semaine.length+'</span></div>';
+  if(!semaine.length)html+='<div class="acc-vide">Aucun examen dans les 7 prochains jours.</div>';
+  else{
+    var dates=Array.from(new Set(semaine.map(function(s){return s.date;})));
+    dates.forEach(function(d){
+      var jour=semaine.filter(function(s){return s.date===d;});
+      html+='<div class="acc-jour"><div class="acc-jt" onclick="showView(\'planning\');allerAuProchain(\''+d+'\')">'+(d===auj?'<b>Aujourd\'hui</b>':labelJourCourt(d))+'<span>'+jour.length+' place'+(jour.length>1?'s':'')+'</span></div>';
+      jour.forEach(function(s){
+        var st=statutPlace(s);
+        html+='<div class="acc-row" onclick="ouvrirDepuisStats('+s.id+')"><span class="acc-hh">'+(s.heure||'--:--')+'</span>'+
+          '<span class="acc-nom'+(estAffecte(s)?'':' vide')+'">'+(estAffecte(s)?s.nom:'Place libre')+'</span>'+
+          '<span class="acc-mon">'+s.moniteur+'</span><span class="r-st st-'+st+'">'+LIB_COURT[st]+'</span></div>';
+      });
+      html+='</div>';
+    });
+  }
+  html+='</section>';
+
+  // 2. Places libres à remplir
+  html+='<section class="acc-card"><div class="acc-h">'+ic('plus')+'<h2>Places libres</h2><span class="acc-n'+(libres.length?' alerte':'')+'">'+libres.length+'</span></div>';
+  if(!libres.length)html+='<div class="acc-vide ok">'+ic('check')+' Toutes les places à venir ont un élève.</div>';
+  else{
+    var dl=Array.from(new Set(libres.map(function(s){return s.date;})));
+    dl.forEach(function(d){
+      var n=libres.filter(function(s){return s.date===d;}).length;
+      var diff=Math.round((new Date(d+'T12:00:00')-t)/86400000);
+      html+='<div class="acc-row" onclick="showView(\'planning\');allerAuProchain(\''+d+'\')"><span class="acc-d">'+labelJourCourt(d)+'</span>'+
+        '<span class="acc-nom">'+n+' place'+(n>1?'s':'')+' libre'+(n>1?'s':'')+'</span>'+
+        '<span class="acc-when'+(diff<=7?' urgent':'')+'">'+(diff===0?'aujourd\'hui':diff===1?'demain':'dans '+diff+' j')+'</span>'+ic('chev-right')+'</div>';
+    });
+  }
+  html+='</section>';
+
+  // 3. Résultats à saisir (examens passés sans résultat)
+  html+='<section class="acc-card"><div class="acc-h">'+ic('clipboard')+'<h2>Résultats à saisir</h2><span class="acc-n'+(aSaisir.length?' alerte':'')+'">'+aSaisir.length+'</span></div>';
+  if(!aSaisir.length)html+='<div class="acc-vide ok">'+ic('check')+' Tous les résultats sont saisis.</div>';
+  else aSaisir.forEach(function(s){
+    html+='<div class="acc-row" onclick="ouvrirDepuisStats('+s.id+')"><span class="acc-d">'+labelJourCourt(s.date)+'</span>'+
+      '<span class="acc-nom">'+s.nom+'</span><span class="acc-mon">'+s.moniteur+'</span>'+ic('chev-right')+'</div>';
+  });
+  html+='</section>';
+
+  // 4. Repassage (raccourci)
+  var nRep=state.waitList.length;
+  html+='<section class="acc-card acc-mini" onclick="showView(\'attente\')"><div class="acc-h">'+ic('retry')+'<h2>Repassage</h2><span class="acc-n">'+nRep+'</span></div>'+
+    '<div class="acc-vide">'+(nRep?nRep+' élève'+(nRep>1?'s':'')+' à replanifier après un échec.':'Aucun élève en repassage.')+' <u>Voir</u></div></section>';
+  html+='</div>';
+  el.innerHTML=html;
+}
+
 /* ===== STATS : heures de formation + listes d'élèves cliquables ===== */
 var STATS_LISTES={},statsSeq=0;
 function fmtHeures(min){
@@ -1956,12 +2113,14 @@ function renderWait(){
   persist();
 }
 function cycleAtt(id){
+  if(lectureSeule)return;
   var w=state.waitList.find(function(x){return x.id===id;});
   if(!w)return;
   w.att=w.att>=3?1:w.att+1;
   renderWait();
 }
 function delWait(id){
+  if(lectureSeule)return;
   var w=state.waitList.find(function(x){return x.id===id;});
   if(!w)return;
   if(!confirm('Retirer '+w.nom+' du repassage ?'))return;
@@ -2292,79 +2451,133 @@ function closeModal(id){document.getElementById(id).style.display='none';}
 document.querySelectorAll('.modal-bg').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.style.display='none';});});
 
 /* ===== IMPRESSION ===== */
+/* ===== IMPRESSION (PDF) — options puis document A4 au design de l'appli ===== */
 function printPlanning(){
-  var month=state.currentMonth;
-  var parts=month.split('-').map(Number);
-  var monthLabel=MONTHS[parts[1]-1]+' '+parts[0];
-  var ms=state.slots.filter(function(s){return s.month===month;});
+  var ms=state.slots.filter(function(s){return s.month===state.currentMonth;});
   if(!ms.length){toast('Aucune place ce mois','#d97706');return;}
-  var byDate={};ms.forEach(function(s){if(!byDate[s.date])byDate[s.date]=[];byDate[s.date].push(s);});
-
-  var html='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Planning '+monthLabel+'</title><style>';
-  html+='body{font-family:Arial,sans-serif;font-size:13px;color:#111;padding:20px;max-width:900px;margin:0 auto}';
-  html+='.header{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e5e7eb}';
-  html+='.header h1{font-size:20px;margin:0}.header p{font-size:12px;color:#6b7280;margin:2px 0 0}';
-  html+='.logo{width:56px;height:56px;border-radius:8px;background:#ff3131;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}';
-  html+='.date-title{font-size:14px;font-weight:700;padding:8px 12px;background:#f3f4f6;border-radius:6px;margin:20px 0 8px;border-left:4px solid #ff3131}';
-  html+='table{width:100%;border-collapse:collapse}th{padding:7px 10px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280;border-bottom:2px solid #e5e7eb;background:#fafafa}';
-  html+='td{padding:8px 10px;border-bottom:1px solid #f3f4f6;vertical-align:middle}';
-  html+='.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}';
-  html+='.sbae{background:#ebf2ff;color:#1e3a8a}.cds{background:#def7ec;color:#014737}';
-  html+='.pv{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;margin-right:4px}';
-  html+='.pv.ok{background:#def7ec;color:#014737}.pv.nok{background:#fef2f2;color:#7f1d1d}';
-  html+='.res{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700}';
-  html+='.res.recu{background:#def7ec;color:#014737}.res.echec{background:#fef2f2;color:#7f1d1d}';
-  html+='.cat{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#f3f4f6}.b78{background:#ede9fe;color:#4c1d95}';
-  html+='.libre{color:#9ca3af;font-style:italic}';
-  html+='.agc{display:inline-block;padding:10px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-right:12px;margin-bottom:8px;vertical-align:top}';
-  html+='</style></head><body>';
-  html+='<div class="header"><div class="logo">easy</div><div><h1>Easy Auto-École — Places permis</h1><p>'+monthLabel+' · Centre Gatignolle</p></div>';
-  html+='<div style="margin-left:auto;font-size:12px;color:#6b7280">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'</div></div>';
-
-  // Bilan par agence — taux de réussite en 1re présentation uniquement
-  html+='<div style="margin-bottom:12px">';
-  ['sbae','cds'].forEach(function(ag){
-    var list=ms.filter(function(s){return s.agence===ag;});
-    var aff=list.filter(estAffecte);
-    var prem=aff.filter(function(s){return !s.passage||s.passage==='1er';});
-    var recus=prem.filter(function(s){return s.resultat==='recu';}).length;
-    var echecs=prem.filter(function(s){return s.resultat==='echec';}).length;
-    var exam=recus+echecs;
-    var taux=exam?Math.round(recus/exam*100):null;
-    var col=ag==='sbae'?'#1a56db':'#057a55';
-    html+='<div class="agc" style="border-top:3px solid '+col+'">';
-    html+='<div style="font-weight:800;color:'+col+';font-size:12px;text-transform:uppercase;margin-bottom:4px">● '+ag.toUpperCase()+'</div>';
-    html+='<div style="font-size:12px;color:#374151">Places : <b>'+list.length+'</b> · Affectés : <b>'+aff.length+'</b> · <b>Réussite 1re fois : '+(taux===null?'—':taux+'%')+'</b> ('+recus+' reçus / '+echecs+' échecs)</div>';
-    html+='</div>';
-  });
-  html+='</div>';
-
-  Object.keys(byDate).sort().forEach(function(d){
-    var day=new Date(d+'T12:00:00');
-    var label=JOURS_FULL[day.getDay()]+' '+day.getDate()+' '+MONTHS[day.getMonth()]+' '+day.getFullYear();
-    html+='<div class="date-title">'+label+' — '+byDate[d].length+' place'+(byDate[d].length>1?'s':'')+'</div>';
-    html+='<table><thead><tr><th>Heure</th><th>Agence</th><th>Élève</th><th>Catégorie</th><th>Moniteur</th><th>Résultat</th><th>Commentaire</th></tr></thead><tbody>';
-    byDate[d].slice().sort(function(a,b){return a.heure.localeCompare(b.heure);}).forEach(function(s){
-      html+='<tr>';
-      html+='<td style="font-weight:600;font-family:monospace">'+(s.heure||'—')+'</td>';
-      html+='<td><span class="badge '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>';
-      html+='<td>'+(s.nom?(s.nom+((s.passage&&s.passage!=='1er')?' <b style="color:#b45309;font-size:11px">'+s.passage+'</b>':'')):'<span class="libre">Libre</span>')+'</td>';
-      html+='<td><span class="cat '+(s.type_permis==='B78'?'b78':'')+'">'+(s.type_permis||'B')+'</span></td>';
-      html+='<td>'+(s.moniteur||'—')+'</td>';
-      html+='<td>'+(s.resultat==='recu'?'<span class="res recu">Reçu</span>':s.resultat==='echec'?'<span class="res echec">Échec</span>':'—')+'</td>';
-      html+='<td style="color:#6b7280;font-size:12px">'+(s.commentaire||'—')+'</td>';
-      html+='</tr>';
-    });
-    html+='</tbody></table>';
-  });
-  html+='<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;text-align:center">Easy Auto-École · easy-permis · Document généré automatiquement</div>';
-  html+='</body></html>';
-
-  var w=window.open('','_blank','width=900,height=700');
+  var p=state.currentMonth.split('-').map(Number);
+  document.getElementById('mp-mois').textContent=MONTHS[p[1]-1]+' '+p[0];
+  document.getElementById('modal-print').style.display='flex';
+}
+function lancerImpression(){
+  var grp=(document.querySelector('input[name="mp-grp"]:checked')||{}).value||'date';
+  var ag=document.getElementById('mp-agence').value;
+  var sansLibres=document.getElementById('mp-libres').checked;
+  var html=docImpression({grp:grp,ag:ag,sansLibres:sansLibres});
+  if(!html){toast('Rien à imprimer avec ces choix','#d97706');return;}
+  // La fenêtre s'ouvre dans le clic (sinon le navigateur la bloque)
+  var w=window.open('','_blank','width=900,height=1000');
   if(!w){alert('Le navigateur a bloqué la fenêtre d\'impression.\nAutorise les fenêtres pop-up pour ce site, puis réessaie.');return;}
+  closeModal('modal-print');
   w.document.write(html);
   w.document.close();
-  setTimeout(function(){w.print();},500);
+  var lance=false,go=function(){if(lance)return;lance=true;try{w.focus();w.print();}catch(e){}};
+  try{if(w.document.fonts&&w.document.fonts.ready)w.document.fonts.ready.then(function(){setTimeout(go,250);});}catch(e){}
+  setTimeout(go,1500);
+}
+function docImpression(o){
+  var esc=function(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var p=state.currentMonth.split('-').map(Number);
+  var moisLabel=MONTHS[p[1]-1]+' '+p[0];
+  var ms=state.slots.filter(function(s){
+    if(s.month!==state.currentMonth)return false;
+    if(o.ag&&s.agence!==o.ag)return false;
+    if(o.sansLibres&&!estAffecte(s))return false;
+    return true;
+  });
+  if(!ms.length)return '';
+  var logo=(document.querySelector('.logo-img-real')||{}).src||'';
+  var NOM_AG={sbae:'SBAE · Seiches',cds:'CDS · Saint-Sylvain'};
+  var bilan=function(list){
+    var aff=list.filter(estAffecte),prem=aff.filter(function(s){return !s.passage||s.passage==='1er';});
+    var r=prem.filter(function(s){return s.resultat==='recu';}).length,e=prem.filter(function(s){return s.resultat==='echec';}).length;
+    return {places:list.length,aff:aff.length,libres:list.length-aff.length,
+      recus:aff.filter(function(s){return s.resultat==='recu';}).length,echecs:aff.filter(function(s){return s.resultat==='echec';}).length,
+      taux:(r+e)?Math.round(r/(r+e)*100):null,heures:moyenneHeures(aff)};
+  };
+  var b=bilan(ms);
+
+  var css='@page{size:A4;margin:14mm 12mm 16mm;@bottom-center{content:"Page " counter(page) " / " counter(pages);font:9px "DM Sans",Arial,sans-serif;color:#9ca3af}}'+
+    '*{box-sizing:border-box;margin:0;padding:0}'+
+    'body{font-family:"DM Sans",Arial,sans-serif;font-size:11px;color:#1c2430;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    '.hd{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#ff4040,#ec1f1f);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:14px}'+
+    '.hd img{height:34px}.hd .lg{font:700 24px Fredoka,Arial;letter-spacing:-.5px}'+
+    '.hd h1{font:600 18px Fredoka,"DM Sans",Arial;letter-spacing:-.3px}.hd .sub{font-size:11px;opacity:.9;margin-top:1px}'+
+    '.hd .imp{margin-left:auto;text-align:right;font-size:10px;opacity:.9;line-height:1.5}'+
+    '.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}'+
+    '.kpi{border:1px solid #e5e7eb;border-radius:10px;padding:8px 10px}.kpi b{display:block;font:600 16px "DM Mono",monospace}.kpi span{font-size:9.5px;color:#6b7280}'+
+    '.grp{break-before:page}.grp.first{break-before:auto}'+
+    '.gh{display:flex;align-items:center;gap:10px;border-bottom:2px solid #1c2430;padding:4px 2px 7px;margin:4px 0 10px}'+
+    '.gh h2{font:600 15px Fredoka,"DM Sans",Arial}.gh .gm{margin-left:auto;font-size:10px;color:#6b7280}'+
+    '.gh .dot{width:10px;height:10px;border-radius:50%}'+
+    '.jour{break-inside:avoid;margin-bottom:12px}'+
+    '.jt{display:flex;align-items:baseline;gap:8px;margin:0 2px 5px}.jt b{font:600 12.5px Fredoka,"DM Sans",Arial}.jt span{font-size:9.5px;color:#9ca3af}'+
+    'table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}'+
+    'th{background:#f7f7f6;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6b7280;text-align:left;padding:6px 9px;border-bottom:1px solid #e5e7eb}'+
+    'td{padding:6.5px 9px;border-bottom:1px solid #f1f1f0;vertical-align:middle}tr:last-child td{border-bottom:none}'+
+    '.h{font-family:"DM Mono",monospace;font-weight:500;width:52px;white-space:nowrap}.nom{font-weight:600}.libre{color:#9ca3af;font-style:italic;font-weight:400}'+
+    '.tag{display:inline-block;font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:5px;background:#fff4e5;color:#b45309;margin-left:5px}'+
+    '.ag{display:inline-block;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px}.ag.sbae{background:#ebf2ff;color:#1e3a8a}.ag.cds{background:#def7ec;color:#014737}'+
+    '.st{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px}.st.recu{background:#def7ec;color:#057a55}.st.echec{background:#fef2f2;color:#dc2626}.st.pret{background:#ebf2ff;color:#1e3a8a}.st.libre{background:#f3f4f6;color:#9ca3af}'+
+    '.note{color:#6b7280;font-size:10px}.muted{color:#9ca3af}'+
+    '@media screen{html{background:#eceae8}body{max-width:210mm;margin:16px auto;background:#fff;padding:14mm 12mm;border-radius:6px;box-shadow:0 4px 24px rgba(0,0,0,.12)}}'+
+    '.ft{margin-top:14px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:9px;color:#9ca3af;display:flex;justify-content:space-between}';
+
+  var html='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Planning '+esc(moisLabel)+'</title>'+
+    '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">'+
+    '<style>'+css+'</style></head><body>';
+  var titreGrp={date:'Toutes les places',agence:'Par agence',moniteur:'Par moniteur'}[o.grp];
+  html+='<div class="hd">'+(logo?'<img src="'+logo+'" alt="easy">':'<span class="lg">easy</span>')+
+    '<div><h1>Planning des examens — '+esc(moisLabel)+'</h1><div class="sub">'+titreGrp+(o.ag?' · '+NOM_AG[o.ag]:' · toutes agences')+(o.sansLibres?' · places libres masquées':'')+'</div></div>'+
+    '<div class="imp">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'<br>'+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div>';
+  html+='<div class="kpis">'+
+    '<div class="kpi"><b>'+b.places+'</b><span>places</span></div>'+
+    '<div class="kpi"><b>'+b.aff+'</b><span>élèves placés'+(b.libres?' · '+b.libres+' libre'+(b.libres>1?'s':''):'')+'</span></div>'+
+    '<div class="kpi"><b style="color:#057a55">'+b.recus+'</b><span>reçus</span></div>'+
+    '<div class="kpi"><b style="color:#dc2626">'+b.echecs+'</b><span>échecs</span></div>'+
+    '<div class="kpi"><b>'+(b.taux===null?'—':b.taux+' %')+'</b><span>réussite 1re fois'+(b.heures?' · '+fmtHeures(b.heures.moy)+' moy.':'')+'</span></div></div>';
+
+  // Groupes
+  var groupes=[];
+  if(o.grp==='agence'){
+    ['sbae','cds'].forEach(function(a){var l=ms.filter(function(s){return s.agence===a;});if(l.length)groupes.push({titre:NOM_AG[a],coul:a==='sbae'?'#1a56db':'#057a55',list:l});});
+  } else if(o.grp==='moniteur'){
+    var mons=Array.from(new Set(ms.map(function(s){return s.moniteur||'—';}))).sort(function(a,c){return a.localeCompare(c,'fr');});
+    mons.forEach(function(m){groupes.push({titre:m,coul:'#ff3131',list:ms.filter(function(s){return (s.moniteur||'—')===m;})});});
+  } else groupes.push({titre:null,list:ms});
+
+  groupes.forEach(function(g,gi){
+    html+='<div class="grp'+(gi===0?' first':'')+'">';
+    if(g.titre){
+      var gb=bilan(g.list);
+      html+='<div class="gh"><span class="dot" style="background:'+g.coul+'"></span><h2>'+esc(g.titre)+'</h2>'+
+        '<span class="gm">'+gb.places+' place'+(gb.places>1?'s':'')+' · '+gb.recus+' reçu'+(gb.recus>1?'s':'')+' · '+gb.echecs+' échec'+(gb.echecs>1?'s':'')+
+        (gb.taux===null?'':' · '+gb.taux+' % en 1re fois')+(gb.heures?' · '+fmtHeures(gb.heures.moy)+' de formation en moy.':'')+'</span></div>';
+    }
+    var dates=Array.from(new Set(g.list.map(function(s){return s.date;}))).sort();
+    dates.forEach(function(d){
+      var jour=g.list.filter(function(s){return s.date===d;}).sort(function(a,c){return (a.heure||'99').localeCompare(c.heure||'99');});
+      var dd=new Date(d+'T12:00:00');
+      html+='<div class="jour"><div class="jt"><b>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</b><span>'+jour.length+' place'+(jour.length>1?'s':'')+'</span></div>';
+      html+='<table><thead><tr><th>Heure</th><th>Élève</th><th>Cat.</th>'+(o.grp!=='moniteur'?'<th>Moniteur</th>':'')+(o.grp!=='agence'&&!o.ag?'<th>Agence</th>':'')+'<th>Heures</th><th>Résultat</th><th>Note</th></tr></thead><tbody>';
+      jour.forEach(function(s){
+        var st=statutPlace(s);
+        html+='<tr><td class="h'+(s.heure?'':' muted')+'">'+(s.heure||'--:--')+'</td>'+
+          '<td>'+(estAffecte(s)?'<span class="nom">'+esc(s.nom)+'</span>'+(s.passage&&s.passage!=='1er'?'<span class="tag">'+libPassage(s.passage)+'</span>':''):'<span class="libre">Place libre</span>')+'</td>'+
+          '<td>'+esc(s.type_permis||'B')+'</td>'+
+          (o.grp!=='moniteur'?'<td>'+esc(s.moniteur||'—')+'</td>':'')+
+          (o.grp!=='agence'&&!o.ag?'<td><span class="ag '+s.agence+'">'+s.agence.toUpperCase()+'</span></td>':'')+
+          '<td class="'+(s.hf>0?'':'muted')+'">'+(s.hf>0?fmtHeures(s.hf):'—')+'</td>'+
+          '<td><span class="st '+st+'">'+LIB_COURT[st]+'</span></td>'+
+          '<td class="note">'+esc(s.commentaire||'')+'</td></tr>';
+      });
+      html+='</tbody></table></div>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="ft"><span>Easy Auto-École · Places Permis</span><span>Réussite calculée sur les élèves passant pour la 1re fois</span></div>';
+  html+='</body></html>';
+  return html;
 }
 
 /* ===== DÉLÉGATION DE CLICS ===== */
@@ -2391,6 +2604,7 @@ document.getElementById('nb-planning').addEventListener('click',function(){showV
 document.getElementById('nb-stats').addEventListener('click',function(){showView('stats');});
 document.getElementById('nb-attente').addEventListener('click',function(){showView('attente');});
 document.getElementById('nb-banque').addEventListener('click',function(){showView('banque');});
+document.getElementById('nb-accueil').addEventListener('click',function(){showView('accueil');});
 document.getElementById('nb-ants').addEventListener('click',function(){showView('ants');});
 document.getElementById('btn-prev-month').addEventListener('click',function(){shiftMonth(-1);});
 document.getElementById('btn-next-month').addEventListener('click',function(){shiftMonth(1);});
@@ -2483,6 +2697,7 @@ function applyRemote(d){
   else if(active&&active.id==='view-attente')renderWait();
   else if(active&&active.id==='view-banque')renderBanque();
   else if(active&&active.id==='view-ants')renderAnts();
+  else if(active&&active.id==='view-accueil')renderAccueil();
   else renderPlanning();
   updateNavCounts();
   majCompteAnts();
@@ -2644,6 +2859,7 @@ initHero();
 initMonth();
 buildMonthSel();
 renderPlanning();
+renderAccueil();
 updateNavCounts();
 </script>
 </body>
