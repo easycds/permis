@@ -480,6 +480,35 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
+@media(max-width:1100px){.pl-kpi{padding:10px 12px}.pl-kpi b{font-size:16px;white-space:nowrap}}
+/* ===== MINI-CALENDRIER (ordinateur) ===== */
+@media(min-width:901px){
+  .pl-side{padding:16px 14px}
+  .pl-dates{display:block}
+  .mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+  .mc-wd{font-size:10px;font-weight:600;color:var(--text-light);padding:4px 0 6px}
+  .mc-day{position:relative;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-light);border-radius:50%;border:none;background:none;font-family:inherit;padding:0}
+  .mc-day>span{position:relative;z-index:1;line-height:1}
+  .mc-day.today>span{text-decoration:underline;text-underline-offset:3px}
+  .mc-day.has{color:var(--text);font-weight:700;cursor:pointer;transition:background .12s}
+  .mc-day.has:hover{background:var(--bg)}
+  .mc-day.has.past{color:var(--text-muted)}
+  .mc-day.has i{position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%}
+  .mc-day.on{background:var(--easy-light);box-shadow:inset 0 0 0 1.5px var(--easy);color:var(--easy)}
+  .mc-day.on.past{color:var(--easy)}
+  .mc-libre i,i.mc-libre{background:var(--easy)}
+  .mc-plein i,i.mc-plein{background:var(--sbae)}
+  .mc-fini i,i.mc-fini{background:var(--ok)}
+  .mc-sum{font-size:12px;color:var(--text-muted);margin:12px 2px 6px}
+  .mc-sum b{color:var(--easy);font-weight:600}
+  .mc-leg{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:10px;color:var(--text-light);margin:0 2px}
+  .mc-leg span{display:inline-flex;align-items:center;gap:4px}
+  .mc-leg i{width:5px;height:5px;border-radius:50%;display:inline-block}
+  .pl-side-actions{border-top:none;padding-top:0;margin-top:14px;gap:4px}
+  .pl-side-actions .btn{box-shadow:none;border-color:transparent;background:var(--bg);justify-content:flex-start;padding:9px 12px;font-weight:500}
+  .pl-side-actions .btn:hover{background:var(--border);transform:none}
+}
+
 /* ===== MODE OBSERVATEUR (consultation seule) ===== */
 body.lecture-seule .add-same-date,body.lecture-seule .day-menu,body.lecture-seule #btn-add-slot,
 body.lecture-seule #nb-attente,body.lecture-seule #nb-banque,body.lecture-seule #nb-ants,body.lecture-seule #save-st{display:none!important}
@@ -1415,7 +1444,8 @@ function renderPlanning(){
       '<span class="pd-j">'+JOURS_FULL[day.getDay()].slice(0,3)+'</span><span class="pd-n">'+day.getDate()+'</span>'+
       '<span class="pd-dots">'+dots+'</span><span class="pd-meta">'+(libres?libres+' libre'+(libres>1?'s':''):jour.length+' pl.')+'</span></button>';
   });
-  document.getElementById('pl-dates').innerHTML=dh||'<div class="pl-empty-dates">Aucune date ce mois-ci.</div>';
+  document.getElementById('pl-dates').innerHTML=vueOrdinateur()?renderMiniCal(ms,todayIso)
+    :(dh||'<div class="pl-empty-dates">Aucune date ce mois-ci.</div>');
 
   // Journée(s) : téléphone = la date choisie ; ordinateur = tout le mois, date choisie mise en avant
   var day=document.getElementById('pl-day');
@@ -1433,6 +1463,34 @@ function renderPlanning(){
 }
 
 function vueOrdinateur(){return window.matchMedia('(min-width:901px)').matches;}
+// Mini-calendrier du mois (colonne de gauche sur ordinateur)
+function renderMiniCal(ms,todayIso){
+  var p=state.currentMonth.split('-').map(Number);
+  var nb=new Date(p[0],p[1],0).getDate();
+  var decal=(new Date(p[0],p[1]-1,1).getDay()+6)%7; // lundi en premier
+  var h='<div class="mc-grid">'+['L','M','M','J','V','S','D'].map(function(x){return '<span class="mc-wd">'+x+'</span>';}).join('');
+  for(var i=0;i<decal;i++)h+='<span></span>';
+  var nbDates=0,nbPlaces=0,nbLibres=0;
+  for(var j=1;j<=nb;j++){
+    var iso=state.currentMonth+'-'+String(j).padStart(2,'0');
+    var jour=ms.filter(function(s){return s.date===iso;});
+    var cls='mc-day'+(iso===todayIso?' today':'');
+    if(jour.length){
+      nbDates++;nbPlaces+=jour.length;
+      var libres=jour.filter(function(s){return !estAffecte(s);}).length;nbLibres+=libres;
+      var fini=jour.every(function(s){return s.resultat;});
+      var etat=libres?'libre':fini?'fini':'plein';
+      h+='<button class="'+cls+' has mc-'+etat+(iso===state.selDate?' on':'')+(iso<todayIso?' past':'')+'" onclick="choisirDate(\''+iso+'\')" title="'+jour.length+' place'+(jour.length>1?'s':'')+(libres?' · '+libres+' libre'+(libres>1?'s':''):'')+'"><span>'+j+'</span><i></i></button>';
+    } else {
+      h+='<span class="'+cls+'"><span>'+j+'</span></span>';
+    }
+  }
+  h+='</div>';
+  if(!nbDates)return h+'<div class="mc-sum">Aucune date d\'examen ce mois-ci.</div>';
+  h+='<div class="mc-sum">'+nbDates+' date'+(nbDates>1?'s':'')+' · '+nbPlaces+' place'+(nbPlaces>1?'s':'')+(nbLibres?' · <b>'+nbLibres+' libre'+(nbLibres>1?'s':'')+'</b>':'')+'</div>';
+  h+='<div class="mc-leg"><span><i class="mc-libre"></i>place libre</span><span><i class="mc-plein"></i>complet</span><span><i class="mc-fini"></i>terminé</span></div>';
+  return h;
+}
 // Un bloc « jour » : en-tête (date, échéance, + Élève) + une ligne par place
 function renderBlocJour(d,ms,today){
   var dd=new Date(d+'T12:00:00');
