@@ -664,6 +664,10 @@ body.lecture-seule .obs-badge{display:inline-flex}
 .ants-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
 .ants-head h2{font-family:var(--police-titre);font-size:22px;font-weight:600;margin:0}
 .ants-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
+.ants-bulk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:18px;font-size:13px;box-shadow:var(--shadow)}
+.ants-bulk>.ic{width:16px;height:16px;color:var(--ok)}
+.ants-bulk input{width:auto}
+.ants-bulk .btn{margin-left:auto}
 .ants-sec{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:4px 4px 8px;display:flex;align-items:center;gap:6px;cursor:default}
 .ants-sec span{background:var(--bg);border-radius:10px;padding:1px 8px;font-size:11px}
 .ants-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
@@ -1192,6 +1196,22 @@ function toggleAnts(id){
   if(v&&v.id==='view-ants')renderAnts();else renderDetail();
   toast(ants.faits[k]?'Demande du titre faite ✓':'Remis à faire',ants.faits[k]?'#057a55':'#6b7280');
 }
+// Coche en une fois toutes les demandes des élèves reçus jusqu'à une date
+function antsToutFaitJusqua(){
+  if(!ants.on)return;
+  var lim=(document.getElementById('ants-jusqua')||{}).value;
+  if(!lim){toast('Choisis une date','#d97706');return;}
+  var cibles=state.slots.filter(function(s){return s.resultat==='recu'&&estAffecte(s)&&s.date<=lim&&!antsFait(s);});
+  var d=new Date(lim+'T12:00:00');
+  if(!cibles.length){toast('Aucune demande à cocher jusqu\'au '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase(),'#6b7280');return;}
+  if(!confirm('Marquer '+cibles.length+' demande'+(cibles.length>1?'s':'')+' du titre comme faite'+(cibles.length>1?'s':'')+' (élèves reçus jusqu\'au '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+' '+d.getFullYear()+') ?'))return;
+  var u=(typeof firebase!=='undefined'&&firebase.auth)?firebase.auth().currentUser:null;
+  var le=new Date().toISOString(),par=u&&u.email||'';
+  cibles.forEach(function(s){ants.faits[String(s.id)]={le:le,par:par,lot:true};});
+  if(ants.ref)ants.ref.set({faits:ants.faits});
+  renderAnts();
+  toast(cibles.length+' demande'+(cibles.length>1?'s':'')+' marquée'+(cibles.length>1?'s':'')+' comme faite'+(cibles.length>1?'s':'')+' ✓','#057a55');
+}
 function renderAnts(){
   var el=document.getElementById('ants-content');if(!el)return;
   var recus=state.slots.filter(function(s){return s.resultat==='recu'&&estAffecte(s);})
@@ -1205,7 +1225,16 @@ function renderAnts(){
       '<div class="ants-info"><div class="ants-nom">'+s.nom+'</div><div class="ants-meta">Reçu le '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+' '+d.getFullYear()+' · '+s.agence.toUpperCase()+(s.type_permis&&s.type_permis!=='B'?' · '+s.type_permis:'')+'</div></div>'+
       '<a class="ants-link" href="'+ANTS_URL+'" target="_blank" rel="noopener">Vérifier '+ic('external')+'</a></div>';
   };
-  var h='<div class="ants-sec">À faire <span>'+aFaire.length+'</span></div>';
+  var h='';
+  if(aFaire.length){
+    // Par défaut : dernier jour du mois précédent
+    var t=new Date(),fin=new Date(t.getFullYear(),t.getMonth(),0);
+    var finIso=fin.getFullYear()+'-'+String(fin.getMonth()+1).padStart(2,'0')+'-'+String(fin.getDate()).padStart(2,'0');
+    h+='<div class="ants-bulk">'+ic('check')+'<span>Tout marquer comme fait jusqu\'au</span>'+
+      '<input type="date" id="ants-jusqua" value="'+finIso+'">'+
+      '<button class="btn primary" onclick="antsToutFaitJusqua()">Valider</button></div>';
+  }
+  h+='<div class="ants-sec">À faire <span>'+aFaire.length+'</span></div>';
   h+=aFaire.length?'<div class="ants-list">'+aFaire.map(ligne).join('')+'</div>':'<div class="ants-vide">Toutes les demandes sont faites.</div>';
   if(faits.length){
     h+='<details class="ants-faits"><summary class="ants-sec">Demandes faites <span>'+faits.length+'</span></summary><div class="ants-list">'+faits.map(ligne).join('')+'</div></details>';
