@@ -481,6 +481,42 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
 @media(max-width:1100px){.pl-kpi{padding:10px 12px}.pl-kpi b{font-size:16px;white-space:nowrap}}
+/* ===== MESSAGES ===== */
+.msg-badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#fff;color:var(--easy);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.msg-pop{position:fixed;right:20px;bottom:24px;z-index:600;width:340px;max-width:calc(100% - 32px);background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--easy);border-radius:14px;box-shadow:var(--shadow-lg);padding:14px 16px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .3s var(--ease)}
+.msg-pop.show{transform:none;opacity:1;pointer-events:auto}
+.mp-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mp-top .ic{width:18px;height:18px;color:var(--easy)}
+.mp-top b{font-size:14px}
+.mp-top .pl-ico{margin-left:auto;width:28px;height:28px}
+.mp-de{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.mp-txt{font-size:14px;line-height:1.45;margin-bottom:12px}
+.mp-libre{font-size:13px;color:var(--text-muted);font-style:italic;margin-top:4px}
+.mp-act{display:flex;gap:8px}
+.mp-act .btn{flex:1;justify-content:center;font-size:12px;padding:8px 10px}
+.msg-form{display:flex;flex-direction:column;gap:10px}
+.msg-form select,.msg-form input{width:100%}
+.msg-types{display:flex;flex-wrap:wrap;gap:6px}
+.msg-list{max-height:48vh;overflow-y:auto;border:1px solid var(--border);border-radius:12px}
+.msg-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.msg-row:last-child{border-bottom:none}
+.msg-row.nonlu{background:var(--easy-light)}
+.msg-main{flex:1;min-width:0;line-height:1.45}
+.msg-meta{font-size:11px;color:var(--text-muted);margin-bottom:2px}
+.msg-st{font-size:11px;font-weight:700;color:var(--text-muted);white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.msg-st.lu{color:var(--ok)}
+.msg-st .ic{width:13px;height:13px}
+.msg-row .btn{font-size:12px;padding:6px 10px}
+@media(max-width:640px){.msg-pop{right:16px;bottom:calc(84px + env(safe-area-inset-bottom))}}
+/* En-tête sur écran moyen : on compacte pour que tout tienne */
+@media(min-width:641px) and (max-width:1240px){
+  .nav-btn{padding:7px 10px}
+  .save-st .ss-txt,.hdr-lbl span{display:none}
+  .hdr-lbl{padding:6px 9px!important}
+  .lbl-long{display:none!important}.lbl-short{display:inline!important}
+}
+@media(min-width:641px) and (max-width:1000px){.app-title{display:none}.nav-btn span{display:none}.nav-btn{padding:8px 10px}}
+
 /* ===== ACCUEIL « CETTE SEMAINE » ===== */
 #view-accueil{max-width:1100px;margin:0 auto}
 .acc-hi{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 2px 18px}
@@ -519,7 +555,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 body.lecture-seule .att-badge{cursor:default}
 .lbl-short{display:none}
 @media(max-width:900px){.acc-grid{grid-template-columns:minmax(0,1fr)}.acc-semaine{grid-row:auto}}
-@media(max-width:640px){.lbl-long{display:none}.lbl-short{display:inline}.acc-hi h1{font-size:22px}.acc-mon{display:none}}
+@media(max-width:640px){.lbl-long{display:none!important}.lbl-short{display:inline!important}.acc-hi h1{font-size:22px}.acc-mon{display:none}}
 
 /* ===== OPTIONS D'IMPRESSION ===== */
 .mp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:4px 0 6px}
@@ -804,6 +840,8 @@ body.lecture-seule .obs-badge{display:inline-flex}
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></g></symbol>
@@ -846,6 +884,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
       <span class="obs-badge"><svg class="ic"><use href="#i-eye"/></svg>Consultation</span>
+      <button class="btn hdr-ic" id="btn-msg" style="display:none;position:relative;padding:5px 10px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" onclick="ouvrirMessages()"><svg class="ic"><use href="#i-bell"/></svg><span class="msg-badge" id="msg-badge" style="display:none">0</span></button>
       <span class="save-st" id="save-st"></span>
       <button class="btn hdr-ic" id="btn-install" style="background:#fff;border-color:#fff;color:#ff3131" title="Installer l'appli sur cet appareil"><svg class="ic"><use href="#i-download"/></svg></button>
       <button class="btn hdr-ic" id="btn-dark" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Mode sombre"><svg class="ic"><use href="#i-moon"/></svg></button>
@@ -1083,6 +1122,16 @@ body.lecture-seule .obs-badge{display:inline-flex}
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
+<!-- MODAL MESSAGES (moniteur → secrétariat) -->
+<div class="modal-bg" id="modal-msg" style="display:none" onclick="if(event.target===this)closeModal('modal-msg')">
+  <div class="modal" style="width:520px;max-width:94vw">
+    <div class="modal-title" id="msg-titre"></div>
+    <div id="msg-contenu"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-msg')">Fermer</button></div>
+  </div>
+</div>
+<div class="msg-pop" id="msg-pop"></div>
+
 <!-- MODAL OPTIONS D'IMPRESSION -->
 <div class="modal-bg" id="modal-print" style="display:none" onclick="if(event.target===this)closeModal('modal-print')">
   <div class="modal" style="width:440px;max-width:94vw">
@@ -1214,6 +1263,113 @@ function startApp(){
   initRoles();
   initCloud();
   initAnts();
+  initMessages();
+}
+
+/* =====================================================================
+   MESSAGES moniteur (observateur) → secrétariat
+   Collection easy_permis_messages : le moniteur crée, le secrétariat lit
+   et marque comme lu. Le planning reste en lecture seule pour le moniteur.
+===================================================================== */
+var MSG_TYPES={pret_bientot:'Élève bientôt prêt',pret:'Élève prêt pour l\'examen',place:'Besoin d\'une place',autre:'Autre'};
+var msgs={col:null,liste:[],vus:{},email:'',init:false,type:'pret_bientot'};
+function initMessages(){
+  if(typeof firebase==='undefined'||!firebase.auth||!firebase.firestore)return;
+  var u=firebase.auth().currentUser;if(!u)return;
+  msgs.email=(u.email||'').toLowerCase();
+  try{
+    msgs.col=firebase.firestore().collection('easy_permis_messages');
+    var q=lectureSeule?msgs.col.where('de','==',msgs.email):msgs.col.orderBy('creeLe','desc').limit(100);
+    q.onSnapshot(function(snap){
+      var l=[];snap.forEach(function(d){var x=d.data();x.id=d.id;l.push(x);});
+      l.sort(function(a,b){return (b.creeLe||'').localeCompare(a.creeLe||'');});
+      var nouveaux=[];
+      if(!lectureSeule)l.forEach(function(m){if(!m.lu&&!msgs.vus[m.id])nouveaux.push(m);msgs.vus[m.id]=true;});
+      msgs.liste=l;msgs.init=true;
+      document.getElementById('btn-msg').style.display='';
+      majBadgeMessages();
+      if(nouveaux.length)afficherPopupMessage(nouveaux);
+      if(document.getElementById('modal-msg').style.display==='flex')renderPanneauMessages();
+    },function(){document.getElementById('btn-msg').style.display='none';});
+  }catch(e){}
+}
+function nonLus(){return msgs.liste.filter(function(m){return !m.lu;});}
+function majBadgeMessages(){
+  var b=document.getElementById('msg-badge'),n=lectureSeule?0:nonLus().length;
+  document.querySelector('#btn-msg use').setAttribute('href',lectureSeule?'#i-send':'#i-bell');
+  b.textContent=n;b.style.display=n?'':'none';
+  document.getElementById('btn-msg').title=lectureSeule?'Envoyer un message au secrétariat':(n?n+' message'+(n>1?'s':'')+' non lu'+(n>1?'s':''):'Messages des moniteurs');
+  document.title=(n?'('+n+') ':'')+'Easy Auto-École · Places Permis';
+}
+function resumeMessage(m){
+  return '<b>'+esc(MSG_TYPES[m.type]||'Message')+'</b>'+(m.eleve?' : '+esc(m.eleve):'')+(m.precision?' · '+esc(m.precision):'');
+}
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function quandMessage(iso){
+  if(!iso)return '';
+  var d=new Date(iso),min=Math.round((Date.now()-d)/60000);
+  if(min<1)return 'à l\'instant';if(min<60)return 'il y a '+min+' min';
+  if(min<1440)return 'il y a '+Math.round(min/60)+' h';
+  return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+// Pop-up « nouveau message » (secrétariat)
+function afficherPopupMessage(nouveaux){
+  var m=nouveaux[0],p=document.getElementById('msg-pop');
+  p.innerHTML='<div class="mp-top">'+ic('bell')+'<b>'+(nouveaux.length>1?nouveaux.length+' nouveaux messages':'Nouveau message')+'</b>'+
+    '<button class="pl-ico" onclick="fermerPopupMessage()" title="Fermer">'+ic('x')+'</button></div>'+
+    '<div class="mp-de">'+esc(m.nom||m.de)+' · '+quandMessage(m.creeLe)+'</div>'+
+    '<div class="mp-txt">'+resumeMessage(m)+(m.texte?'<div class="mp-libre">« '+esc(m.texte)+' »</div>':'')+'</div>'+
+    '<div class="mp-act"><button class="btn" onclick="marquerLu(\''+m.id+'\');fermerPopupMessage()">'+ic('check')+'Marquer comme lu</button>'+
+    '<button class="btn primary" onclick="fermerPopupMessage();ouvrirMessages()">Voir '+(nouveaux.length>1?'tous':'')+'</button></div>';
+  p.classList.add('show');
+}
+function fermerPopupMessage(){document.getElementById('msg-pop').classList.remove('show');}
+function marquerLu(id){
+  if(!msgs.col||lectureSeule)return;
+  msgs.col.doc(id).update({lu:true,luLe:new Date().toISOString(),luPar:msgs.email}).catch(function(){toast('Impossible de marquer comme lu','#dc2626');});
+}
+function toutMarquerLu(){nonLus().forEach(function(m){marquerLu(m.id);});}
+function ouvrirMessages(){renderPanneauMessages();document.getElementById('modal-msg').style.display='flex';}
+function renderPanneauMessages(){
+  var t=document.getElementById('msg-titre'),c=document.getElementById('msg-contenu'),h='';
+  if(lectureSeule){
+    t.innerHTML=ic('send')+'Message au secrétariat';
+    var moi='';try{moi=localStorage.getItem('permis_moniteur')||'';}catch(e){}
+    var noms=Array.from(new Set(state.slots.map(function(s){return s.nom;}).concat(state.eleves.map(function(e){return e.nom;})).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,'fr');});
+    h+='<div class="msg-form">'+
+      '<div class="pp-f"><label>Je suis</label><select id="msg-de">'+MONITEURS.map(function(m){return '<option'+(m===moi?' selected':'')+'>'+m+'</option>';}).join('')+'</select></div>'+
+      '<div class="pp-f"><label>Motif</label><div class="msg-types">'+Object.keys(MSG_TYPES).map(function(k){return '<button type="button" class="chip-btn'+(msgs.type===k?' active':'')+'" onclick="msgs.type=\''+k+'\';renderPanneauMessages()">'+MSG_TYPES[k]+'</button>';}).join('')+'</div></div>'+
+      '<div class="pp-f"><label>Élève</label><input type="text" id="msg-eleve" list="dl-msg" placeholder="Nom de l\'élève"><datalist id="dl-msg">'+noms.map(function(n){return '<option value="'+esc(n)+'">';}).join('')+'</datalist></div>'+
+      '<div class="pp-f"><label>Précision</label><input type="text" id="msg-prec" placeholder="ex. dans 4 h de conduite, dispo le jeudi…"></div>'+
+      '<div class="pp-f"><label>Message (facultatif)</label><textarea id="msg-texte" rows="2" style="width:100%" placeholder="Un mot pour le secrétariat"></textarea></div>'+
+      '<button class="btn primary" style="width:100%;justify-content:center" onclick="envoyerMessage()">'+ic('send')+'Envoyer au secrétariat</button></div>';
+    h+='<div class="mp-lbl" style="margin-top:16px">Mes messages envoyés</div>';
+    if(!msgs.liste.length)h+='<div class="acc-vide">Aucun message envoyé pour l\'instant.</div>';
+    else h+='<div class="msg-list">'+msgs.liste.slice(0,15).map(function(m){
+      return '<div class="msg-row"><div class="msg-main">'+resumeMessage(m)+(m.texte?'<div class="mp-libre">« '+esc(m.texte)+' »</div>':'')+'<div class="msg-meta">'+quandMessage(m.creeLe)+'</div></div>'+
+        '<span class="msg-st '+(m.lu?'lu':'')+'">'+(m.lu?ic('check')+' Lu':'Envoyé')+'</span></div>';}).join('')+'</div>';
+  } else {
+    var n=nonLus().length;
+    t.innerHTML=ic('bell')+'Messages des moniteurs'+(n?' <span class="ml-n">'+n+' non lu'+(n>1?'s':'')+'</span>':'');
+    if(!msgs.liste.length)h+='<div class="acc-vide">Aucun message pour l\'instant. Les moniteurs peuvent vous écrire depuis leur compte.</div>';
+    else{
+      if(n)h+='<div style="text-align:right;margin:-6px 0 8px"><button class="btn" onclick="toutMarquerLu()">'+ic('check')+'Tout marquer comme lu</button></div>';
+      h+='<div class="msg-list">'+msgs.liste.map(function(m){
+        return '<div class="msg-row'+(m.lu?'':' nonlu')+'"><div class="msg-main"><div class="msg-meta"><b>'+esc(m.nom||m.de)+'</b> · '+quandMessage(m.creeLe)+'</div>'+resumeMessage(m)+(m.texte?'<div class="mp-libre">« '+esc(m.texte)+' »</div>':'')+'</div>'+
+          (m.lu?'<span class="msg-st lu">'+ic('check')+' Lu</span>':'<button class="btn" onclick="marquerLu(\''+m.id+'\')">Marquer lu</button>')+'</div>';}).join('')+'</div>';
+    }
+  }
+  c.innerHTML=h;
+}
+function envoyerMessage(){
+  if(!msgs.col)return;
+  var nom=document.getElementById('msg-de').value,eleve=document.getElementById('msg-eleve').value.trim();
+  var prec=document.getElementById('msg-prec').value.trim(),texte=document.getElementById('msg-texte').value.trim();
+  if(!eleve&&!texte){toast('Indique au moins un élève ou un message','#d97706');return;}
+  try{localStorage.setItem('permis_moniteur',nom);}catch(e){}
+  msgs.col.add({de:msgs.email,nom:nom,type:msgs.type,eleve:eleve,precision:prec,texte:texte,creeLe:new Date().toISOString(),lu:false})
+    .then(function(){toast('Message envoyé au secrétariat ✓','#057a55');renderPanneauMessages();})
+    .catch(function(){toast('Envoi impossible (règle Firebase manquante ?)','#dc2626');});
 }
 
 /* =====================================================================
