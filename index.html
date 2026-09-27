@@ -772,6 +772,17 @@ body.lecture-seule .att-badge{cursor:default}
 .lbl-short{display:none}
 @media(max-width:900px){.acc-grid{grid-template-columns:minmax(0,1fr)}.acc-semaine{grid-row:auto}}
 @media(max-width:640px){.lbl-long{display:none!important}.lbl-short{display:inline!important}.acc-hi h1{font-size:22px}.acc-mon{display:none}}
+/* Accueil mobile : sections repliables */
+.acc-chev{display:none}
+@media(max-width:640px){
+  .acc-card .acc-h{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+  .acc-chev{display:flex;margin-left:4px;color:var(--text-light);transition:transform .2s}
+  .acc-chev .ic{width:16px!important;height:16px!important;color:var(--text-light)!important}
+  .acc-card.ferme .acc-chev{transform:rotate(-90deg)}
+  .acc-card.ferme .acc-body{display:none}
+  .acc-card.ferme .acc-h{margin-bottom:0}
+  .acc-grid{gap:10px}
+}
 
 /* ===== OPTIONS D'IMPRESSION ===== */
 .mp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:4px 0 6px}
@@ -1067,6 +1078,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
   <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="i-hand" viewBox="0 0 24 24"><path d="M9 11V6a2 2 0 0 1 4 0v5M13 10V5a2 2 0 0 1 4 0v7M9 11V9a2 2 0 0 0-4 0v5a8 8 0 0 0 16 0v-2a2 2 0 0 0-4 0"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
@@ -1892,6 +1904,27 @@ function renderAccueil(){
     '<div class="acc-vide">'+(nRep?nRep+' élève'+(nRep>1?'s':'')+' à replanifier après un échec.':'Aucun élève en repassage.')+' <u>Voir</u></div></section>';
   html+='</div>';
   el.innerHTML=html;
+  plisAccueil(el);
+}
+
+/* Sur mobile : chaque section de l'accueil se replie / se déplie (état mémorisé) */
+function plisAccueil(el){
+  var ouverts={};try{ouverts=JSON.parse(localStorage.getItem('acc_ouverts')||'{}');}catch(e){}
+  el.querySelectorAll('.acc-card').forEach(function(card){
+    if(card.classList.contains('acc-mini')||card.classList.contains('acc-note'))return;
+    var hd=card.querySelector('.acc-h');if(!hd)return;
+    var k=(hd.querySelector('h2')||{}).textContent||'';
+    var body=document.createElement('div');body.className='acc-body';
+    while(hd.nextSibling)body.appendChild(hd.nextSibling);
+    card.appendChild(body);
+    hd.insertAdjacentHTML('beforeend','<span class="acc-chev">'+ic('chev-down')+'</span>');
+    if(!ouverts[k])card.classList.add('ferme');
+    hd.onclick=function(){
+      if(!window.matchMedia('(max-width:640px)').matches)return;
+      var ferme=card.classList.toggle('ferme');
+      try{var o=JSON.parse(localStorage.getItem('acc_ouverts')||'{}');if(ferme)delete o[k];else o[k]=1;localStorage.setItem('acc_ouverts',JSON.stringify(o));}catch(e){}
+    };
+  });
 }
 
 // Saisie du résultat directement depuis l'accueil
