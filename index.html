@@ -480,6 +480,17 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
+/* ===== MODE OBSERVATEUR (consultation seule) ===== */
+body.lecture-seule .add-same-date,body.lecture-seule .day-menu,body.lecture-seule #btn-add-slot,
+body.lecture-seule #nb-attente,body.lecture-seule #nb-banque,body.lecture-seule #nb-ants,body.lecture-seule #save-st{display:none!important}
+body.lecture-seule .pl-row .r-n.vide{font-style:italic}
+.pp-ro-name{font-size:18px;font-weight:700;margin-bottom:2px}
+.pp-ro{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin-bottom:14px}
+.pp-hint .ic{width:13px;height:13px;vertical-align:-2px}
+.obs-badge{display:none;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;white-space:nowrap;align-items:center;gap:5px}
+.obs-badge .ic{width:13px;height:13px}
+body.lecture-seule .obs-badge{display:inline-flex}
+
 /* ===== LISIBILITÉ (secrétariat) ===== */
 .pl-row{grid-template-columns:58px minmax(0,1fr) auto auto 64px 16px!important}
 .r-mon{font-size:13px;color:var(--text-muted);white-space:nowrap}
@@ -682,6 +693,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></g></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
   <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
@@ -720,6 +732,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
       <button class="nav-btn" id="nb-ants" style="display:none"><svg class="ic"><use href="#i-clipboard"/></svg><span id="nb-ants-lbl">ANTS</span></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
+      <span class="obs-badge"><svg class="ic"><use href="#i-eye"/></svg>Consultation</span>
       <span class="save-st" id="save-st"></span>
       <button class="btn hdr-ic" id="btn-install" style="background:#fff;border-color:#fff;color:#ff3131" title="Installer l'appli sur cet appareil"><svg class="ic"><use href="#i-download"/></svg></button>
       <button class="btn hdr-ic" id="btn-dark" style="padding:5px 10px;font-size:14px;background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:#fff" title="Mode sombre"><svg class="ic"><use href="#i-moon"/></svg></button>
@@ -1050,8 +1063,26 @@ function logout(){
 }
 function startApp(){
   if(appStarted)return;appStarted=true;
+  initRoles();
   initCloud();
   initAnts();
+}
+
+/* =====================================================================
+   OBSERVATEURS — consultation seule (planning + statistiques)
+   La règle Firestore bloque aussi toute écriture pour ces comptes.
+===================================================================== */
+var OBSERVATEURS=['dasilva.charles49@gmail.com'];
+var lectureSeule=false;
+function initRoles(){
+  var u=(typeof firebase!=='undefined'&&firebase.auth)?firebase.auth().currentUser:null;
+  var email=u&&u.email?u.email.toLowerCase():'';
+  lectureSeule=OBSERVATEURS.indexOf(email)>=0;
+  document.body.classList.toggle('lecture-seule',lectureSeule);
+  if(lectureSeule){
+    var v=document.querySelector('.view.active');
+    if(v&&v.id!=='view-planning'&&v.id!=='view-stats')showView('planning');
+  }
 }
 
 /* =====================================================================
@@ -1505,9 +1536,25 @@ function fermerDetail(silencieux){
 }
 
 // Panneau de détail de la place sélectionnée
+// Détail en consultation seule (observateurs) : texte, aucun champ modifiable
+function renderDetailLecture(s){
+  var d=new Date(s.date+'T12:00:00'),st=statutPlace(s);
+  var ligne=function(l,v){return '<span style="color:var(--text-muted)">'+l+'</span><span>'+v+'</span>';};
+  return '<div class="pp-top"><span class="pp-st"><span class="pl-dot st-'+st+'"></span>'+LIB_STATUT[st]+'</span>'+
+    '<button class="pl-ico pp-close" onclick="fermerDetail()" title="Fermer">'+ic('x')+'</button></div>'+
+    '<div class="pp-ro-name">'+(estAffecte(s)?s.nom:'Place libre')+'</div>'+
+    '<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>'+
+    '<div class="pp-ro">'+
+      ligne('Heure',s.heure||'à définir')+ligne('Moniteur',s.moniteur)+ligne('Catégorie',s.type_permis)+
+      ligne('Agence',(s.agence||'').toUpperCase())+(s.commentaire?ligne('Note',s.commentaire):'')+
+      ligne('Résultat',s.resultat==='recu'?'Reçu':s.resultat==='echec'?'Échec':'—')+
+    '</div>'+
+    '<div class="pp-hint">'+ic('eye')+' Mode consultation : tu peux regarder, pas modifier.</div>';
+}
 function renderDetail(){
   var p=document.getElementById('pl-panel');if(!p)return;
   var s=state.slots.find(function(x){return x.id===state.selSlot&&x.date===state.selDate;});
+  if(s&&lectureSeule){p.innerHTML=renderDetailLecture(s);return;}
   if(!s){
     document.body.classList.remove('detail-open');
     p.innerHTML='<div class="pl-empty">'+ic('hand')+'Sélectionne une place<br>pour voir son détail.</div>';
@@ -2122,6 +2169,7 @@ function printPlanning(){
   html+='</body></html>';
 
   var w=window.open('','_blank','width=900,height=700');
+  if(!w){alert('Le navigateur a bloqué la fenêtre d\'impression.\nAutorise les fenêtres pop-up pour ce site, puis réessaie.');return;}
   w.document.write(html);
   w.document.close();
   setTimeout(function(){w.print();},500);
@@ -2252,6 +2300,7 @@ function applyRemote(d){
 }
 function cloudSave(force){
   if(!cloud.on)return;
+  if(lectureSeule)return; // observateur : jamais d'écriture
   // Tant que les données du cloud ne sont pas chargées, on n'écrit rien (évite d'écraser la base avec un planning vide)
   if(!cloud.ready)return;
   if(cloud.applying&&!force)return;
