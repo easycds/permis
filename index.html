@@ -1345,7 +1345,7 @@ function voirListeStats(key){
   list.forEach(function(s){
     var d=new Date(s.date+'T12:00:00'),st=statutPlace(s);
     h+='<div class="ml-row" onclick="ouvrirDepuisStats('+s.id+')" title="Voir dans le planning">'+
-      '<span class="ml-d">'+d.getDate()+' '+MONTHS[d.getMonth()].slice(0,4).toLowerCase()+'.</span>'+
+      '<span class="ml-d">'+d.getDate()+' '+['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'][d.getMonth()]+'</span>'+
       '<span class="ml-nom">'+s.nom+(s.passage&&s.passage!=='1er'?' <em>'+libPassage(s.passage)+'</em>':'')+'</span>'+
       '<span class="ml-mon">'+s.moniteur+'</span>'+
       '<span class="ml-h">'+(s.hf>0?fmtHeures(s.hf):'—')+'</span>'+
