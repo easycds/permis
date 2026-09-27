@@ -2439,8 +2439,9 @@ function updateSlotEleve(id,val){
   if(eoF&&eoF.formation){s.formation=eoF.formation;if(/AAC/.test(eoF.formation))s.type_permis='AAC';}
   if(!val){s.pp=false;s.vm=false;}
   if(val){var eo=eleveObj(val);if(eo)eo.moisPrevu='';} // prévision soldée : il est sur le planning
+  var ajoute=val?ajouterABanqueSiNouveau(val,s.agence,s.formation||formationDe(s,true)):false;
   renderPlanning();
-  toast(val?(val+' affecté ✓'):'Place libérée','#057a55');
+  toast(val?(val+' affecté'+(ajoute?' · ajouté aux Élèves':'')+' ✓'):'Place libérée','#057a55');
 }
 // Ajout rapide d'une place sur une date déjà au planning (reprend agence / moniteur / catégorie de la dernière ligne)
 function addSlotSameDate(date){
@@ -2955,11 +2956,18 @@ function saveSlot(){
     var nomLigne=(i===0)?nom:'';
     state.slots.push({id:state.nextId++,month:month,date:date,heure:h,agence:agence,nom:nomLigne,type_permis:permis,moniteur:moniteur,pp:nomLigne?modalPV.pp:false,vm:nomLigne?modalPV.vm:false,resultat:'',locked:false,passage:nomLigne?modalPassage:'1er',commentaire:''});
   });
+  var ajoute=nom?ajouterABanqueSiNouveau(nom,agence,''):false;
   closeModal('modal-slot');
   state.currentMonth=month;buildMonthSel();
   state.selDate=date;state.selSlot=null;
   renderPlanning();
-  toast(heures.length+' place'+(heures.length>1?'s':'')+' ajoutée'+(heures.length>1?'s':'')+' ✓','#057a55');
+  toast(heures.length+' place'+(heures.length>1?'s':'')+' ajoutée'+(heures.length>1?'s':'')+(ajoute?' · '+nom+' ajouté aux Élèves':'')+' ✓','#057a55');
+}
+// Un nom saisi sur une place et inconnu de l'onglet Élèves y est ajouté automatiquement
+function ajouterABanqueSiNouveau(nom,agence,formation){
+  nom=(nom||'').trim();if(!nom||eleveObj(nom)||enRepassage(nom))return false;
+  state.eleves.push({nom:nom,agence:agence==='sbae'?'sbae':'cds',statut:'bientot',moisPrevu:'',formation:formation||''});
+  return true;
 }
 function closeModal(id){document.getElementById(id).style.display='none';}
 document.querySelectorAll('.modal-bg').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.style.display='none';});});
