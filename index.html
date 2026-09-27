@@ -638,6 +638,31 @@ body.dark .acc-note{background:#2d2408;border-color:#5a4a12}
 .acc-note .acc-h .ic{color:var(--warn)}
 .acc-note-txt{font-size:13px;line-height:1.5;max-height:140px;overflow:hidden}
 
+/* Stats des repassages (menu déroulant) */
+.rep-stats{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
+.rep-stats summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none;flex-wrap:wrap}
+.rep-stats summary::-webkit-details-marker{display:none}
+.rep-stats summary:hover{background:var(--bg)}
+.rep-stats summary>.ic{width:18px;height:18px;color:var(--warn)}
+.rep-stats summary b{font-family:var(--police-titre);font-size:16px;font-weight:600}
+.rs-sub{font-size:12px;color:var(--text-muted)}
+.rs-sum{margin-left:auto;font-size:13px;color:var(--text-muted)}
+.rs-sum b{font-family:inherit!important;font-size:13px!important;font-weight:700!important}
+.rep-stats summary .ic:last-child{width:16px;height:16px;color:var(--text-muted);transition:transform .15s}
+.rep-stats[open] summary .ic:last-child{transform:rotate(90deg)}
+.rep-stats[open] summary{border-bottom:1px solid var(--border)}
+.rs-body{padding:16px}
+.rs-t{margin-top:16px}
+
+/* Catégorie à l'ajout d'un élève */
+.el-cat{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 2px 0}
+.el-cat-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin-right:4px}
+.el-cat-b{border:1.5px solid var(--border);background:var(--surface);color:var(--text-muted);font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .12s}
+.el-cat-b:hover{border-color:var(--easy);color:var(--easy)}
+.el-cat-b.on{background:var(--easy);border-color:var(--easy);color:#fff}
+.el-form{max-width:150px}
+.el-form.ok{background:var(--sbae-light);color:var(--sbae-dark);border-color:transparent}
+
 /* Repassage en menus déroulants */
 .el-grp{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
 .el-grp summary{list-style:none;display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;font-size:13px;user-select:none}
@@ -1095,6 +1120,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div class="dim-grid">
         <div class="dim-card" id="stats-formation"></div>
       </div>
+      <div id="stats-repassage"></div>
     </div>
 
     <!-- ===== VUE REPASSAGE ===== -->
@@ -1133,6 +1159,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
           <button class="el-clear" id="el-clear" onclick="viderAjoutEleve()" title="Effacer" style="display:none"><svg class="ic"><use href="#i-x"/></svg></button>
         </div>
         <div class="el-hint" id="el-hint"></div>
+        <div class="el-cat" id="el-cat"></div>
         <div class="el-dest">
           <button class="el-btn sbae" id="el-btn-sbae" onclick="ajouterEleveVers('sbae')"><b>SBAE</b><span>Seiches</span></button>
           <button class="el-btn cds" id="el-btn-cds" onclick="ajouterEleveVers('cds')"><b>CDS</b><span>Saint-Sylvain</span></button>
@@ -1819,14 +1846,14 @@ function ligneHeures(list){
   return '<div class="am-hours">'+ic('clock')+' <b>'+fmtHeures(m.moy)+'</b> de formation en moyenne <span>· '+m.n+' élève'+(m.n>1?'s':'')+'</span></div>';
 }
 // Les 4 chiffres (1re fois, reçus, échecs, à passer) : un clic ouvre la liste des élèves
-function metriquesStats(list,titre){
+function metriquesStats(list,titre,lblTous){
   var groupes=[
-    {k:'tous',lbl:'1re fois',cls:'',l:list},
+    {k:'tous',lbl:lblTous||'1re fois',cls:'',l:list},
     {k:'recu',lbl:ic('ok','ic-ok')+' Reçus',cls:'am-ok',l:list.filter(function(s){return s.resultat==='recu';})},
     {k:'echec',lbl:ic('ko','ic-ko')+' Échecs',cls:'am-ko',l:list.filter(function(s){return s.resultat==='echec';})},
     {k:'attente',lbl:'À passer',cls:'',l:list.filter(function(s){return !s.resultat;})}
   ];
-  var noms={tous:'Élèves présentés (1re fois)',recu:'Reçus',echec:'Échecs',attente:'À passer'};
+  var noms={tous:lblTous?'Élèves présentés':'Élèves présentés (1re fois)',recu:'Reçus',echec:'Échecs',attente:'À passer'};
   var h='<div class="agency-metrics" style="grid-template-columns:repeat(4,1fr)">';
   groupes.forEach(function(g,i){
     var key='l'+(++statsSeq);
@@ -1925,6 +1952,45 @@ function renderStatsDimensions(){
   tableau('stats-formation','Par formation','grad',function(s){return formationDe(s);},FORMATIONS.concat(['Non renseignée']));
 }
 
+/* ===== STATS DES REPASSAGES (tout sauf les 1ers passages), en menu déroulant ===== */
+var statsRepOuvert=false;
+function renderStatsRepassage(){
+  var el=document.getElementById('stats-repassage');if(!el)return;
+  var annee=state.currentMonth.split('-')[0];
+  var rp=state.slots.filter(function(s){return s.date.slice(0,4)===annee&&estAffecte(s)&&s.passage&&s.passage!=='1er';});
+  var tx=function(l){var r=l.filter(function(s){return s.resultat==='recu';}).length,e=l.filter(function(s){return s.resultat==='echec';}).length;return (r+e)?Math.round(r/(r+e)*100):null;};
+  var coul=function(t){return t===null?'var(--text-light)':t>=70?'var(--ok)':t>=50?'var(--warn)':'var(--danger)';};
+  var tG=tx(rp);
+  var h='<details class="rep-stats"'+(statsRepOuvert?' open':'')+' ontoggle="statsRepOuvert=this.open">'+
+    '<summary>'+ic('retry')+'<b>Repassages</b><span class="rs-sub">2e passage et plus · année '+annee+'</span>'+
+    '<span class="rs-sum">'+rp.length+' examen'+(rp.length>1?'s':'')+(tG===null?'':' · <b style="color:'+coul(tG)+'">'+tG+'% de réussite</b>')+'</span>'+ic('chev-right')+'</summary>';
+  if(!rp.length){el.innerHTML=h+'<div class="acc-vide" style="padding:14px 16px">Aucun repassage cette année.</div></details>';return;}
+  h+='<div class="rs-body"><div class="agency-grid">';
+  [['','Toutes agences','SBAE + CDS réunis'],['sbae','SBAE','Seiches · AE11'],['cds','CDS','Saint-Sylvain · AE8']].forEach(function(a){
+    var l=a[0]?rp.filter(function(s){return s.agence===a[0];}):rp,t=tx(l);
+    var r=l.filter(function(s){return s.resultat==='recu';}).length,e=l.filter(function(s){return s.resultat==='echec';}).length,ex=r+e;
+    h+='<div class="agency-card '+(a[0]||'')+'"'+(a[0]?'':' style="border-top:3px solid var(--warn)"')+'>'+
+      '<div class="agency-head">'+(a[0]?'<span class="badge '+a[0]+'">● '+a[0].toUpperCase()+'</span>':'<span class="badge" style="background:var(--warn-light);color:#92400e">'+ic('retry')+' REPASSAGES</span>')+
+      '<div><div class="agency-name">'+a[1]+'</div><div class="agency-sub">'+a[2]+'</div></div>'+
+      '<div class="agency-rate"><div class="agency-rate-val" style="color:'+coul(t)+'">'+(t===null?'—':t+'%')+'</div><div class="agency-rate-lbl">réussite</div></div></div>'+
+      '<div class="progress"><div class="seg-ok" style="width:'+(ex?r/ex*100:0)+'%"></div><div class="seg-ko" style="width:'+(ex?e/ex*100:0)+'%"></div></div>'+
+      ligneHeures(l)+metriquesStats(l,'Repassages '+a[1]+' · année '+annee,'Présentés')+'</div>';
+  });
+  h+='</div>';
+  // Détail par rang de passage
+  h+='<table class="dim-t rs-t"><thead><tr><th></th><th>Présentés</th><th>Reçus</th><th>Échecs</th><th>Réussite</th><th>Heures moy.</th></tr></thead><tbody>';
+  ['B2','B3','B4+'].forEach(function(code){
+    var l=rp.filter(function(s){return s.passage===code;});if(!l.length)return;
+    var r=l.filter(function(s){return s.resultat==='recu';}),e=l.filter(function(s){return s.resultat==='echec';}),t=tx(l),m=moyenneHeures(l);
+    var lien=function(liste,lib,cls){var k='l'+(++statsSeq);STATS_LISTES[k]={titre:lib+' — '+libPassage(code)+' · année '+annee,list:liste};
+      return '<button class="dim-n '+(cls||'')+'" onclick="voirListeStats(\''+k+'\')"'+(liste.length?'':' disabled')+'>'+liste.length+'</button>';};
+    h+='<tr><td class="dim-nom">'+libPassage(code)+'</td><td>'+lien(l,'Présentés')+'</td><td>'+lien(r,'Reçus','ok')+'</td><td>'+lien(e,'Échecs','ko')+'</td>'+
+      '<td><div class="dim-taux"><b style="color:'+coul(t)+'">'+(t===null?'—':t+'%')+'</b><span class="dim-bar"><i style="width:'+(t||0)+'%;background:'+coul(t)+'"></i></span></div></td>'+
+      '<td class="dim-hm">'+(m?fmtHeures(m.moy):'—')+'</td></tr>';
+  });
+  el.innerHTML=h+'</tbody></table></div></details>';
+}
+
 function renderStatsView(){
   syncMonthSelectors();
   STATS_LISTES={};statsSeq=0;
@@ -1932,6 +1998,7 @@ function renderStatsView(){
   renderAgencyStats(ms);
   renderAnneeStats();
   renderStatsDimensions();
+  renderStatsRepassage();
 }
 /* Bilan annuel — année de la période affichée, 1re présentation uniquement */
 function renderAnneeStats(){
@@ -2367,6 +2434,9 @@ function updateSlotEleve(id,val){
   s.nom=val;
   var ag=agenceDe(val);
   if(ag)s.agence=ag;
+  // Catégorie choisie dans l'onglet Élèves : reprise sur la place
+  var eoF=eleveObj(val);
+  if(eoF&&eoF.formation){s.formation=eoF.formation;if(/AAC/.test(eoF.formation))s.type_permis='AAC';}
   if(!val){s.pp=false;s.vm=false;}
   if(val){var eo=eleveObj(val);if(eo)eo.moisPrevu='';} // prévision soldée : il est sur le planning
   renderPlanning();
@@ -2579,7 +2649,15 @@ var KCOLS=[
 ];
 var LIB_DEST={sbae:'SBAE',cds:'CDS',repassage:'Repassage'};
 var elFiltre={txt:'',vue:'tous'};
-var elSuggestion=null,elListeCollee=null,kdrag=null,elOuverts={};
+var elSuggestion=null,elListeCollee=null,kdrag=null,elOuverts={},elCategorie='',elCatManuelle=false;
+// Choix de la catégorie au moment de l'ajout
+function renderCategorieChoix(){
+  var el=document.getElementById('el-cat');if(!el)return;
+  el.innerHTML='<span class="el-cat-l">Catégorie</span>'+FORMATIONS.map(function(f){
+    return '<button type="button" class="el-cat-b'+(elCategorie===f?' on':'')+'" onclick="choisirCategorie(\''+f+'\')">'+f.replace(/^B /,'')+'</button>';}).join('');
+}
+function choisirCategorie(f){elCategorie=elCategorie===f?'':f;elCatManuelle=true;renderCategorieChoix();document.getElementById('el-nom').focus();}
+function setFormationEleve(nom,val){var e=eleveObj(nom);if(!e)return;e.formation=val;renderBanque();toast(nom+' → '+(val||'catégorie retirée'),'#057a55');}
 
 // Tous les noms déjà vus (élèves, repassage, historique des examens)
 function nomsConnus(){
@@ -2619,6 +2697,12 @@ function suggererAgence(){
   var ou=v?ouEstEleve(v):null,ag=v?agenceConnue(v):null;
   elSuggestion=ou||ag;
   majBoutonsDestination();
+  // Ancien élève : on pré-remplit sa catégorie (sauf si elle a été choisie à la main)
+  if(!elCatManuelle){
+    var eo=v?eleveObj(v):null,ex=v?state.slots.filter(function(s){return s.nom===v;}).sort(function(a,b){return b.date.localeCompare(a.date);})[0]:null;
+    elCategorie=(eo&&eo.formation)||(ex?formationDe(ex,true):'')||'';
+    renderCategorieChoix();
+  }
   if(!v)hint.innerHTML='';
   else if(ou)hint.innerHTML=ic('check')+' <b>'+esc(v)+'</b> est déjà en <b>'+LIB_DEST[ou]+'</b>. Choisis une autre destination pour le déplacer.';
   else if(ag)hint.innerHTML=ic('clock')+' Ancien élève, passé par <b>'+LIB_DEST[ag]+'</b>. Appuie sur <b>Entrée</b> pour l\'ajouter en '+LIB_DEST[ag]+', ou choisis ci-dessous.';
@@ -2637,7 +2721,7 @@ function collerListeEleves(e){
 }
 function viderAjoutEleve(){
   var inp=document.getElementById('el-nom');inp.readOnly=false;inp.value='';
-  elListeCollee=null;suggererAgence();inp.focus();
+  elListeCollee=null;elCategorie='';elCatManuelle=false;suggererAgence();renderCategorieChoix();inp.focus();
 }
 // Range (ou déplace) un élève vers SBAE, CDS ou Repassage
 function rangerEleve(nom,dest){
@@ -2662,8 +2746,8 @@ function ajouterEleveVers(dest){
   if(!dest){toast('Choisis SBAE, CDS ou Repassage','#d97706');return;}
   var noms=elListeCollee||[inp.value.trim()].filter(Boolean);
   if(!noms.length){toast('Tape d\'abord le nom d\'un élève','#d97706');inp.focus();return;}
-  noms.forEach(function(n){rangerEleve(n,dest);});
-  toast((noms.length>1?noms.length+' élèves':noms[0])+' → '+LIB_DEST[dest]+' ✓','#057a55');
+  noms.forEach(function(n){rangerEleve(n,dest);var e=eleveObj(n);if(e&&elCategorie)e.formation=elCategorie;});
+  toast((noms.length>1?noms.length+' élèves':noms[0])+' → '+LIB_DEST[dest]+(elCategorie?' · '+elCategorie:'')+' ✓','#057a55');
   viderAjoutEleve();
   renderBanque();
   // Petit effet pour repérer la carte ajoutée
@@ -2700,6 +2784,7 @@ function setFiltreEleves(v){elFiltre.vue=v;renderBanque();}
 function renderBanque(){
   var board=document.getElementById('kanban-board');if(!board)return;
   remplirSuggestionsEleves();
+  renderCategorieChoix();
   var auj=isoJour(new Date()),q=(elFiltre.txt||'').trim().toLowerCase();
   var prochain=function(nom){return state.slots.filter(function(s){return s.nom===nom&&s.date>=auj&&!s.resultat;}).sort(function(a,b){return a.date.localeCompare(b.date);})[0];};
   var aPermis=function(nom){return state.slots.some(function(s){return s.nom===nom&&s.resultat==='recu';});};
@@ -2741,6 +2826,7 @@ function renderBanque(){
         var bientot=x.e.statut==='bientot';
         html+='<button class="el-tag st'+(bientot?' bientot':'')+'" title="Cliquer pour changer" onclick="basculerStatutEleve(\''+nq+'\')">'+(bientot?ic('clock')+'Bientôt prêt':ic('grad')+'En formation')+'</button>';
         if(bientot)html+='<select class="el-mois" onchange="setMoisPrevu(\''+nq+'\',this.value)"><option value="">Mois ?</option>'+moisOptsSel(x.e.moisPrevu)+'</select>';
+        html+='<select class="el-mois el-form'+(x.e.formation?' ok':'')+'" title="Catégorie" onchange="setFormationEleve(\''+nq+'\',this.value)"><option value="">Catégorie ?</option>'+FORMATIONS.map(function(f){return '<option'+(x.e.formation===f?' selected':'')+'>'+f+'</option>';}).join('')+'</select>';
       }
       if(ok)html+='<span class="el-tag ok">'+ic('check')+'Permis</span>';
       else if(px)html+='<span class="el-tag exam">'+ic('calendar')+labelJourCourt(px.date)+'</span>';
