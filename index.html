@@ -515,7 +515,7 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
   .hdr-lbl{padding:6px 9px!important}
   .lbl-long{display:none!important}.lbl-short{display:inline!important}
 }
-@media(min-width:641px) and (max-width:1000px){.app-title{display:none}.nav-btn span{display:none}.nav-btn{padding:8px 10px}}
+@media(min-width:641px) and (max-width:1000px){.app-title{display:none}.nav-btn span,.nav-btn .lbl-short,.nav-btn .lbl-long{display:none!important}.nav-btn{padding:8px 10px}}
 
 /* ===== ÉLÈVES : ajout rapide + tri ===== */
 #view-banque{max-width:1180px;margin:0 auto}
@@ -692,6 +692,8 @@ body.lecture-seule .att-badge{cursor:default}
 .mp-choix span{display:flex;flex-direction:column}
 .mp-choix b{font-size:13px}
 .mp-choix em{font-style:normal;font-size:11px;color:var(--text-muted)}
+.mp-choix label select{margin-left:auto;width:auto;font-size:13px!important;padding:6px 8px}
+.mp-choix span{flex:1;min-width:0}
 .mp-check{display:flex;align-items:center;gap:8px;font-size:13px;margin:12px 0 4px;cursor:pointer}
 .mp-check input{accent-color:var(--easy)}
 
@@ -1235,7 +1237,13 @@ body.lecture-seule .obs-badge{display:inline-flex}
 <!-- MODAL OPTIONS D'IMPRESSION -->
 <div class="modal-bg" id="modal-print" style="display:none" onclick="if(event.target===this)closeModal('modal-print')">
   <div class="modal" style="width:440px;max-width:94vw">
-    <div class="modal-title"><svg class="ic"><use href="#i-printer"/></svg>Imprimer — <span id="mp-mois"></span></div>
+    <div class="modal-title"><svg class="ic"><use href="#i-printer"/></svg>Imprimer le planning</div>
+    <div class="mp-lbl">Période</div>
+    <div class="mp-choix">
+      <label><input type="radio" name="mp-per" value="avenir" checked><span><b>Examens à venir</b><em>À partir d'aujourd'hui, pour placer les élèves en réunion</em></span>
+        <select id="mp-horizon" onclick="event.stopPropagation()" onchange="document.querySelector('input[name=mp-per][value=avenir]').checked=true"><option value="1">1 mois</option><option value="2">2 mois</option><option value="3" selected>3 mois</option><option value="0">Tout</option></select></label>
+      <label><input type="radio" name="mp-per" value="mois"><span><b>Mois affiché · <span id="mp-mois"></span></b><em>Tout le mois, examens passés compris</em></span></label>
+    </div>
     <div class="mp-lbl">Présentation</div>
     <div class="mp-choix">
       <label><input type="radio" name="mp-grp" value="date" checked><span><b>Tout le mois</b><em>Toutes les dates à la suite</em></span></label>
@@ -2791,8 +2799,6 @@ document.querySelectorAll('.modal-bg').forEach(function(m){m.addEventListener('c
 /* ===== IMPRESSION ===== */
 /* ===== IMPRESSION (PDF) — options puis document A4 au design de l'appli ===== */
 function printPlanning(){
-  var ms=state.slots.filter(function(s){return s.month===state.currentMonth;});
-  if(!ms.length){toast('Aucune place ce mois','#d97706');return;}
   var p=state.currentMonth.split('-').map(Number);
   document.getElementById('mp-mois').textContent=MONTHS[p[1]-1]+' '+p[0];
   document.getElementById('modal-print').style.display='flex';
@@ -2801,7 +2807,9 @@ function lancerImpression(){
   var grp=(document.querySelector('input[name="mp-grp"]:checked')||{}).value||'date';
   var ag=document.getElementById('mp-agence').value;
   var sansLibres=document.getElementById('mp-libres').checked;
-  var html=docImpression({grp:grp,ag:ag,sansLibres:sansLibres});
+  var per=(document.querySelector('input[name="mp-per"]:checked')||{}).value||'avenir';
+  var horizon=+document.getElementById('mp-horizon').value;
+  var html=docImpression({grp:grp,ag:ag,sansLibres:sansLibres,per:per,horizon:horizon});
   if(!html){toast('Rien à imprimer avec ces choix','#d97706');return;}
   // La fenêtre s'ouvre dans le clic (sinon le navigateur la bloque)
   var w=window.open('','_blank','width=900,height=1000');
@@ -2817,13 +2825,23 @@ function docImpression(o){
   var esc=function(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
   var p=state.currentMonth.split('-').map(Number);
   var moisLabel=MONTHS[p[1]-1]+' '+p[0];
+  var avenir=o.per==='avenir';
+  var t0=new Date();t0.setHours(0,0,0,0);
+  var auj=isoJour(t0),lim=o.horizon?isoJour(new Date(t0.getFullYear(),t0.getMonth()+o.horizon,t0.getDate())):'9999';
   var ms=state.slots.filter(function(s){
-    if(s.month!==state.currentMonth)return false;
+    if(avenir){if(s.date<auj||s.date>=lim)return false;}
+    else if(s.month!==state.currentMonth)return false;
     if(o.ag&&s.agence!==o.ag)return false;
     if(o.sansLibres&&!estAffecte(s))return false;
     return true;
   });
   if(!ms.length)return '';
+  if(avenir){
+    var dmin=ms.reduce(function(a,s){return s.date<a?s.date:a;},'9999'),dmax=ms.reduce(function(a,s){return s.date>a?s.date:a;},'');
+    moisLabel='examens à venir';
+    var fmtC=function(iso){var d=new Date(iso+'T12:00:00');return d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase();};
+    o.periodeTxt='du '+fmtC(dmin)+' au '+fmtC(dmax)+' '+dmax.slice(0,4);
+  }
   var logo=(document.querySelector('.logo-img-real')||{}).src||'';
   var NOM_AG={sbae:'SBAE · Seiches',cds:'CDS · Saint-Sylvain'};
   var bilan=function(list){
@@ -2849,6 +2867,7 @@ function docImpression(o){
     '.gh h2{font:600 15px Fredoka,"DM Sans",Arial}.gh .gm{margin-left:auto;font-size:10px;color:#6b7280}'+
     '.gh .dot{width:10px;height:10px;border-radius:50%}'+
     '.jour{break-inside:avoid;margin-bottom:12px}'+
+    '.mt{font:600 14px Fredoka,"DM Sans",Arial;color:#ff3131;border-bottom:2px solid #ff3131;padding:10px 2px 5px;margin:6px 0 10px;display:flex;align-items:baseline;gap:10px;break-after:avoid}.mt span{font:500 10px "DM Sans",Arial;color:#6b7280}.mt b{color:#ff3131}'+
     '.jt{display:flex;align-items:baseline;gap:8px;margin:0 2px 5px}.jt b{font:600 12.5px Fredoka,"DM Sans",Arial}.jt span{font-size:9.5px;color:#9ca3af}'+
     'table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden}'+
     'th{background:#f7f7f6;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#6b7280;text-align:left;padding:6px 9px;border-bottom:1px solid #e5e7eb}'+
@@ -2866,9 +2885,16 @@ function docImpression(o){
     '<style>'+css+'</style></head><body>';
   var titreGrp={date:'Toutes les places',agence:'Par agence',moniteur:'Par moniteur'}[o.grp];
   html+='<div class="hd">'+(logo?'<img src="'+logo+'" alt="easy">':'<span class="lg">easy</span>')+
-    '<div><h1>Planning des examens — '+esc(moisLabel)+'</h1><div class="sub">'+titreGrp+(o.ag?' · '+NOM_AG[o.ag]:' · toutes agences')+(o.sansLibres?' · places libres masquées':'')+'</div></div>'+
+    '<div><h1>'+(avenir?'Examens à venir':'Planning des examens — '+esc(moisLabel))+'</h1><div class="sub">'+(avenir?esc(o.periodeTxt)+' · ':'')+titreGrp+(o.ag?' · '+NOM_AG[o.ag]:' · toutes agences')+(o.sansLibres?' · places libres masquées':'')+'</div></div>'+
     '<div class="imp">Imprimé le '+new Date().toLocaleDateString('fr-FR')+'<br>'+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div></div>';
-  html+='<div class="kpis">'+
+  if(avenir){
+    var nbDates=new Set(ms.map(function(s){return s.date;})).size;
+    html+='<div class="kpis" style="grid-template-columns:repeat(4,1fr)">'+
+      '<div class="kpi"><b>'+nbDates+'</b><span>date'+(nbDates>1?'s':'')+' d\'examen</span></div>'+
+      '<div class="kpi"><b>'+b.places+'</b><span>places au total</span></div>'+
+      '<div class="kpi"><b>'+b.aff+'</b><span>élèves déjà placés</span></div>'+
+      '<div class="kpi" style="border-color:#ff3131;background:#fff5f5"><b style="color:#ff3131">'+b.libres+'</b><span>place'+(b.libres>1?'s':'')+' libre'+(b.libres>1?'s':'')+' à remplir</span></div></div>';
+  } else html+='<div class="kpis">'+
     '<div class="kpi"><b>'+b.places+'</b><span>places</span></div>'+
     '<div class="kpi"><b>'+b.aff+'</b><span>élèves placés'+(b.libres?' · '+b.libres+' libre'+(b.libres>1?'s':''):'')+'</span></div>'+
     '<div class="kpi"><b style="color:#057a55">'+b.recus+'</b><span>reçus</span></div>'+
@@ -2893,11 +2919,15 @@ function docImpression(o){
         (gb.taux===null?'':' · '+gb.taux+' % en 1re fois')+(gb.heures?' · '+fmtHeures(gb.heures.moy)+' de formation en moy.':'')+'</span></div>';
     }
     var dates=Array.from(new Set(g.list.map(function(s){return s.date;}))).sort();
+    var plusieursMois=new Set(dates.map(function(d){return d.slice(0,7);})).size>1,moisCourant='';
     dates.forEach(function(d){
+      if(plusieursMois&&d.slice(0,7)!==moisCourant){moisCourant=d.slice(0,7);var mm=+moisCourant.slice(5)-1;
+        var lm=g.list.filter(function(s){return s.month===moisCourant||s.date.slice(0,7)===moisCourant;}),lib=lm.filter(function(s){return !estAffecte(s);}).length;
+        html+='<div class="mt">'+MONTHS[mm]+' '+moisCourant.slice(0,4)+'<span>'+lm.length+' place'+(lm.length>1?'s':'')+(lib?' · <b>'+lib+' libre'+(lib>1?'s':'')+'</b>':'')+'</span></div>';}
       var jour=g.list.filter(function(s){return s.date===d;}).sort(function(a,c){return (a.heure||'99').localeCompare(c.heure||'99');});
       var dd=new Date(d+'T12:00:00');
       html+='<div class="jour"><div class="jt"><b>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</b><span>'+jour.length+' place'+(jour.length>1?'s':'')+'</span></div>';
-      html+='<table><thead><tr><th>Heure</th><th>Élève</th><th>Cat.</th>'+(o.grp!=='moniteur'?'<th>Moniteur</th>':'')+(o.grp!=='agence'&&!o.ag?'<th>Agence</th>':'')+'<th>Heures</th><th>Résultat</th><th>Note</th></tr></thead><tbody>';
+      html+='<table><thead><tr><th>Heure</th><th>Élève</th><th>Cat.</th>'+(o.grp!=='moniteur'?'<th>Moniteur</th>':'')+(o.grp!=='agence'&&!o.ag?'<th>Agence</th>':'')+'<th>Heures</th><th>'+(avenir?'Statut':'Résultat')+'</th><th>Note</th></tr></thead><tbody>';
       jour.forEach(function(s){
         var st=statutPlace(s);
         html+='<tr><td class="h'+(s.heure?'':' muted')+'">'+(s.heure||'--:--')+'</td>'+
@@ -2913,7 +2943,7 @@ function docImpression(o){
     });
     html+='</div>';
   });
-  html+='<div class="ft"><span>Easy Auto-École · Places Permis</span><span>Réussite calculée sur les élèves passant pour la 1re fois</span></div>';
+  html+='<div class="ft"><span>Easy Auto-École · Places Permis</span><span>'+(avenir?'Places libres = à proposer aux élèves prêts':'Réussite calculée sur les élèves passant pour la 1re fois')+'</span></div>';
   html+='</body></html>';
   return html;
 }
