@@ -587,6 +587,31 @@ button.el-tag:hover{filter:brightness(.95)}
 @media(max-width:900px){.el-board{grid-template-columns:minmax(0,1fr)}}
 @media(hover:none){.el-x,.el-move{opacity:1;max-height:none}}
 @media(max-width:640px){.el-dest{gap:6px}.el-btn{padding:10px 4px}.el-btn b{font-size:13px}.el-add-in input{font-size:16px!important}}
+/* Note du mois + calendrier plus grand */
+.pl-note{margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--bg);transition:all .15s}
+.pl-note.remplie{background:#fffbeb;border-color:#fde68a}
+body.dark .pl-note.remplie{background:#2d2408;border-color:#5a4a12}
+.pl-note:focus-within{border-color:var(--easy);background:var(--surface)}
+.pn-h{display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px}
+.pn-h .ic{width:14px;height:14px;color:var(--warn)}
+.pn-h span{margin-left:auto;font-size:11px;color:var(--text-muted)}
+.pl-note textarea{width:100%;border:none!important;background:transparent!important;resize:vertical;font-family:inherit;font-size:13px!important;line-height:1.45;padding:2px 0!important;min-height:72px;box-shadow:none!important;outline:none;color:var(--text)}
+.pn-meta{font-size:10.5px;color:var(--text-light);margin-top:4px}
+@media(min-width:901px){
+  .pl{grid-template-columns:270px minmax(0,1fr) 320px}
+  .pl-side .mc-day{height:38px;font-size:14px}
+  .pl-side .mc-wd{font-size:11px;padding:4px 0 8px}
+  .pl-side .mc-day.has i{width:5px;height:5px;margin-left:-2.5px;bottom:4px}
+  .pl-side .pl-month select{font-size:15px!important}
+  .pl-side .mc-grid{gap:3px}
+}
+@media(min-width:901px) and (max-width:1100px){.pl{grid-template-columns:240px minmax(0,1fr) 280px}.pl-side .mc-day{height:33px;font-size:12.5px}}
+
+.acc-note{background:#fffbeb;border-color:#fde68a;cursor:pointer}
+body.dark .acc-note{background:#2d2408;border-color:#5a4a12}
+.acc-note .acc-h .ic{color:var(--warn)}
+.acc-note-txt{font-size:13px;line-height:1.5;max-height:140px;overflow:hidden}
+
 /* Repassage en menus déroulants */
 .el-grp{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
 .el-grp summary{list-style:none;display:flex;align-items:center;gap:8px;padding:11px 12px;cursor:pointer;font-size:13px;user-select:none}
@@ -624,7 +649,7 @@ button.el-tag:hover{filter:brightness(.95)}
 .acc-date{font-size:13px;color:var(--text-muted);text-transform:capitalize;margin-top:2px}
 .acc-resume{font-size:13px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px}
 .acc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
-.acc-semaine{grid-row:span 3}
+.acc-semaine{grid-row:span 4}
 .acc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:14px 16px}
 .acc-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .acc-h .ic{width:18px;height:18px;color:var(--easy)}
@@ -940,6 +965,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
   <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
@@ -1008,6 +1034,7 @@ body.lecture-seule .obs-badge{display:inline-flex}
             <button class="pl-ico" id="btn-next-month" title="Mois suivant"><svg class="ic"><use href="#i-chev-right"/></svg></button>
           </div>
           <div class="pl-dates" id="pl-dates"></div>
+          <div class="pl-note" id="pl-note"></div>
           <div class="pl-side-actions">
             <button class="btn" id="btn-add-slot" title="Ajouter une nouvelle date d'examen"><svg class="ic"><use href="#i-calendar-plus"/></svg><span>Nouvelle date</span></button>
             <button class="btn" id="btn-print" title="Imprimer le planning du mois"><svg class="ic"><use href="#i-printer"/></svg><span>Imprimer</span></button>
@@ -1684,6 +1711,13 @@ function renderAccueil(){
   }
   html+='</section>';
 
+  // Note du mois en cours (admins)
+  var nm=(state.notesMois||{})[isoJour(t).slice(0,7)];
+  if(!lectureSeule&&nm&&nm.texte&&nm.texte.trim()){
+    html+='<section class="acc-card acc-note" onclick="showView(\'planning\');allerAuProchain(\''+isoJour(t)+'\')" title="Modifier dans le planning">'+
+      '<div class="acc-h">'+ic('edit')+'<h2>Note du mois</h2></div><div class="acc-note-txt">'+esc(nm.texte).replace(/\n/g,'<br>')+'</div></section>';
+  }
+
   // 2. Places libres à remplir
   html+='<section class="acc-card"><div class="acc-h">'+ic('plus')+'<h2>Places libres</h2><span class="acc-n'+(libres.length?' alerte':'')+'">'+libres.length+'</span></div>';
   if(!libres.length)html+='<div class="acc-vide ok">'+ic('check')+' Toutes les places à venir ont un élève.</div>';
@@ -1990,7 +2024,45 @@ function renderPlanning(){
   }
 
   renderDetail();
+  renderNoteMois();
   persist();
+}
+
+/* ===== NOTE DU MOIS (comptes admin : pense-bête du secrétariat) ===== */
+var noteTimer=null;
+function metaNoteMois(n){
+  if(!n||!n.le)return 'Enregistrée automatiquement, visible par le secrétariat.';
+  var d=new Date(n.le);
+  return 'Modifiée le '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+(n.par?' · '+esc(n.par.split('@')[0]):'');
+}
+function renderNoteMois(){
+  var el=document.getElementById('pl-note');if(!el)return;
+  if(lectureSeule){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='';
+  var ta=document.getElementById('pl-note-txt');
+  // Ne pas écraser le texte pendant qu'on écrit
+  if(ta&&document.activeElement===ta&&el.getAttribute('data-mois')===state.currentMonth)return;
+  var p=state.currentMonth.split('-'),n=(state.notesMois||{})[state.currentMonth]||{};
+  el.setAttribute('data-mois',state.currentMonth);
+  el.classList.toggle('remplie',!!(n.texte&&n.texte.trim()));
+  el.innerHTML='<div class="pn-h">'+ic('edit')+'<b>Note du mois</b><span>'+MONTHS[+p[1]-1].toLowerCase()+'</span></div>'+
+    '<textarea id="pl-note-txt" rows="4" placeholder="Pense-bête pour ce mois : dossiers à envoyer, élèves à relancer, rappels…" oninput="saisirNoteMois(this.value)">'+esc(n.texte||'')+'</textarea>'+
+    '<div class="pn-meta" id="pl-note-meta">'+metaNoteMois(n)+'</div>';
+}
+function saisirNoteMois(v){
+  if(lectureSeule)return;
+  var mois=state.currentMonth;
+  clearTimeout(noteTimer);
+  var m=document.getElementById('pl-note-meta');if(m)m.textContent='Enregistrement…';
+  noteTimer=setTimeout(function(){
+    state.notesMois=state.notesMois||{};
+    var u=(typeof firebase!=='undefined'&&firebase.auth)?firebase.auth().currentUser:null;
+    if(v.trim())state.notesMois[mois]={texte:v,le:new Date().toISOString(),par:u&&u.email||''};
+    else delete state.notesMois[mois];
+    persist();
+    var el=document.getElementById('pl-note');if(el)el.classList.toggle('remplie',!!v.trim());
+    var mm=document.getElementById('pl-note-meta');if(mm)mm.innerHTML=v.trim()?metaNoteMois(state.notesMois[mois]):'Note effacée.';
+  },700);
 }
 
 function vueOrdinateur(){return window.matchMedia('(min-width:901px)').matches;}
@@ -2950,9 +3022,10 @@ function applyRemote(d){
   state.slots=d.slots;
   state.eleves=Array.isArray(d.eleves)?d.eleves:[];
   state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+  state.notesMois=(d.notesMois&&typeof d.notesMois==='object')?d.notesMois:(state.notesMois||{});
   state.nextId=d.nextId||state.nextId;
   state.nextWaitId=d.nextWaitId||state.nextWaitId;
-  try{localStorage.setItem(STORAGE_KEY, JSON.stringify({v:1,savedAt:new Date().toISOString(),slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId}));}catch(e){}
+  try{localStorage.setItem(STORAGE_KEY, JSON.stringify({v:1,savedAt:new Date().toISOString(),slots:state.slots,eleves:state.eleves,waitList:state.waitList,notesMois:state.notesMois||{},nextId:state.nextId,nextWaitId:state.nextWaitId}));}catch(e){}
   buildMonthSel();
   var active=document.querySelector('.view.active');
   if(active&&active.id==='view-stats')renderStatsView();
@@ -2964,7 +3037,7 @@ function applyRemote(d){
   updateNavCounts();
   majCompteAnts();
   // Mémorise ce qui vient du cloud : on ne le renverra pas tant que rien ne change
-  cloud.lastPayload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId});
+  cloud.lastPayload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,notesMois:state.notesMois||{},nextId:state.nextId,nextWaitId:state.nextWaitId});
   cloud.applying=false;
 }
 function cloudSave(force){
@@ -2975,7 +3048,7 @@ function cloudSave(force){
   if(cloud.applying&&!force)return;
   clearTimeout(cloud.timer);
   cloud.timer=setTimeout(function(){
-    var payload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,nextId:state.nextId,nextWaitId:state.nextWaitId});
+    var payload=JSON.stringify({slots:state.slots,eleves:state.eleves,waitList:state.waitList,notesMois:state.notesMois||{},nextId:state.nextId,nextWaitId:state.nextWaitId});
     // Rien n'a changé (simple clic, changement de date…) : pas d'écriture
     if(payload===cloud.lastPayload&&!force)return;
     cloud.lastPayload=payload;
@@ -3007,7 +3080,7 @@ function persist(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       v:1, savedAt:new Date().toISOString(),
-      slots:state.slots, eleves:state.eleves, waitList:state.waitList,
+      slots:state.slots, eleves:state.eleves, waitList:state.waitList, notesMois:state.notesMois||{},
       nextId:state.nextId, nextWaitId:state.nextWaitId
     }));
   }catch(e){/* quota ou navigation privée : on ignore silencieusement */}
@@ -3022,6 +3095,7 @@ function loadState(){
       state.slots=d.slots;
       state.eleves=Array.isArray(d.eleves)?d.eleves:[];
       state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+  state.notesMois=(d.notesMois&&typeof d.notesMois==='object')?d.notesMois:(state.notesMois||{});
       state.nextId=d.nextId||(state.slots.reduce(function(m,s){return Math.max(m,s.id||0);},0)+1);
       state.nextWaitId=d.nextWaitId||(state.waitList.reduce(function(m,w){return Math.max(m,w.id||0);},0)+1);
       return true;
@@ -3032,7 +3106,7 @@ function loadState(){
 function exportJSON(){
   var data={
     app:'easy-permis', v:1, exportedAt:new Date().toISOString(),
-    slots:state.slots, eleves:state.eleves, waitList:state.waitList,
+    slots:state.slots, eleves:state.eleves, waitList:state.waitList, notesMois:state.notesMois||{},
     nextId:state.nextId, nextWaitId:state.nextWaitId
   };
   var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -3057,6 +3131,7 @@ function importJSON(ev){
       state.slots=d.slots;
       state.eleves=Array.isArray(d.eleves)?d.eleves:[];
       state.waitList=Array.isArray(d.waitList)?d.waitList:[];
+  state.notesMois=(d.notesMois&&typeof d.notesMois==='object')?d.notesMois:(state.notesMois||{});
       state.nextId=d.nextId||(state.slots.reduce(function(m,s){return Math.max(m,s.id||0);},0)+1);
       state.nextWaitId=d.nextWaitId||(state.waitList.reduce(function(m,w){return Math.max(m,w.id||0);},0)+1);
       persist();
