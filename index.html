@@ -507,6 +507,13 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .msg-st.lu{color:var(--ok)}
 .msg-st .ic{width:13px;height:13px}
 .msg-row .btn{font-size:12px;padding:6px 10px}
+.msg-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-4px 0 10px}
+.msg-bar .dim-seg{margin-left:0;margin-right:auto}
+.msg-bar .btn{font-size:12px;padding:6px 10px}
+.msg-acts{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.msg-acts .pl-ico{width:30px;height:30px}
+.msg-acts .pl-ico .ic{width:16px;height:16px}
+.msg-del:hover{background:var(--danger-light)!important;color:var(--danger)!important}
 @media(max-width:640px){.msg-pop{right:16px;bottom:calc(84px + env(safe-area-inset-bottom))}}
 /* En-tête sur écran moyen : on compacte pour que tout tienne */
 @media(min-width:641px) and (max-width:1240px){
@@ -653,6 +660,35 @@ body.dark .acc-note{background:#2d2408;border-color:#5a4a12}
 .rep-stats[open] summary{border-bottom:1px solid var(--border)}
 .rs-body{padding:16px}
 .rs-t{margin-top:16px}
+
+/* Confirmation élève */
+.cf-nom{font-size:20px;font-weight:700;margin:2px 0 10px}
+.cf-ligne{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted);margin-bottom:10px}
+.cf-ligne .ic{width:16px;height:16px}
+.cf-note{font-size:13px;padding:8px 11px;border-radius:10px;background:var(--bg);color:var(--text-muted);margin-bottom:6px}
+.cf-note.new{background:#fff7ed;color:#b45309}
+.cf-note.rep{background:var(--easy-light);color:var(--easy)}
+
+/* Placer un élève en repassage */
+.btn-placer{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:12px;font-weight:700;color:var(--easy);background:var(--easy-light);border:1px solid transparent;border-radius:20px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.btn-placer:hover{border-color:var(--easy)}
+.btn-placer .ic,.el-tag.placer .ic{width:13px;height:13px}
+.el-tag.placer{background:var(--easy-light);color:var(--easy);font-weight:700}
+.mpl-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--text-muted);margin:-4px 0 12px}
+.mpl-list{max-height:52vh;overflow-y:auto;border:1px solid var(--border);border-radius:12px}
+.mpl-mois{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);background:var(--bg);padding:6px 12px;position:sticky;top:0}
+.mpl-row{display:flex;align-items:center;gap:10px;width:100%;border:none;border-bottom:1px solid var(--border);background:var(--surface);padding:11px 12px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--text);text-align:left}
+.mpl-row:last-child{border-bottom:none}
+.mpl-row:hover{background:var(--easy-light)}
+.mpl-row.meme{box-shadow:inset 3px 0 0 var(--easy)}
+.mpl-row>.ic{width:15px;height:15px;color:var(--text-light)}
+.mpl-d{font-weight:700;width:86px}
+.mpl-h{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);width:44px}
+.mpl-mon{flex:1;color:var(--text-muted)}
+.mpl-j{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.ag-mini{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.ag-mini.sbae{background:var(--sbae-light);color:var(--sbae-dark)}
+.ag-mini.cds{background:var(--cds-light);color:var(--cds-dark)}
 
 /* Catégorie à l'ajout d'un élève */
 .el-cat{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 2px 0}
@@ -1280,6 +1316,22 @@ body.lecture-seule .obs-badge{display:inline-flex}
 
 <!-- MODAL AJOUT REPASSAGE : voir plus haut -->
 
+<!-- MODAL PLACER UN ÉLÈVE SUR UNE PLACE LIBRE -->
+<div class="modal-bg" id="modal-confirm" style="display:none" onclick="if(event.target===this)validerConfirm(false)">
+  <div class="modal" style="width:420px;max-width:94vw">
+    <div class="modal-title">Confirmer l'élève sur cette place ?</div>
+    <div id="mcf-contenu"></div>
+    <div class="modal-actions"><button class="btn" onclick="validerConfirm(false)">Annuler</button><button class="btn primary" id="mcf-ok" onclick="validerConfirm(true)">Confirmer</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="modal-placer" style="display:none" onclick="if(event.target===this)closeModal('modal-placer')">
+  <div class="modal" style="width:500px;max-width:94vw">
+    <div class="modal-title" id="mpl-titre"></div>
+    <div id="mpl-contenu"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-placer')">Annuler</button></div>
+  </div>
+</div>
+
 <!-- MODAL MESSAGES (moniteur → secrétariat) -->
 <div class="modal-bg" id="modal-msg" style="display:none" onclick="if(event.target===this)closeModal('modal-msg')">
   <div class="modal" style="width:520px;max-width:94vw">
@@ -1448,7 +1500,7 @@ function initMessages(){
       var l=[];snap.forEach(function(d){var x=d.data();x.id=d.id;l.push(x);});
       l.sort(function(a,b){return (b.creeLe||'').localeCompare(a.creeLe||'');});
       var nouveaux=[];
-      if(!lectureSeule)l.forEach(function(m){if(!m.lu&&!msgs.vus[m.id])nouveaux.push(m);msgs.vus[m.id]=true;});
+      if(!lectureSeule)l.forEach(function(m){if(!m.lu&&!m.archive&&!msgs.vus[m.id])nouveaux.push(m);msgs.vus[m.id]=true;});
       msgs.liste=l;msgs.init=true;
       document.getElementById('btn-msg').style.display='';
       majBadgeMessages();
@@ -1457,7 +1509,19 @@ function initMessages(){
     },function(){document.getElementById('btn-msg').style.display='none';});
   }catch(e){}
 }
-function nonLus(){return msgs.liste.filter(function(m){return !m.lu;});}
+function nonLus(){return msgs.liste.filter(function(m){return !m.lu&&!m.archive;});}
+// Archiver (masque le message, garde une trace) ou supprimer définitivement (admins)
+function archiverMessage(id,val){
+  if(!msgs.col||lectureSeule)return;
+  var maj={archive:val!==false};if(val!==false){maj.lu=true;maj.luLe=maj.luLe||new Date().toISOString();maj.luPar=msgs.email;}
+  msgs.col.doc(id).update(maj).then(function(){toast(val===false?'Message restauré':'Message archivé','#6b7280');}).catch(function(){toast('Action impossible','#dc2626');});
+}
+function supprimerMessage(id){
+  if(!msgs.col||lectureSeule)return;
+  if(!confirm('Supprimer définitivement ce message ?'))return;
+  msgs.col.doc(id).delete().then(function(){toast('Message supprimé','#6b7280');}).catch(function(){toast('Suppression impossible','#dc2626');});
+}
+function archiverTousLus(){msgs.liste.filter(function(m){return m.lu&&!m.archive;}).forEach(function(m){archiverMessage(m.id,true);});}
 function majBadgeMessages(){
   var b=document.getElementById('msg-badge'),n=lectureSeule?0:nonLus().length;
   document.querySelector('#btn-msg use').setAttribute('href',lectureSeule?'#i-send':'#i-bell');
@@ -1478,6 +1542,7 @@ function quandMessage(iso){
 }
 // Pop-up « nouveau message » (secrétariat)
 function afficherPopupMessage(nouveaux){
+  nouveaux=nouveaux.filter(function(x){return !x.archive;});if(!nouveaux.length)return;
   var m=nouveaux[0],p=document.getElementById('msg-pop');
   p.innerHTML='<div class="mp-top">'+ic('bell')+'<b>'+(nouveaux.length>1?nouveaux.length+' nouveaux messages':'Nouveau message')+'</b>'+
     '<button class="pl-ico" onclick="fermerPopupMessage()" title="Fermer">'+ic('x')+'</button></div>'+
@@ -1515,12 +1580,19 @@ function renderPanneauMessages(){
   } else {
     var n=nonLus().length;
     t.innerHTML=ic('bell')+'Messages des moniteurs'+(n?' <span class="ml-n">'+n+' non lu'+(n>1?'s':'')+'</span>':'');
-    if(!msgs.liste.length)h+='<div class="acc-vide">Aucun message pour l\'instant. Les moniteurs peuvent vous écrire depuis leur compte.</div>';
+    var archives=msgs.liste.filter(function(m){return m.archive;}),visibles=msgs.liste.filter(function(m){return msgs.voirArchives?m.archive:!m.archive;});
+    var nbLusActifs=msgs.liste.filter(function(m){return m.lu&&!m.archive;}).length;
+    h+='<div class="msg-bar"><div class="dim-seg"><button class="'+(msgs.voirArchives?'':'on')+'" onclick="msgs.voirArchives=false;renderPanneauMessages()">Boîte de réception</button><button class="'+(msgs.voirArchives?'on':'')+'" onclick="msgs.voirArchives=true;renderPanneauMessages()">Archives ('+archives.length+')</button></div>'+
+      (!msgs.voirArchives&&n?'<button class="btn" onclick="toutMarquerLu()">'+ic('check')+'Tout lu</button>':'')+
+      (!msgs.voirArchives&&nbLusActifs?'<button class="btn" onclick="archiverTousLus()" title="Archiver tous les messages déjà lus">'+ic('inbox')+'Archiver les lus</button>':'')+'</div>';
+    if(!visibles.length)h+='<div class="acc-vide">'+(msgs.voirArchives?'Aucun message archivé.':'Aucun message. Les moniteurs peuvent vous écrire depuis leur compte.')+'</div>';
     else{
-      if(n)h+='<div style="text-align:right;margin:-6px 0 8px"><button class="btn" onclick="toutMarquerLu()">'+ic('check')+'Tout marquer comme lu</button></div>';
-      h+='<div class="msg-list">'+msgs.liste.map(function(m){
+      h+='<div class="msg-list">'+visibles.map(function(m){
         return '<div class="msg-row'+(m.lu?'':' nonlu')+'"><div class="msg-main"><div class="msg-meta"><b>'+esc(m.nom||m.de)+'</b> · '+quandMessage(m.creeLe)+'</div>'+resumeMessage(m)+(m.texte?'<div class="mp-libre">« '+esc(m.texte)+' »</div>':'')+'</div>'+
-          (m.lu?'<span class="msg-st lu">'+ic('check')+' Lu</span>':'<button class="btn" onclick="marquerLu(\''+m.id+'\')">Marquer lu</button>')+'</div>';}).join('')+'</div>';
+          '<div class="msg-acts">'+(m.archive?'<button class="pl-ico" title="Remettre dans la boîte de réception" onclick="archiverMessage(\''+m.id+'\',false)">'+ic('retry')+'</button>':
+            (m.lu?'<span class="msg-st lu">'+ic('check')+' Lu</span>':'<button class="btn" onclick="marquerLu(\''+m.id+'\')">Marquer lu</button>')+
+            '<button class="pl-ico" title="Archiver" onclick="archiverMessage(\''+m.id+'\',true)">'+ic('inbox')+'</button>')+
+            '<button class="pl-ico msg-del" title="Supprimer" onclick="supprimerMessage(\''+m.id+'\')">'+ic('trash')+'</button></div></div>';}).join('')+'</div>';
     }
   }
   c.innerHTML=h;
@@ -1672,11 +1744,16 @@ function toast(msg,col){var t=document.getElementById('toast');t.textContent=msg
 function estComplet(s){return s.pp&&s.vm;}
 function estAffecte(s){return !!(s.nom&&s.nom.trim());}
 function tousEleves(){
-  return state.eleves.map(function(e){return{n:e.nom,a:e.agence};});
+  // Élèves de la liste + élèves en repassage (même s'ils n'ont pas de fiche)
+  var l=state.eleves.map(function(e){return{n:e.nom,a:e.agence,rep:enRepassage(e.nom)};});
+  state.waitList.forEach(function(w){if(!l.some(function(x){return x.n===w.nom;}))l.push({n:w.nom,a:w.agence,rep:true});});
+  return l;
 }
 function agenceDe(nom){
   var e=state.eleves.find(function(x){return x.nom===nom;});
-  return e?e.agence:null;
+  if(e)return e.agence;
+  var w=state.waitList.find(function(x){return x.nom===nom;});
+  return w?w.agence:null;
 }
 function eleveObj(nom){return state.eleves.find(function(x){return x.nom===nom;});}
 function enRepassage(nom){return state.waitList.some(function(w){return w.nom===nom;});}
@@ -1989,6 +2066,47 @@ function renderStatsRepassage(){
       '<td class="dim-hm">'+(m?fmtHeures(m.moy):'—')+'</td></tr>';
   });
   el.innerHTML=h+'</tbody></table></div></details>';
+}
+
+/* ===== PLACER UN ÉLÈVE (repassage) SUR UNE PLACE LIBRE ===== */
+var placerNom='';
+function ouvrirPlacer(nom){
+  if(lectureSeule)return;
+  placerNom=nom;
+  var auj=isoJour(new Date()),ag=agenceDe(nom);
+  var w=state.waitList.find(function(x){return x.nom===nom;});
+  var libres=state.slots.filter(function(s){return s.date>=auj&&!estAffecte(s)&&!s.locked;})
+    .sort(function(a,b){return a.date.localeCompare(b.date)||(a.heure||'99').localeCompare(b.heure||'99');});
+  document.getElementById('mpl-titre').innerHTML=ic('calendar-plus')+'Placer '+esc(nom);
+  var h='<div class="mpl-info">'+(ag?'<span class="badge '+ag+'">'+ag.toUpperCase()+'</span>':'')+
+    (w?'<span class="el-tag ko">'+w.att+' échec'+(w.att>1?'s':'')+'</span><span>→ passera en <b>'+libPassage((w.att+1)>=4?'B4+':'B'+(w.att+1))+'</b></span>':'')+'</div>';
+  if(!libres.length){
+    h+='<div class="acc-vide">Aucune place libre à venir. Ajoute une date dans le Planning avec « Nouvelle date ».</div>';
+  } else {
+    h+='<div class="mpl-list">';
+    var moisC='';
+    libres.forEach(function(s){
+      var m=s.date.slice(0,7);
+      if(m!==moisC){moisC=m;h+='<div class="mpl-mois">'+MONTHS[+m.slice(5)-1]+' '+m.slice(0,4)+'</div>';}
+      var diff=Math.round((new Date(s.date+'T12:00:00')-new Date(auj+'T12:00:00'))/86400000);
+      h+='<button class="mpl-row'+(ag&&s.agence===ag?' meme':'')+'" onclick="placerEleveSur('+s.id+')">'+
+        '<span class="mpl-d">'+labelJourCourt(s.date)+'</span><span class="mpl-h">'+(s.heure||'--:--')+'</span>'+
+        '<span class="mpl-mon">'+esc(s.moniteur)+'</span><span class="ag-mini '+s.agence+'">'+s.agence.toUpperCase()+'</span>'+
+        '<span class="mpl-j">'+(diff===0?'aujourd\'hui':diff===1?'demain':'dans '+diff+' j')+'</span>'+ic('chev-right')+'</button>';
+    });
+    h+='</div><div class="pp-hint">Les places de son agence sont mises en avant. L\'agence de la place devient celle de l\'élève.</div>';
+  }
+  document.getElementById('mpl-contenu').innerHTML=h;
+  document.getElementById('modal-placer').style.display='flex';
+}
+function placerEleveSur(id){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s||!placerNom)return;
+  closeModal('modal-placer');
+  updateSlotEleve(id,placerNom);
+  try{renderWait();}catch(e){}
+  try{renderBanque();}catch(e){}
+  toast(placerNom+' placé le '+labelJourCourt(s.date)+' · '+libPassage(s.passage)+' ✓','#057a55');
+  placerNom='';
 }
 
 function renderStatsView(){
@@ -2386,11 +2504,11 @@ function renderDetail(){
   var permisOpts=PERMIS.map(function(x){return '<option value="'+x+'"'+(s.type_permis===x?' selected':'')+'>'+x+'</option>';}).join('');
   var agOpts=['cds','sbae'].map(function(a){return '<option value="'+a+'"'+(s.agence===a?' selected':'')+'>'+a.toUpperCase()+'</option>';}).join('');
   var planned=state.slots.filter(function(x){return estAffecte(x)&&x.month===s.month;}).map(function(x){return x.nom;});
-  var dl='';tousEleves().forEach(function(e){if(planned.includes(e.n)&&e.n!==s.nom)return;dl+='<option value="'+e.n+'">'+e.a.toUpperCase()+'</option>';});
+  var dl='';tousEleves().forEach(function(e){if(planned.includes(e.n)&&e.n!==s.nom)return;dl+='<option value="'+e.n+'">'+(e.rep?'REPASSAGE · ':'')+e.a.toUpperCase()+'</option>';});
 
   var h='<div class="pp-top"><span class="pp-st"><span class="pl-dot st-'+st+'"></span>'+LIB_STATUT[st]+'</span>'+
     '<button class="pl-ico pp-close" onclick="fermerDetail()" title="Fermer">'+ic('x')+'</button></div>';
-  h+='<input type="text" class="pp-name" id="pp-name" list="dl-detail" value="'+(s.nom||'').replace(/"/g,'&quot;')+'" placeholder="Nom de l\'élève" onchange="updateSlotEleve('+s.id+',this.value)"'+dis+'><datalist id="dl-detail">'+dl+'</datalist>';
+  h+='<input type="text" class="pp-name" id="pp-name" list="dl-detail" value="'+(s.nom||'').replace(/"/g,'&quot;')+'" placeholder="Nom de l\'élève" onchange="confirmerEleve('+s.id+',this)"'+dis+'><datalist id="dl-detail">'+dl+'</datalist>';
   h+='<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>';
   h+='<div class="pp-grid">'+
     '<div class="pp-f"><label>Heure</label><select onchange="updateSlot('+s.id+',\'heure\',this.value)"'+dis+'>'+heureOpts+'</select></div>'+
@@ -2427,21 +2545,52 @@ function updateSlot(id,f,v){
   renderPlanning();
   toast('Sauvegardé ✓','#057a55');
 }
+/* ===== CONFIRMATION AVANT D'INSCRIRE UN ÉLÈVE SUR UNE PLACE ===== */
+var confAttente=null;
+function confirmerEleve(id,inp){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
+  var val=(inp.value||'').trim();
+  if(val===(s.nom||''))return;
+  if(!val){updateSlotEleve(id,'');return;}
+  confAttente={id:id,val:val,inp:inp,ancien:s.nom||''};
+  var ag=agenceDe(val),w=state.waitList.find(function(x){return x.nom===val;}),connu=tousEleves().some(function(e){return e.nom===val;});
+  var h='<div class="cf-nom">'+esc(val)+'</div>'+
+    '<div class="cf-ligne">'+ic('calendar')+'<span>'+labelJourCourt(s.date)+(s.heure?' à '+s.heure:'')+(s.moniteur?' · '+esc(s.moniteur):'')+'</span>'+(ag?'<span class="ag-mini '+ag+'">'+ag.toUpperCase()+'</span>':'')+'</div>';
+  if(w)h+='<div class="cf-note rep">Élève en repassage ('+w.att+' échec'+(w.att>1?'s':'')+') → '+libPassage((w.att+1)>=4?'B4+':'B'+(w.att+1))+'</div>';
+  else if(!connu)h+='<div class="cf-note new">Nouvel élève : il sera ajouté aux Élèves. Vérifie bien l\'orthographe.</div>';
+  if(confAttente.ancien)h+='<div class="cf-note">Remplace « '+esc(confAttente.ancien)+' »</div>';
+  document.getElementById('mcf-contenu').innerHTML=h;
+  document.getElementById('modal-confirm').style.display='flex';
+  setTimeout(function(){var b=document.getElementById('mcf-ok');if(b)b.focus();},50);
+}
+function validerConfirm(ok){
+  var c=confAttente;confAttente=null;
+  document.getElementById('modal-confirm').style.display='none';
+  if(!c)return;
+  if(ok)updateSlotEleve(c.id,c.val);
+  else if(c.inp)c.inp.value=c.ancien;
+}
+
 function updateSlotEleve(id,val){
   var s=state.slots.find(function(x){return x.id===id;});
   if(!s||s.locked)return;
   val=val.trim();
+  var ancien=s.nom;
   s.nom=val;
+  var retire=(ancien&&ancien!==val)?nettoyerEleveAuto(ancien):false;
   var ag=agenceDe(val);
   if(ag)s.agence=ag;
   // Catégorie choisie dans l'onglet Élèves : reprise sur la place
   var eoF=eleveObj(val);
   if(eoF&&eoF.formation){s.formation=eoF.formation;if(/AAC/.test(eoF.formation))s.type_permis='AAC';}
+  // Élève en repassage : rang de passage déduit du nombre d'échecs
+  var wR=val?state.waitList.find(function(x){return x.nom===val;}):null;
+  if(wR){var rg=(wR.att||1)+1;s.passage=rg>=4?'B4+':'B'+rg;}
   if(!val){s.pp=false;s.vm=false;}
   if(val){var eo=eleveObj(val);if(eo)eo.moisPrevu='';} // prévision soldée : il est sur le planning
   var ajoute=val?ajouterABanqueSiNouveau(val,s.agence,s.formation||formationDe(s,true)):false;
   renderPlanning();
-  toast(val?(val+' affecté'+(ajoute?' · ajouté aux Élèves':'')+' ✓'):'Place libérée','#057a55');
+  toast((val?(val+' affecté'+(wR?' · '+libPassage(s.passage):'')+(ajoute?' · ajouté aux Élèves':'')+' ✓'):'Place libérée')+(retire?' · « '+ancien+' » retiré des Élèves':''),'#057a55');
 }
 // Ajout rapide d'une place sur une date déjà au planning (reprend agence / moniteur / catégorie de la dernière ligne)
 function addSlotSameDate(date){
@@ -2485,6 +2634,7 @@ function supprimerDate(d){
 function delSlot(id){
   var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
   state.slots=state.slots.filter(function(x){return x.id!==id;});
+  nettoyerEleveAuto(s.nom);
   state.selSlot=null;fermerDetail(true);
   renderPlanning();
   toastAnnuler('Place supprimée',[s]);
@@ -2580,6 +2730,7 @@ function renderWait(){
       html+='<div class="wait-info"><div class="wait-name">'+w.nom+'</div><div class="wait-sub">Dernier passage : '+dlabel+(replanifie?' · <span style="color:var(--sbae);font-weight:600">'+ic('calendar')+' Replanifié le '+new Date(replanifie.date+'T12:00:00').getDate()+' '+MONTHS[new Date(replanifie.date+'T12:00:00').getMonth()]+'</span>':'')+'</div></div>';
       html+='<span class="badge '+ag+'">'+ag.toUpperCase()+'</span>';
       html+='<span class="date-pill '+datePillClass(w.last_date)+'">'+datePillLabel(w.last_date)+'</span>';
+      if(!replanifie&&!lectureSeule)html+='<button class="btn-placer" onclick="ouvrirPlacer(\''+w.nom.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')" title="Choisir une place libre">'+ic('calendar-plus')+'Placer</button>';
       html+='<button class="icon-btn" onclick="delWait('+w.id+')" title="Retirer du repassage">'+ic('trash')+'</button>';
       html+='</div>';
     });
@@ -2658,7 +2809,7 @@ function renderCategorieChoix(){
     return '<button type="button" class="el-cat-b'+(elCategorie===f?' on':'')+'" onclick="choisirCategorie(\''+f+'\')">'+f.replace(/^B /,'')+'</button>';}).join('');
 }
 function choisirCategorie(f){elCategorie=elCategorie===f?'':f;elCatManuelle=true;renderCategorieChoix();document.getElementById('el-nom').focus();}
-function setFormationEleve(nom,val){var e=eleveObj(nom);if(!e)return;e.formation=val;renderBanque();toast(nom+' → '+(val||'catégorie retirée'),'#057a55');}
+function setFormationEleve(nom,val){var e=eleveObj(nom);if(!e)return;e.auto=false;e.formation=val;renderBanque();toast(nom+' → '+(val||'catégorie retirée'),'#057a55');}
 
 // Tous les noms déjà vus (élèves, repassage, historique des examens)
 function nomsConnus(){
@@ -2726,7 +2877,7 @@ function viderAjoutEleve(){
 }
 // Range (ou déplace) un élève vers SBAE, CDS ou Repassage
 function rangerEleve(nom,dest){
-  var e=eleveObj(nom);
+  var e=eleveObj(nom);if(e)e.auto=false;
   if(dest==='repassage'){
     var ag=(e&&e.agence)||agenceConnue(nom)||'cds';
     if(!e)state.eleves.push({nom:nom,agence:ag,statut:'formation',moisPrevu:''});
@@ -2760,7 +2911,7 @@ function deplacerEleve(nom,dest){
   toast(nom+' → '+LIB_DEST[dest],dest==='repassage'?'#d97706':'#057a55');
 }
 function basculerStatutEleve(nom){
-  var e=eleveObj(nom);if(!e)return;
+  var e=eleveObj(nom);if(!e)return;e.auto=false;
   e.statut=e.statut==='bientot'?'formation':'bientot';
   if(e.statut!=='bientot')e.moisPrevu='';
   renderBanque();
@@ -2823,6 +2974,7 @@ function renderBanque(){
       if(c.k==='repassage'){
         html+='<button class="el-tag ag '+x.w.agence+'" title="Changer d\'agence" onclick="basculerAgenceRepassage(\''+nq+'\')">'+x.w.agence.toUpperCase()+'</button>';
         html+='<span class="el-tag ko">'+x.w.att+' échec'+(x.w.att>1?'s':'')+'</span>';
+        if(!px&&!ok)html+='<button class="el-tag placer" onclick="ouvrirPlacer(\''+nq+'\')" title="Choisir une place libre">'+ic('calendar-plus')+'Placer</button>';
       } else {
         var bientot=x.e.statut==='bientot';
         html+='<button class="el-tag st'+(bientot?' bientot':'')+'" title="Cliquer pour changer" onclick="basculerStatutEleve(\''+nq+'\')">'+(bientot?ic('clock')+'Bientôt prêt':ic('grad')+'En formation')+'</button>';
@@ -2900,7 +3052,9 @@ function openAddSlot(){
   dl.innerHTML='';
   var planned=state.slots.filter(function(x){return estAffecte(x)&&x.month===state.currentMonth;}).map(function(x){return x.nom;});
   // Élèves dispo, annotés et triés : prévus ce mois d'abord, puis repassage, puis le reste
-  var dispo=state.eleves.filter(function(e){return !planned.includes(e.nom);}).map(function(e){
+  var sources=state.eleves.slice();
+  state.waitList.forEach(function(w){if(!sources.some(function(e){return e.nom===w.nom;}))sources.push({nom:w.nom,agence:w.agence,statut:'formation',moisPrevu:''});});
+  var dispo=sources.filter(function(e){return !planned.includes(e.nom);}).map(function(e){
     var st=statutEleve(e.nom);
     var prevCeMois=(e.moisPrevu===state.currentMonth);
     var rang=prevCeMois?0:(st==='repassage'?1:(st==='bientot'?2:3));
@@ -2966,7 +3120,16 @@ function saveSlot(){
 // Un nom saisi sur une place et inconnu de l'onglet Élèves y est ajouté automatiquement
 function ajouterABanqueSiNouveau(nom,agence,formation){
   nom=(nom||'').trim();if(!nom||eleveObj(nom)||enRepassage(nom))return false;
-  state.eleves.push({nom:nom,agence:agence==='sbae'?'sbae':'cds',statut:'bientot',moisPrevu:'',formation:formation||''});
+  state.eleves.push({nom:nom,agence:agence==='sbae'?'sbae':'cds',statut:'bientot',moisPrevu:'',formation:formation||'',auto:true});
+  return true;
+}
+// Nom corrigé / effacé sur une place : l'élève créé automatiquement avec l'ancien nom (faute de frappe)
+// est retiré, s'il n'est sur aucune autre place et n'a pas été retouché dans l'onglet Élèves
+function nettoyerEleveAuto(ancien){
+  ancien=(ancien||'').trim();if(!ancien)return false;
+  var e=eleveObj(ancien);if(!e||!e.auto)return false;
+  if(state.slots.some(function(x){return x.nom===ancien;})||enRepassage(ancien))return false;
+  state.eleves=state.eleves.filter(function(x){return x!==e;});
   return true;
 }
 function closeModal(id){document.getElementById(id).style.display='none';}
