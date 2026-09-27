@@ -482,6 +482,16 @@ textarea{padding:8px 12px;border:1px solid var(--border);border-radius:var(--rad
 .st-pret{background:var(--easy)}
 .st-recu{background:var(--ok)}
 .st-echec{background:var(--danger)}
+.pl-bloc{margin-bottom:18px;scroll-margin-top:90px}
+.pl-bloc .pl-list{transition:box-shadow .2s,border-color .2s}
+.pl-bloc.on .pl-list{border-color:var(--easy);box-shadow:0 0 0 3px var(--easy-light),var(--shadow)}
+.pl-bloc.on .pl-dayhead h2{color:var(--easy)}
+.pl-bloc.past:not(.on) .pl-list{opacity:.72}
+.pl-bloc.past:not(.on) .pl-dayhead h2{color:var(--text-muted)}
+.pl-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.pl-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.pl-kpi b{display:block;font-family:'DM Mono',monospace;font-size:20px;font-weight:600;line-height:1.1}
+.pl-kpi span{font-size:11px;color:var(--text-muted)}
 .pl-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);margin:10px 6px 0}
 .pl-legend span{display:inline-flex;align-items:center;gap:5px}
 .pl-empty{text-align:center;color:var(--text-muted);padding:40px 16px;font-size:13px;line-height:1.6}
@@ -1010,7 +1020,7 @@ function startApp(){
    Les coches sont stockées à part (collection easy_permis_ants) : la règle
    Firestore n'en autorise la lecture/écriture qu'à ces mêmes e-mails.
 ===================================================================== */
-var ANTS_EMAILS=['dasilva.charles49@gmail.com','testpourexercice@gmail.com'];
+var ANTS_EMAILS=['testpourexercice@gmail.com'];
 var ANTS_URL='https://moncompte.ants.gouv.fr/connexion';
 var ants={on:false,ref:null,faits:{}};
 function initAnts(){
@@ -1337,31 +1347,14 @@ function renderPlanning(){
   });
   document.getElementById('pl-dates').innerHTML=dh||'<div class="pl-empty-dates">Aucune date ce mois-ci.</div>';
 
-  // Journée sélectionnée
+  // Journée(s) : téléphone = la date choisie ; ordinateur = tout le mois, date choisie mise en avant
   var day=document.getElementById('pl-day');
   if(!state.selDate){
     day.innerHTML='<div class="pl-list"><div class="pl-empty">'+ic('calendar')+'Aucune place d\'examen ce mois-ci.<br>Ajoute une date avec <strong>Nouvelle date</strong>.</div></div>';
   } else {
-    var dd=new Date(state.selDate+'T12:00:00');
-    var diff=Math.round((dd-today)/86400000);
-    var quand=diff<0?'passé':diff===0?'aujourd\'hui':diff===1?'demain':'dans '+diff+' j';
-    var jour=ms.filter(function(s){return s.date===state.selDate;})
-      .sort(function(a,b){return (a.heure||'99').localeCompare(b.heure||'99');});
-    var h='<div class="pl-dayhead"><h2>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</h2><span class="dh-j">'+quand+'</span>'+
-      '<button class="add-same-date" onclick="addSlotSameDate(\''+state.selDate+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span>Élève</span></button></div>';
-    h+='<div class="pl-list">';
-    jour.forEach(function(s){
-      var tags='';
-      if(s.passage&&s.passage!=='1er')tags+='<span class="r-tag">'+s.passage+'</span>';
-      if(s.type_permis&&s.type_permis!=='B')tags+='<span class="r-tag">'+s.type_permis+'</span>';
-      h+='<div class="pl-row'+(s.id===state.selSlot?' on':'')+'" onclick="ouvrirDetail('+s.id+')">'+
-        '<span class="r-h'+(s.heure?'':' vide')+'">'+(s.heure||'--:--')+'</span>'+
-        (estAffecte(s)?'<span class="r-n">'+s.nom+'</span>':'<span class="r-n vide">Ajouter un élève</span>')+
-        '<span class="r-tags">'+tags+'</span>'+
-        '<span class="pl-av" title="'+s.moniteur+'">'+initiales(s.moniteur)+'</span>'+
-        '<span class="pl-dot st-'+statutPlace(s)+'" title="'+LIB_STATUT[statutPlace(s)]+'"></span></div>';
-    });
-    h+='</div>';
+    var h=vueOrdinateur()?renderKpisMois(ms):'';
+    var aAfficher=vueOrdinateur()?dates:[state.selDate];
+    aAfficher.forEach(function(d){h+=renderBlocJour(d,ms,today);});
     h+='<div class="pl-legend"><span><i class="pdot st-libre"></i>Libre</span><span><i class="pdot st-vm"></i>VM à faire</span><span><i class="pdot st-pret"></i>Prêt</span><span><i class="pdot st-recu"></i>Reçu</span><span><i class="pdot st-echec"></i>Échec</span></div>';
     day.innerHTML=h;
   }
@@ -1369,6 +1362,56 @@ function renderPlanning(){
   renderDetail();
   persist();
 }
+
+function vueOrdinateur(){return window.matchMedia('(min-width:901px)').matches;}
+// Un bloc « jour » : en-tête (date, échéance, + Élève) + une ligne par place
+function renderBlocJour(d,ms,today){
+  var dd=new Date(d+'T12:00:00');
+  var diff=Math.round((dd-today)/86400000);
+  var quand=diff<0?'passé':diff===0?'aujourd\'hui':diff===1?'demain':'dans '+diff+' j';
+  var jour=ms.filter(function(s){return s.date===d;})
+    .sort(function(a,b){return (a.heure||'99').localeCompare(b.heure||'99');});
+  var h='<div class="pl-bloc'+(d===state.selDate?' on':'')+(diff<0?' past':'')+'" id="jour-'+d+'">';
+  h+='<div class="pl-dayhead"><h2>'+JOURS_FULL[dd.getDay()]+' '+dd.getDate()+' '+MONTHS[dd.getMonth()].toLowerCase()+'</h2><span class="dh-j">'+quand+'</span>'+
+    '<button class="add-same-date" onclick="addSlotSameDate(\''+d+'\')" title="Ajouter une place à cette date">'+ic('plus')+'<span>Élève</span></button></div>';
+  h+='<div class="pl-list">';
+  jour.forEach(function(s){
+    var tags='';
+    if(s.passage&&s.passage!=='1er')tags+='<span class="r-tag">'+s.passage+'</span>';
+    if(s.type_permis&&s.type_permis!=='B')tags+='<span class="r-tag">'+s.type_permis+'</span>';
+    h+='<div class="pl-row'+(s.id===state.selSlot?' on':'')+'" onclick="ouvrirDetail('+s.id+')">'+
+      '<span class="r-h'+(s.heure?'':' vide')+'">'+(s.heure||'--:--')+'</span>'+
+      (estAffecte(s)?'<span class="r-n">'+s.nom+'</span>':'<span class="r-n vide">Ajouter un élève</span>')+
+      '<span class="r-tags">'+tags+'</span>'+
+      '<span class="pl-av" title="'+s.moniteur+'">'+initiales(s.moniteur)+'</span>'+
+      '<span class="pl-dot st-'+statutPlace(s)+'" title="'+LIB_STATUT[statutPlace(s)]+'"></span></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+// Chiffres du mois (ordinateur)
+function renderKpisMois(ms){
+  var aff=ms.filter(estAffecte);
+  var recus=aff.filter(function(s){return s.resultat==='recu';}).length;
+  var echecs=aff.filter(function(s){return s.resultat==='echec';}).length;
+  var taux=(recus+echecs)?Math.round(recus/(recus+echecs)*100):null;
+  var libres=ms.length-aff.length;
+  var tuile=function(v,l,c){return '<div class="pl-kpi"><b'+(c?' style="color:'+c+'"':'')+'>'+v+'</b><span>'+l+'</span></div>';};
+  return '<div class="pl-kpis">'+
+    tuile(ms.length,'places ce mois')+
+    tuile(libres,'place'+(libres>1?'s':'')+' libre'+(libres>1?'s':''),libres?'var(--easy)':'')+
+    tuile(recus+' / '+echecs,'reçus / échecs')+
+    tuile(taux===null?'—':taux+'%','réussite',taux===null?'':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)')+
+    '</div>';
+}
+function defilerVersJour(d){
+  var el=document.getElementById('jour-'+d);
+  if(el&&vueOrdinateur())el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+// Passage téléphone ⇄ ordinateur : on réaffiche le planning
+try{window.matchMedia('(min-width:901px)').addEventListener('change',function(){
+  var v=document.querySelector('.view.active');if(v&&v.id==='view-planning')renderPlanning();
+});}catch(e){}
 
 var LIB_STATUT={libre:'Place libre',vm:'VM à faire',pret:'Prêt',recu:'Reçu',echec:'Échec'};
 function statutPlace(s){
@@ -1397,10 +1440,14 @@ function allerAuProchain(d){
   state.selDate=d;state.selSlot=null;
   if(state.currentMonth!==d.slice(0,7)){state.currentMonth=d.slice(0,7);buildMonthSel();}
   renderPlanning();
+  defilerVersJour(d);
 }
-function choisirDate(d){state.selDate=d;state.selSlot=null;fermerDetail(true);renderPlanning();}
+function choisirDate(d){state.selDate=d;state.selSlot=null;fermerDetail(true);renderPlanning();defilerVersJour(d);}
 function ouvrirDetail(id){
   state.selSlot=id;
+  // Sur ordinateur tout le mois est affiché : la date de la place cliquée devient la date active
+  var s=state.slots.find(function(x){return x.id===id;});
+  if(s)state.selDate=s.date;
   renderPlanning();
   if(window.matchMedia('(max-width:900px)').matches)document.body.classList.add('detail-open');
 }
