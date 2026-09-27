@@ -588,12 +588,16 @@ button.el-tag:hover{filter:brightness(.95)}
 @media(hover:none){.el-x,.el-move{opacity:1;max-height:none}}
 @media(max-width:640px){.el-dest{gap:6px}.el-btn{padding:10px 4px}.el-btn b{font-size:13px}.el-add-in input{font-size:16px!important}}
 /* Stats par formation / centre */
-.dim-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:22px;align-items:start}
+.dim-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:22px;align-items:start;max-width:860px}
 .dim-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:14px 16px;overflow-x:auto}
 .dim-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .dim-h .ic{width:18px;height:18px;color:var(--easy)}
 .dim-h h3{font-family:var(--police-titre);font-size:16px;font-weight:600;margin:0}
-.dim-h span{margin-left:auto;font-size:11px;color:var(--text-muted)}
+.dim-h{flex-wrap:wrap}
+.dim-h>span{margin-left:auto;font-size:11px;color:var(--text-muted)}
+.dim-seg{display:inline-flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px;margin-left:8px}
+.dim-seg button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-muted);padding:4px 10px;border-radius:8px;cursor:pointer}
+.dim-seg button.on{background:var(--surface);color:var(--easy);box-shadow:var(--shadow)}
 .dim-t{width:100%;border-collapse:collapse;font-size:13px}
 .dim-t th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);text-align:center;padding:6px 6px;border-bottom:1px solid var(--border);white-space:nowrap}
 .dim-t td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:center}
@@ -1090,7 +1094,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div class="agency-grid" id="agency-stats"></div>
       <div class="dim-grid">
         <div class="dim-card" id="stats-formation"></div>
-        <div class="dim-card" id="stats-centre"></div>
       </div>
     </div>
 
@@ -1895,19 +1898,22 @@ function setInfoSlot(id,champ,val){
 // Tableaux « par formation » et « par centre » (année affichée, élèves en 1re fois)
 function renderStatsDimensions(){
   var annee=state.currentMonth.split('-')[0];
-  var an=state.slots.filter(function(s){return s.date.slice(0,4)===annee&&estAffecte(s)&&(!s.passage||s.passage==='1er');});
+  var ag=state.dimAgence||'';
+  var an=state.slots.filter(function(s){return s.date.slice(0,4)===annee&&estAffecte(s)&&(!s.passage||s.passage==='1er')&&(!ag||s.agence===ag);});
+  var agLib=ag?' · '+ag.toUpperCase():'';
+  var selAg='<div class="dim-seg">'+[['','Toutes'],['sbae','SBAE'],['cds','CDS']].map(function(o){return '<button class="'+(ag===o[0]?'on':'')+'" onclick="state.dimAgence=\''+o[0]+'\';renderStatsDimensions()">'+o[1]+'</button>';}).join('')+'</div>';
   var tableau=function(elId,titre,icone,cle,ordre){
     var el=document.getElementById(elId);if(!el)return;
     var groupes={};an.forEach(function(s){var k=cle(s);(groupes[k]=groupes[k]||[]).push(s);});
     var noms=Object.keys(groupes).sort(function(a,b){
       var ia=ordre.indexOf(a),ib=ordre.indexOf(b);if(ia<0)ia=99;if(ib<0)ib=99;return ia-ib||a.localeCompare(b,'fr');});
-    var h='<div class="dim-h">'+ic(icone)+'<h3>'+titre+'</h3><span>année '+annee+' · 1re fois</span></div>';
+    var h='<div class="dim-h">'+ic(icone)+'<h3>'+titre+'</h3>'+selAg+'<span>année '+annee+' · 1re fois</span></div>';
     if(!noms.length){el.innerHTML=h+'<div class="acc-vide">Aucune donnée pour cette année.</div>';return;}
     h+='<table class="dim-t"><thead><tr><th></th><th>Présentés</th><th>Reçus</th><th>Échecs</th><th>Réussite</th><th>Heures moy.</th></tr></thead><tbody>';
     noms.forEach(function(n){
       var l=groupes[n],r=l.filter(function(s){return s.resultat==='recu';}),e=l.filter(function(s){return s.resultat==='echec';});
       var taux=(r.length+e.length)?Math.round(r.length/(r.length+e.length)*100):null,m=moyenneHeures(l);
-      var lien=function(liste,lib,cls){var k='l'+(++statsSeq);STATS_LISTES[k]={titre:lib+' — '+n+' · année '+annee,list:liste};
+      var lien=function(liste,lib,cls){var k='l'+(++statsSeq);STATS_LISTES[k]={titre:lib+' — '+n+agLib+' · année '+annee,list:liste};
         return '<button class="dim-n '+(cls||'')+'" onclick="voirListeStats(\''+k+'\')"'+(liste.length?'':' disabled')+'>'+liste.length+'</button>';};
       var coul=taux===null?'var(--text-light)':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)';
       h+='<tr><td class="dim-nom">'+esc(n)+'</td><td>'+lien(l,'Élèves présentés')+'</td><td>'+lien(r,'Reçus','ok')+'</td><td>'+lien(e,'Échecs','ko')+'</td>'+
@@ -1917,7 +1923,6 @@ function renderStatsDimensions(){
     el.innerHTML=h+'</tbody></table>';
   };
   tableau('stats-formation','Par formation','grad',function(s){return formationDe(s);},FORMATIONS.concat(['Non renseignée']));
-  tableau('stats-centre','Par centre d\'examen','target',function(s){return s.centre||'Non renseigné';},CENTRES.concat(['Non renseigné']));
 }
 
 function renderStatsView(){
