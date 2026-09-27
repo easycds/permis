@@ -587,6 +587,28 @@ button.el-tag:hover{filter:brightness(.95)}
 @media(max-width:900px){.el-board{grid-template-columns:minmax(0,1fr)}}
 @media(hover:none){.el-x,.el-move{opacity:1;max-height:none}}
 @media(max-width:640px){.el-dest{gap:6px}.el-btn{padding:10px 4px}.el-btn b{font-size:13px}.el-add-in input{font-size:16px!important}}
+/* Stats par formation / centre */
+.dim-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:22px;align-items:start}
+.dim-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:14px 16px;overflow-x:auto}
+.dim-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.dim-h .ic{width:18px;height:18px;color:var(--easy)}
+.dim-h h3{font-family:var(--police-titre);font-size:16px;font-weight:600;margin:0}
+.dim-h span{margin-left:auto;font-size:11px;color:var(--text-muted)}
+.dim-t{width:100%;border-collapse:collapse;font-size:13px}
+.dim-t th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);text-align:center;padding:6px 6px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dim-t td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:center}
+.dim-t tr:last-child td{border-bottom:none}
+.dim-nom{text-align:left!important;font-weight:600;white-space:nowrap}
+.dim-n{border:none;background:none;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;padding:3px 8px;border-radius:8px}
+.dim-n:hover:not(:disabled){background:var(--bg);color:var(--easy)}
+.dim-n.ok{color:var(--ok)}.dim-n.ko{color:var(--danger)}
+.dim-n:disabled{cursor:default;color:var(--text-light)}
+.dim-taux{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dim-bar{width:60px;height:5px;border-radius:3px;background:var(--bg);overflow:hidden;display:block}
+.dim-bar i{display:block;height:100%}
+.dim-hm{font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap}
+@media(max-width:900px){.dim-grid{grid-template-columns:minmax(0,1fr)}}
+
 /* Note du mois + calendrier plus grand */
 .pl-note{margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--bg);transition:all .15s}
 .pl-note.remplie{background:#fffbeb;border-color:#fde68a}
@@ -1066,6 +1088,10 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin:2px 2px 4px">Détail du mois — élèves qui passent pour la 1re fois</div>
       <div style="font-size:12px;color:var(--text-muted);margin:0 2px 14px">Seuls les élèves passant l'examen pour la première fois sont comptabilisés (les repassages ne sont pas comptés).</div>
       <div class="agency-grid" id="agency-stats"></div>
+      <div class="dim-grid">
+        <div class="dim-card" id="stats-formation"></div>
+        <div class="dim-card" id="stats-centre"></div>
+      </div>
     </div>
 
     <!-- ===== VUE REPASSAGE ===== -->
@@ -1846,12 +1872,61 @@ function setHeuresFormation(id,val){
   toast('Heures de formation enregistrées ✓','#057a55');
 }
 
+/* ===== FORMATION + CENTRE D'EXAMEN ===== */
+var FORMATIONS=['B Trad','B Trad Automatique','B CS','B CS Automatique','B AAC'];
+var CENTRES=['Gatignolle','Dixmeras'];
+// Formation d'un examen : champ dédié, sinon reconnue dans la note (anciens imports)
+function formationDe(s,brut){
+  if(s.formation)return s.formation;
+  var c=(s.commentaire||'').trim().toLowerCase();
+  var f=FORMATIONS.slice().sort(function(a,b){return b.length-a.length;}).find(function(x){return c===x.toLowerCase();});
+  return f||(brut?'':'Non renseignée');
+}
+function optionsListe(liste,val){
+  var h='<option value=""'+(val?'':' selected')+'>—</option>';
+  var l=liste.slice();if(val&&l.indexOf(val)<0)l.push(val);
+  return h+l.map(function(x){return '<option'+(x===val?' selected':'')+'>'+esc(x)+'</option>';}).join('');
+}
+// Infos descriptives modifiables même quand le résultat est verrouillé
+function setInfoSlot(id,champ,val){
+  var s=state.slots.find(function(x){return x.id===id;});if(!s||lectureSeule)return;
+  s[champ]=val;renderPlanning();toast('Enregistré ✓','#057a55');
+}
+// Tableaux « par formation » et « par centre » (année affichée, élèves en 1re fois)
+function renderStatsDimensions(){
+  var annee=state.currentMonth.split('-')[0];
+  var an=state.slots.filter(function(s){return s.date.slice(0,4)===annee&&estAffecte(s)&&(!s.passage||s.passage==='1er');});
+  var tableau=function(elId,titre,icone,cle,ordre){
+    var el=document.getElementById(elId);if(!el)return;
+    var groupes={};an.forEach(function(s){var k=cle(s);(groupes[k]=groupes[k]||[]).push(s);});
+    var noms=Object.keys(groupes).sort(function(a,b){
+      var ia=ordre.indexOf(a),ib=ordre.indexOf(b);if(ia<0)ia=99;if(ib<0)ib=99;return ia-ib||a.localeCompare(b,'fr');});
+    var h='<div class="dim-h">'+ic(icone)+'<h3>'+titre+'</h3><span>année '+annee+' · 1re fois</span></div>';
+    if(!noms.length){el.innerHTML=h+'<div class="acc-vide">Aucune donnée pour cette année.</div>';return;}
+    h+='<table class="dim-t"><thead><tr><th></th><th>Présentés</th><th>Reçus</th><th>Échecs</th><th>Réussite</th><th>Heures moy.</th></tr></thead><tbody>';
+    noms.forEach(function(n){
+      var l=groupes[n],r=l.filter(function(s){return s.resultat==='recu';}),e=l.filter(function(s){return s.resultat==='echec';});
+      var taux=(r.length+e.length)?Math.round(r.length/(r.length+e.length)*100):null,m=moyenneHeures(l);
+      var lien=function(liste,lib,cls){var k='l'+(++statsSeq);STATS_LISTES[k]={titre:lib+' — '+n+' · année '+annee,list:liste};
+        return '<button class="dim-n '+(cls||'')+'" onclick="voirListeStats(\''+k+'\')"'+(liste.length?'':' disabled')+'>'+liste.length+'</button>';};
+      var coul=taux===null?'var(--text-light)':taux>=70?'var(--ok)':taux>=50?'var(--warn)':'var(--danger)';
+      h+='<tr><td class="dim-nom">'+esc(n)+'</td><td>'+lien(l,'Élèves présentés')+'</td><td>'+lien(r,'Reçus','ok')+'</td><td>'+lien(e,'Échecs','ko')+'</td>'+
+        '<td><div class="dim-taux"><b style="color:'+coul+'">'+(taux===null?'—':taux+'%')+'</b><span class="dim-bar"><i style="width:'+(taux||0)+'%;background:'+coul+'"></i></span></div></td>'+
+        '<td class="dim-hm">'+(m?fmtHeures(m.moy):'—')+'</td></tr>';
+    });
+    el.innerHTML=h+'</tbody></table>';
+  };
+  tableau('stats-formation','Par formation','grad',function(s){return formationDe(s);},FORMATIONS.concat(['Non renseignée']));
+  tableau('stats-centre','Par centre d\'examen','target',function(s){return s.centre||'Non renseigné';},CENTRES.concat(['Non renseigné']));
+}
+
 function renderStatsView(){
   syncMonthSelectors();
   STATS_LISTES={};statsSeq=0;
   var ms=state.slots.filter(function(s){return s.month===state.currentMonth;});
   renderAgencyStats(ms);
   renderAnneeStats();
+  renderStatsDimensions();
 }
 /* Bilan annuel — année de la période affichée, 1re présentation uniquement */
 function renderAnneeStats(){
@@ -2215,7 +2290,7 @@ function renderDetailLecture(s){
     '<div class="pp-when">'+JOURS_FULL[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+(s.passage&&s.passage!=='1er'?' · '+libPassage(s.passage):'')+'</div>'+
     '<div class="pp-ro">'+
       ligne('Heure',s.heure||'à définir')+ligne('Moniteur',s.moniteur)+ligne('Catégorie',s.type_permis)+
-      ligne('Agence',(s.agence||'').toUpperCase())+ligne('Heures de formation',s.hf>0?fmtHeures(s.hf):'—')+(s.commentaire?ligne('Note',s.commentaire):'')+
+      ligne('Agence',(s.agence||'').toUpperCase())+ligne('Formation',formationDe(s))+ligne('Centre',s.centre||'—')+ligne('Heures de formation',s.hf>0?fmtHeures(s.hf):'—')+(s.commentaire?ligne('Note',s.commentaire):'')+
       ligne('Résultat',s.resultat==='recu'?'Reçu':s.resultat==='echec'?'Échec':'—')+
     '</div>'+
     '<div class="pp-hint">'+ic('eye')+' Mode consultation : tu peux regarder, pas modifier.</div>';
@@ -2250,6 +2325,8 @@ function renderDetail(){
     '<div class="pp-f"><label>Moniteur</label><select onchange="updateSlot('+s.id+',\'moniteur\',this.value)"'+dis+'>'+monOpts+'</select></div>'+
     '<div class="pp-f"><label>Catégorie</label><select onchange="updateSlot('+s.id+',\'type_permis\',this.value)"'+dis+'>'+permisOpts+'</select></div>'+
     '<div class="pp-f"><label>Agence</label><select onchange="updateSlot('+s.id+',\'agence\',this.value)"'+dis+'>'+agOpts+'</select></div>'+
+    '<div class="pp-f"><label>Formation</label><select onchange="setInfoSlot('+s.id+',\'formation\',this.value)">'+optionsListe(FORMATIONS,formationDe(s,true))+'</select></div>'+
+    '<div class="pp-f"><label>Centre d\'examen</label><select onchange="setInfoSlot('+s.id+',\'centre\',this.value)">'+optionsListe(CENTRES,s.centre||'')+'</select></div>'+
     '<div class="pp-f full"><label>Heures de formation</label><input type="text" value="'+(s.hf>0?Math.floor(s.hf/60)+':'+String(s.hf%60).padStart(2,'0'):'')+'" placeholder="ex. 32:45" onchange="setHeuresFormation('+s.id+',this.value)"></div>'+
     '<div class="pp-f full"><label>Note</label><input type="text" value="'+(s.commentaire||'').replace(/"/g,'&quot;')+'" placeholder="Ex. B Trad, boîte auto…" onchange="updateSlot('+s.id+',\'commentaire\',this.value)"'+dis+'></div>'+
     '</div>';
@@ -2302,7 +2379,7 @@ function addSlotSameDate(date){
     if(m<=16*60+30)heure=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
   }
   var id=state.nextId++;
-  state.slots.push({id:id,month:date.slice(0,7),date:date,heure:heure,agence:ref.agence,nom:'',type_permis:ref.type_permis,moniteur:ref.moniteur,pp:false,vm:false,resultat:'',locked:false,passage:'1er',commentaire:''});
+  state.slots.push({id:id,month:date.slice(0,7),date:date,heure:heure,agence:ref.agence,nom:'',type_permis:ref.type_permis,moniteur:ref.moniteur,centre:ref.centre||'',pp:false,vm:false,resultat:'',locked:false,passage:'1er',commentaire:''});
   state.selDate=date;
   ouvrirDetail(id);
   // On place directement le curseur sur le nom de l'élève dans le panneau de détail
