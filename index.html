@@ -940,7 +940,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
           <option value="Quentin">Quentin</option>
           <option value="Doriane">Doriane</option>
           <option value="Aline">Aline</option>
-          <option value="Pauline">Pauline</option>
         </select>
       </div>
       <div class="form-field"><label>Élève <span style="font-weight:400;text-transform:none;letter-spacing:0">(taper pour chercher dans la banque · vide = place libre)</span></label>
@@ -1183,7 +1182,7 @@ function renderAnts(){
 
 var MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 var JOURS_FULL=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-var MONITEURS=['Charles','Grégoire','Quentin','Doriane','Aline','Pauline'];
+var MONITEURS=['Charles','Grégoire','Quentin','Doriane','Aline'];
 var PERMIS=['B','AAC','SUPP','B78'];
 var AGENCE_LABEL={sbae:'SBAE — Doriane & Aline',cds:'CDS — Charles & Grégoire'};
 
@@ -1623,6 +1622,8 @@ function renderDetail(){
   var heureOpts='<option value=""'+(s.heure?'':' selected')+'>--:--</option>';
   for(var hh=8;hh<=16;hh++){['00','30'].forEach(function(mn){var v=String(hh).padStart(2,'0')+':'+mn;heureOpts+='<option value="'+v+'"'+(s.heure===v?' selected':'')+'>'+v+'</option>';});}
   var monOpts=MONITEURS.map(function(m){return '<option value="'+m+'"'+(s.moniteur===m?' selected':'')+'>'+m+'</option>';}).join('');
+  // Ancien moniteur retiré de la liste (ex. Pauline) : on le garde affiché pour l'historique
+  if(s.moniteur&&MONITEURS.indexOf(s.moniteur)<0)monOpts='<option value="'+s.moniteur+'" selected>'+s.moniteur+' (ancien)</option>'+monOpts;
   var permisOpts=PERMIS.map(function(x){return '<option value="'+x+'"'+(s.type_permis===x?' selected':'')+'>'+x+'</option>';}).join('');
   var agOpts=['cds','sbae'].map(function(a){return '<option value="'+a+'"'+(s.agence===a?' selected':'')+'>'+a.toUpperCase()+'</option>';}).join('');
   var planned=state.slots.filter(function(x){return estAffecte(x)&&x.month===s.month;}).map(function(x){return x.nom;});
