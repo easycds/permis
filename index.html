@@ -2692,10 +2692,12 @@ function updateSlotEleve(id,val){
   if(ag)s.agence=ag;
   // Catégorie choisie dans l'onglet Élèves : reprise sur la place
   var eoF=eleveObj(val);
+  if(ancien!==val)s.formation=''; // on ne garde pas la formation de l'élève précédent
   if(eoF&&eoF.formation){s.formation=eoF.formation;if(/AAC/.test(eoF.formation))s.type_permis='AAC';}
-  // Élève en repassage : rang de passage déduit du nombre d'échecs
+  // Élève en repassage : rang de passage déduit du nombre d'échecs, sinon 1re fois
   var wR=val?state.waitList.find(function(x){return x.nom===val;}):null;
   if(wR){var rg=(wR.att||1)+1;s.passage=rg>=4?'B4+':'B'+rg;}
+  else if(ancien!==val)s.passage='1er';
   if(!val){s.pp=false;s.vm=false;}
   if(val){var eo=eleveObj(val);if(eo)eo.moisPrevu='';} // prévision soldée : il est sur le planning
   var ajoute=val?ajouterABanqueSiNouveau(val,s.agence,s.formation||formationDe(s,true)):false;
@@ -2743,6 +2745,7 @@ function supprimerDate(d){
 }
 function delSlot(id){
   var s=state.slots.find(function(x){return x.id===id;});if(!s)return;
+  if(s.locked||s.resultat){toast('Résultat saisi : déverrouille la place avant de la supprimer','#d97706');return;}
   state.slots=state.slots.filter(function(x){return x.id!==id;});
   nettoyerEleveAuto(s.nom);
   state.selSlot=null;fermerDetail(true);
@@ -2783,6 +2786,9 @@ function setResultat(id,res){
     ajouterAuRepassage(s.nom,s.agence,s.date);
     toast(s.nom+' → envoyé en Repassage','#d97706');
   } else {
+    // Reçu : l'élève sort du Repassage (mémorisé pour le remettre si on déverrouille)
+    var wOk=state.waitList.find(function(x){return x.nom===s.nom;});
+    if(wOk){s.repRetire=JSON.parse(JSON.stringify(wOk));state.waitList=state.waitList.filter(function(x){return x.nom!==s.nom;});updateNavCounts();}
     toast(s.nom+' a obtenu son permis ! Ligne verrouillée','#057a55');
   }
   renderPlanning();
@@ -2799,6 +2805,11 @@ function unlockSlot(id){
       else{state.waitList=state.waitList.filter(function(x){return x.id!==w.id;});}
     }
   }
+  if(s.resultat==='recu'&&s.repRetire){
+    if(!state.waitList.some(function(x){return x.nom===s.nom;}))state.waitList.push(s.repRetire);
+    updateNavCounts();
+  }
+  delete s.repRetire;
   s.resultat='';
   s.locked=false;
   renderPlanning();
@@ -2853,7 +2864,7 @@ function cycleAtt(id){
   if(lectureSeule)return;
   var w=state.waitList.find(function(x){return x.id===id;});
   if(!w)return;
-  w.att=w.att>=3?1:w.att+1;
+  w.att=w.att>=5?1:w.att+1; // 1 → 2 → 3 → 4 → 5 → 1
   renderWait();
 }
 function delWait(id){
