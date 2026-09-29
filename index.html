@@ -1014,55 +1014,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
 
 /* ===== SUIVI ANTS ===== */
 #view-ants{max-width:760px;margin:0 auto}
-/* Pédagogie : suivi des inscrits */
-#view-peda{max-width:1200px;margin:0 auto}
-.pd-head h2{font-family:var(--police-titre);font-size:22px;font-weight:600;margin:0}
-.pd-head{margin-bottom:16px}
-.pd-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.pd-kpi{text-align:left;font-family:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px 16px;box-shadow:var(--shadow);cursor:pointer}
-.pd-kpi:hover,.pd-kpi.actif{border-color:var(--easy)}
-.pd-kpi b{display:block;font-family:var(--police-titre);font-size:26px;font-weight:600;line-height:1.1}
-.pd-kpi span{font-size:12.5px;color:var(--text-muted)}
-.pd-kpi.alerte b{color:var(--easy)}
-.pd-bar{display:block;height:5px;background:var(--bg);border-radius:4px;margin-top:8px;overflow:hidden}
-.pd-bar i{display:block;height:100%;background:var(--ok);border-radius:4px}
-.pd-outils{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.pd-seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px}
-.pd-seg button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-muted);padding:7px 12px;border-radius:9px;cursor:pointer}
-.pd-seg button.on{background:var(--easy);color:#fff}
-.pd-seg button.on.sbae{background:var(--sbae)}.pd-seg button.on.cds{background:var(--cds)}
-.pd-rech{flex:1;min-width:170px}
-.pd-add{display:flex;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;margin-bottom:16px;box-shadow:var(--shadow)}
-.pd-add input{flex:1;min-width:180px}
-.pd-add select{width:auto}
-.pd-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-.pd-cols.une{grid-template-columns:1fr}
-.pd-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden}
-.pd-col-h{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border)}
-.pd-col-h h3{font-family:var(--police-titre);font-size:17px;font-weight:600;margin:0}
-.pd-n{margin-left:auto;font-size:12px;color:var(--text-muted)}
-.pd-leg,.pd-row{display:grid;grid-template-columns:minmax(0,1fr) 86px 86px;gap:8px;align-items:center;padding:9px 16px}
-.pd-leg{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-light);background:var(--bg);padding-top:6px;padding-bottom:6px}
-.pd-leg span:not(:first-child){text-align:center}
-.pd-row{border-top:1px solid var(--border)}
-.pd-row.complet{background:linear-gradient(90deg,var(--ok-light),transparent 65%)}
-.pd-nom{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pd-nom em{font-style:normal;font-size:10px;font-weight:700;color:var(--warn);background:#fff7ed;padding:1px 6px;border-radius:8px;vertical-align:middle}
-.pd-meta{font-size:12px;color:var(--text-muted);margin-top:2px}
-.pd-meta a{color:var(--text-light)}
-.pd-meta a:hover{color:var(--danger)}
-.pd-tg{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px dashed var(--border-strong);background:none;border-radius:12px;padding:6px 4px;cursor:pointer;font-family:inherit;color:var(--text-light);font-size:11px;font-weight:700}
-.pd-tg:hover{color:var(--text-muted);border-color:var(--text-muted)}
-.pd-ck{width:20px;height:20px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center}
-.pd-ck .ic{width:12px;height:12px;stroke-width:4}
-.pd-tg.on{border:1.5px solid var(--ok);background:var(--ok-light);color:var(--ok)}
-.pd-tg.on .pd-ck{background:var(--ok);border-color:var(--ok);color:#fff}
-.pd-d{font-weight:500;font-size:10px}
-.pd-vide{padding:22px 16px;text-align:center;color:var(--text-muted);font-size:13px}
-.pd-demo{margin-top:16px;font-size:13px;color:var(--text-muted);text-align:center}
-.pd-demo button{font-family:inherit;font-size:13px;font-weight:700;color:var(--easy);background:none;border:none;cursor:pointer;text-decoration:underline}
-@media(max-width:860px){.pd-cols{grid-template-columns:1fr}.pd-kpis{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.pd-leg,.pd-row{grid-template-columns:minmax(0,1fr) 70px 70px;padding-left:12px;padding-right:12px}.pd-seg button{padding:7px 8px;font-size:12px}}
 .ants-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
 .ants-head h2{font-family:var(--police-titre);font-size:22px;font-weight:600;margin:0}
 .ants-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
@@ -1163,7 +1114,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
   <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
 <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-<symbol id="i-grad" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="i-hand" viewBox="0 0 24 24"><path d="M9 11V6a2 2 0 0 1 4 0v5M13 10V5a2 2 0 0 1 4 0v7M9 11V9a2 2 0 0 0-4 0v5a8 8 0 0 0 16 0v-2a2 2 0 0 0-4 0"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
@@ -1197,7 +1147,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <button class="nav-btn" id="nb-attente"><svg class="ic"><use href="#i-retry"/></svg><span id="nb-attente-lbl">Repassage</span></button>
       <button class="nav-btn" id="nb-banque"><svg class="ic"><use href="#i-users"/></svg><span>Élèves</span></button>
       <button class="nav-btn" id="nb-ants" style="display:none"><svg class="ic"><use href="#i-clipboard"/></svg><span id="nb-ants-lbl">ANTS</span></button>
-      <button class="nav-btn" id="nb-peda" style="display:none"><svg class="ic"><use href="#i-grad"/></svg><span class="lbl-long">Pédagogie</span><span class="lbl-short">Péda</span></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-left:8px">
       <span class="obs-badge"><svg class="ic"><use href="#i-eye"/></svg>Consultation</span>
@@ -1311,7 +1260,6 @@ body.lecture-seule .obs-badge{display:inline-flex}
       <div class="el-board" id="kanban-board"></div>
     </div>
     <!-- ===== VUE SUIVI ANTS (comptes autorisés uniquement) ===== -->
-    <div class="view" id="view-peda"><div id="peda-content"></div></div>
     <div class="view" id="view-ants">
       <div class="ants-head">
         <div>
@@ -1582,7 +1530,6 @@ function startApp(){
   initRoles();
   initCloud();
   initAnts();
-  initPeda();
   initMessages();
 }
 
@@ -1729,120 +1676,6 @@ function initRoles(){
     else if(v&&v.id==='view-accueil')renderAccueil();
   }
 }
-
-/* =====================================================================
-   PÉDAGOGIE — suivi des inscrits (code obtenu / demande NEPH faite)
-   Réservé aux comptes de PEDA_EMAILS. Stocké à part, dans la collection
-   déjà protégée easy_permis_ants (doc « pedagogie ») : l'observateur n'y a pas accès.
-===================================================================== */
-var PEDA_EMAILS=['testpourexercice@gmail.com'];
-var peda={on:false,ref:null,liste:[],ag:'',filtre:'',rech:''};
-function initPeda(){
-  var u=(typeof firebase!=='undefined'&&firebase.auth)?firebase.auth().currentUser:null;
-  var email=u&&u.email?u.email.toLowerCase():'';
-  if(PEDA_EMAILS.indexOf(email)<0)return;
-  try{
-    peda.ref=firebase.firestore().collection('easy_permis_ants').doc('pedagogie');
-    peda.ref.onSnapshot(function(snap){
-      peda.liste=(snap.exists&&Array.isArray(snap.data().inscrits))?snap.data().inscrits:[];
-      activerPeda();
-    },function(){/* règle absente ou refus : l'onglet reste caché */});
-  }catch(e){}
-}
-function activerPeda(){
-  peda.on=true;
-  document.getElementById('nb-peda').style.display='';
-  var v=document.querySelector('.view.active');
-  if(v&&v.id==='view-peda')renderPeda();
-}
-function sauverPeda(){
-  if(peda.ref)peda.ref.set({inscrits:peda.liste}).then(function(){etatSauvegarde('ok');}).catch(function(){etatSauvegarde('err');});
-}
-function renderPeda(){
-  var el=document.getElementById('peda-content');if(!el)return;
-  var base=peda.liste.filter(function(e){return !peda.ag||e.ag===peda.ag;});
-  var n=base.length,nc=base.filter(function(e){return e.code;}).length,nn=base.filter(function(e){return e.neph;}).length;
-  var comp=base.filter(function(e){return e.code&&e.neph;}).length;
-  var k=function(id,val,lib,pct,al){return '<button class="pd-kpi'+(peda.filtre===id?' actif':'')+(al?' alerte':'')+'" onclick="pedaFiltre(\''+id+'\')"><b>'+val+'</b><span>'+lib+'</span>'+(pct!=null?'<i class="pd-bar"><i style="width:'+pct+'%"></i></i>':'')+'</button>';};
-  var h='<div class="pd-head"><div><h2>Pédagogie · suivi des inscrits</h2><div class="ants-sub">Pour chaque élève inscrit : le code est-il obtenu ? la demande de numéro de permis (NEPH) est-elle faite ?</div></div></div>';
-  h+='<div class="pd-kpis">'+k('',n,'inscrit'+(n>1?'s':''))+k('code',nc+' / '+n,'code obtenu',n?Math.round(nc/n*100):0)+
-    k('neph',nn+' / '+n,'demande NEPH faite',n?Math.round(nn/n*100):0)+k('afaire',n-comp,'dossier'+(n-comp>1?'s':'')+' à compléter',null,n-comp>0)+'</div>';
-  h+='<div class="pd-outils"><div class="pd-seg">'+[['','Les deux'],['sbae','SBAE · Seiches'],['cds','CDS · Saint-Sylvain']].map(function(a){
-      return '<button class="'+a[0]+(peda.ag===a[0]?' on':'')+'" onclick="peda.ag=\''+a[0]+'\';renderPeda()">'+a[1]+'</button>';}).join('')+'</div>'+
-    '<input class="pd-rech" id="pd-rech" placeholder="Rechercher un élève…" value="'+esc(peda.rech)+'" oninput="peda.rech=this.value;renderPedaListe()"></div>';
-  h+='<div class="pd-add"><input id="pd-nom" placeholder="NOM Prénom du nouvel inscrit" onkeydown="if(event.key===\'Enter\')ajouterInscrit()">'+
-    '<select id="pd-ag"><option value="sbae">SBAE</option><option value="cds"'+(peda.ag==='cds'?' selected':'')+'>CDS</option></select>'+
-    '<select id="pd-f">'+FORMATIONS.map(function(f){return '<option>'+f+'</option>';}).join('')+'</select>'+
-    '<button class="btn primary" onclick="ajouterInscrit()">'+ic('plus')+'Inscrire</button></div>';
-  h+='<div class="pd-cols" id="pd-cols"></div>';
-  if(!peda.liste.length)h+='<div class="pd-demo">Liste vide. Pour tester : <button onclick="pedaDemo()">remplir avec des élèves fictifs</button></div>';
-  else if(peda.liste.some(function(e){return e.demo;}))h+='<div class="pd-demo">Des élèves fictifs de test sont affichés. <button onclick="pedaViderDemo()">Retirer les élèves fictifs</button></div>';
-  el.innerHTML=h;
-  renderPedaListe();
-}
-function renderPedaListe(){
-  var box=document.getElementById('pd-cols');if(!box)return;
-  var q=(peda.rech||'').trim().toLowerCase();
-  var liste=peda.liste.filter(function(e){
-    if(peda.ag&&e.ag!==peda.ag)return false;
-    if(q&&e.nom.toLowerCase().indexOf(q)<0)return false;
-    if(peda.filtre==='code')return !e.code;if(peda.filtre==='neph')return !e.neph;if(peda.filtre==='afaire')return !(e.code&&e.neph);
-    return true;
-  }).sort(function(a,b){return (!!(a.code&&a.neph))-(!!(b.code&&b.neph))||(a.inscrit||'').localeCompare(b.inscrit||'');});
-  var ags=peda.ag?[peda.ag]:['sbae','cds'];
-  box.classList.toggle('une',ags.length===1);
-  box.innerHTML=ags.map(function(ag){
-    var l=liste.filter(function(e){return e.ag===ag;});
-    var h='<section class="pd-col '+ag+'"><div class="pd-col-h"><h3>'+(ag==='sbae'?'Seiches':'Saint-Sylvain')+'</h3><span class="ag-mini '+ag+'">'+ag.toUpperCase()+'</span><span class="pd-n">'+l.length+' élève'+(l.length>1?'s':'')+'</span></div>'+
-      '<div class="pd-leg"><span>Élève</span><span>Code</span><span>N° permis</span></div>';
-    if(!l.length)h+='<div class="pd-vide">'+(peda.filtre?'Rien à faire ici ✓':'Aucun inscrit')+'</div>';
-    l.forEach(function(e){
-      h+='<div class="pd-row'+(e.code&&e.neph?' complet':'')+'"><div class="pd-info"><div class="pd-nom">'+esc(e.nom)+(e.demo?' <em>test</em>':'')+'</div>'+
-        '<div class="pd-meta">'+esc(e.f||'')+(e.inscrit?' · inscrit le '+labelJourCourt(e.inscrit):'')+
-        ' · <a href="#" onclick="supprimerInscrit('+e.id+');return false">retirer</a></div></div>'+
-        pedaTg(e,'code','Code')+pedaTg(e,'neph','NEPH')+'</div>';
-    });
-    return h+'</section>';
-  }).join('');
-}
-function pedaTg(e,champ,lib){
-  var on=!!e[champ];
-  return '<button class="pd-tg'+(on?' on':'')+'" onclick="basculerPeda('+e.id+',\''+champ+'\')" title="'+(champ==='code'?'Code de la route obtenu':'Demande de numéro de permis (NEPH) faite')+'">'+
-    '<span class="pd-ck">'+(on?ic('check'):'')+'</span>'+lib+'<span class="pd-d">'+(on?labelJourCourt(e[champ]):'à faire')+'</span></button>';
-}
-function pedaFiltre(f){peda.filtre=peda.filtre===f?'':f;renderPeda();}
-function basculerPeda(id,champ){
-  var e=peda.liste.find(function(x){return x.id===id;});if(!e)return;
-  e[champ]=e[champ]?null:isoJour(new Date());
-  sauverPeda();renderPeda();
-  toast(e.nom+' · '+(champ==='code'?'code':'demande NEPH')+(e[champ]?' ✓':' remis à faire'),e[champ]?'#057a55':'#6b7280');
-}
-function ajouterInscrit(){
-  var inp=document.getElementById('pd-nom'),nom=(inp.value||'').trim();
-  if(!nom){inp.focus();return;}
-  if(peda.liste.some(function(e){return e.nom.toLowerCase()===nom.toLowerCase();})){toast('« '+nom+' » est déjà inscrit','#d97706');return;}
-  var id=peda.liste.reduce(function(m,e){return Math.max(m,e.id||0);},0)+1;
-  peda.liste.push({id:id,nom:nom,ag:document.getElementById('pd-ag').value,f:document.getElementById('pd-f').value,inscrit:isoJour(new Date()),code:null,neph:null});
-  sauverPeda();renderPeda();
-  var n2=document.getElementById('pd-nom');if(n2)n2.focus();
-  toast(nom+' inscrit ✓','#057a55');
-}
-function supprimerInscrit(id){
-  var e=peda.liste.find(function(x){return x.id===id;});if(!e)return;
-  if(!confirm('Retirer « '+e.nom+' » du suivi ?'))return;
-  peda.liste=peda.liste.filter(function(x){return x.id!==id;});
-  sauverPeda();renderPeda();
-}
-function pedaDemo(){
-  var j=function(n){var d=new Date();d.setDate(d.getDate()-n);return isoJour(d);};
-  var D=[['MARTIN Léa','sbae','B Trad',120,95,60],['BERNARD Hugo','sbae','B AAC',98,null,40],['PETIT Chloé','sbae','B Trad',75,50,null],
-    ['ROBERT Nathan','sbae','B Trad Automatique',60,null,null],['RICHARD Manon','sbae','B Trad',44,20,18],['LEROY Inès','sbae','B Trad',21,null,15],
-    ['LAURENT Enzo','cds','B Trad',140,110,90],['LEFEBVRE Emma','cds','B Trad Automatique',101,70,70],['MICHEL Louis','cds','B AAC',88,null,55],
-    ['GARCIA Lina','cds','B Trad',65,30,null],['DAVID Jules','cds','B Trad',52,null,null],['VINCENT Alice','cds','B Trad Automatique',14,null,null]];
-  peda.liste=D.map(function(a,i){return {id:i+1,nom:a[0],ag:a[1],f:a[2],inscrit:j(a[3]),code:a[4]!=null?j(a[4]):null,neph:a[5]!=null?j(a[5]):null,demo:true};});
-  sauverPeda();renderPeda();
-}
-function pedaViderDemo(){peda.liste=peda.liste.filter(function(e){return !e.demo;});sauverPeda();renderPeda();}
 
 /* =====================================================================
    SUIVI ANTS — réservé aux comptes de ANTS_EMAILS
@@ -2023,7 +1856,6 @@ function showView(v){
   if(v==='attente')renderWait();
   if(v==='banque')renderBanque();
   if(v==='ants')renderAnts();
-  if(v==='peda')renderPeda();
   if(v==='accueil')renderAccueil();
 }
 
@@ -3602,7 +3434,6 @@ document.getElementById('nb-attente').addEventListener('click',function(){showVi
 document.getElementById('nb-banque').addEventListener('click',function(){showView('banque');});
 document.getElementById('nb-accueil').addEventListener('click',function(){showView('accueil');});
 document.getElementById('nb-ants').addEventListener('click',function(){showView('ants');});
-document.getElementById('nb-peda').addEventListener('click',function(){showView('peda');});
 document.getElementById('btn-prev-month').addEventListener('click',function(){shiftMonth(-1);});
 document.getElementById('btn-next-month').addEventListener('click',function(){shiftMonth(1);});
 document.getElementById('sel-month').addEventListener('change',function(){setMonth(this.value);});
