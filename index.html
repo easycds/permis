@@ -72,14 +72,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
 .shell{display:flex;flex-direction:column;min-height:100vh}
 /* ===== ÉCRAN DE VERROUILLAGE ===== */
-#lock-screen{position:fixed;inset:0;z-index:1000;background:var(--grad-easy);display:flex;align-items:center;justify-content:center;padding:20px}
-.lock-card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:0 20px 60px rgba(0,0,0,.3);padding:32px 28px;width:340px;max-width:100%;text-align:center;animation:groupIn .3s var(--ease) both}
-.lock-logo{font-family:var(--police-titre);font-weight:700;font-size:34px;color:var(--easy);letter-spacing:-.5px;line-height:1;margin-bottom:6px}
-.lock-title{font-family:var(--police-titre);font-weight:600;font-size:19px;color:var(--text);margin-bottom:4px}
-.lock-sub{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.4}
-#lock-input,#login-email,#login-pass{width:100%;padding:12px 14px;font-size:16px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;text-align:center}
-#lock-input:focus,#login-email:focus,#login-pass:focus{border-color:var(--easy)}
-.lock-err{font-size:13px;color:var(--danger);min-height:18px;margin-bottom:8px;font-weight:600}
+/* Écran de connexion — même présentation que la page Administratif */
+#lock-screen{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;flex-direction:column;align-items:center;overflow-y:auto}
+.lock-haut{align-self:stretch;display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--grad-easy);color:#fff;box-shadow:0 2px 10px rgba(255,49,49,.25)}
+.lock-retour{display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:6px 10px 6px 6px;border-radius:10px}
+.lock-retour:hover{background:rgba(255,255,255,.15)}
+.lock-retour svg{width:18px;height:18px}
+.lock-app{font-family:var(--police-titre);font-weight:600;font-size:18px}
+.lock-card{margin:8vh 16px 24px;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:24px;width:380px;max-width:calc(100% - 32px);text-align:left;animation:groupIn .3s var(--ease) both}
+.lock-title{font-family:var(--police-titre);font-weight:600;font-size:24px;color:var(--text);margin:0 0 14px}
+.lock-lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin:0 0 6px}
+#login-email,#login-pass{width:100%;padding:10px 12px;font-size:14.5px;border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:12px}
+#login-email:focus,#login-pass:focus{border-color:var(--easy)}
+.lock-btn{width:100%;border:1px solid var(--easy);background:var(--easy);color:#fff;border-radius:11px;padding:10px 16px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.lock-btn:hover{background:var(--easy-dark)}
+.lock-err{font-size:13px;color:var(--easy);min-height:18px;margin-top:8px;font-weight:600}
+.lock-oubli{margin-top:2px;border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:13px;text-decoration:underline;font-family:inherit;padding:0}
 .topbar{background:var(--grad-easy);border-bottom:none;padding:0 24px;padding-top:env(safe-area-inset-top);display:flex;align-items:center;gap:16px;height:calc(64px + env(safe-area-inset-top));display:flex;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(255,48,48,.28)}
 .logo-area{display:flex;align-items:center;gap:12px;flex:1}
 .logo-img-real,.app-title{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -1121,15 +1129,19 @@ body.lecture-seule .obs-badge{display:inline-flex}
 </svg>
 <!-- ===== ÉCRAN DE CONNEXION ===== -->
 <div id="lock-screen">
+  <header class="lock-haut">
+    <a class="lock-retour" href="https://easycds.github.io/" title="Retour à Mes outils"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Mes outils</a>
+    <span class="lock-app">Places Permis</span>
+  </header>
   <div class="lock-card">
-    <div class="lock-logo">easy</div>
-    <div class="lock-title">Connexion</div>
-    <div class="lock-sub">Connecte-toi avec ton compte pour accéder à l'application.</div>
-    <input type="email" id="login-email" placeholder="E-mail" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
-    <input type="password" id="login-pass" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <h1 class="lock-title">Espace réservé</h1>
+    <label class="lock-lbl" for="login-email">E-mail</label>
+    <input type="email" id="login-email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    <label class="lock-lbl" for="login-pass">Mot de passe</label>
+    <input type="password" id="login-pass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lock-btn" id="btn-login" onclick="doLogin()">Se connecter</button>
     <div class="lock-err" id="lock-err"></div>
-    <button class="btn primary" id="btn-login" onclick="doLogin()" style="width:100%;justify-content:center;padding:11px">Se connecter</button>
-    <button type="button" onclick="motDePasseOublie()" style="margin-top:12px;border:none;background:none;cursor:pointer;color:var(--text-muted);font-size:13px;text-decoration:underline;font-family:inherit">Mot de passe oublié ?</button>
+    <button type="button" class="lock-oubli" onclick="motDePasseOublie()">Mot de passe oublié ?</button>
   </div>
 </div>
 <div class="shell" id="app-shell">
